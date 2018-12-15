@@ -28,8 +28,8 @@ _user = getenv('SUBMIT_USER')                                    # user running 
 _job_id = None                                                   # identifying string for this job
 _year = 2016                                                     # what year's data is this analysis?
 maxcopy = 3                                                      # maximum number of stagein attempts
-_to_hdfs = bool(getenv('SUBMIT_HDFSCACHE', False))               # should we cache on hdfs instead of local
-_users = ['snarayan', 'bmaier', 'dhsu', 'ceballos']              # MIT T3 PandaAnalysis users 
+_to_hdfs = bool(int(getenv('SUBMIT_HDFSCACHE', False)))          # should we cache on hdfs instead of local
+_users = ['snarayan', 'bmaier', 'dhsu', 'ceballos', 'ballen']    # MIT T3 PandaAnalysis users 
 
 stageout_protocol = None                                         # what stageout should we use?
 if _is_t3:
@@ -160,6 +160,7 @@ def request_data(xrd_path, first_attempt):
             try:
                 logger.info(_sname+'.request_data', 'creating parent at '+parent)
                 os.makedirs(parent)
+                os.chmod(parent, 0777)
             except OSError as e:
                 logger.warning(_sname+'.request_data', str(e))
                 pass 
@@ -175,6 +176,7 @@ def request_data(xrd_path, first_attempt):
             payload = {'path' : input_path, 
                        'bytes' : path.getsize(input_path)}
             r = requests.post(cb.report_server+'/condor/requestdata', json=payload)
+            os.chmod(input_path, 0777)
         logger.info(_sname+'.request_data', 'Successfully xrdcopied %s'%input_path)
         return input_path
     return None 
@@ -444,6 +446,8 @@ def add_json(skimmer):
     json_path = _jsons.get(_year, None)
     if not json_path:
         logger.error("T3.job_utilities.add_json", "Unknown key = "+str(_year))
+    else:
+        logger.info("T3.job_utilities.add_json", json_path)
     json_path = _data_dir + json_path
     with open(json_path) as jsonFile:
         payload = json.load(jsonFile)

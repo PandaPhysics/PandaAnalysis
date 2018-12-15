@@ -8,11 +8,12 @@ Load('BranchAdder')
  
 
 def gethisto(tree,formula,binlo,binhi,additionalcut=None):
-  nbins=50
+  nbins=100
   h = root.TH1D('h','h',nbins,binlo,binhi)
   s = Selector()
   s.read_tree(tree, branches=[formula], cut=additionalcut)
   h = s.draw(formula, hbase=h)
+  h.Smooth()
   for ib in xrange(1, h.GetNbinsX()+1):
     v = h.GetBinContent(ib)
     if v == 0:
@@ -27,8 +28,8 @@ def addbranches(fpath,additionalcut=None):
   jets = fin.Get('events')
   ba = root.H1BranchAdder()
 
-  hpt = gethisto(jets,'fjGenPt[0]',175,1000,additionalcut)
-  ba.formulaX = 'fjGenPt[0]'
+  hpt = gethisto(jets,'gen_pt',0,1000,additionalcut)
+  ba.formulaX = 'gen_pt'
   ba.newBranchName = 'ptweight'
   ba.setH(hpt)
   ba.addBranch(jets)
@@ -38,4 +39,4 @@ def addbranches(fpath,additionalcut=None):
 
 basedir = getenv('PANDA_FLATDIR')
 
-addbranches(basedir+'/'+sys.argv[1]+'.root')
+addbranches(basedir+'/'+sys.argv[1]+'.root', additionalcut='fabs(gen_eta)<2.5')

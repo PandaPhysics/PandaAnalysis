@@ -75,7 +75,6 @@ void BaseJetOp::do_readData(TString dirPath)
     scales["data"+e].reset(new FactorizedJetCorrector(params));
   }
 
-
   basePath = dirPath+"/jec/"+jecVFull+"/"+campaign+"_";
   setScaleUnc("MC", (basePath+jecVFull+"_MC_UncertaintySources_"+jetType+".txt").Data());
   for (auto e : eraGroups) {
@@ -319,6 +318,9 @@ void JetOp::do_execute()
       vbf->execute();
     }
     hbb->execute();
+
+    if (isNominal)
+      adjet->execute();
 
   } // shift loop
   gt.barrelHTMiss = vBarrelJets.Pt();
@@ -739,5 +741,20 @@ void HbbSystemOp::do_execute()
       HP4.SetPtEtaPhiM(gt.hbbpt[0], gt.hbbeta[0], gt.hbbphi[0], gt.hbbm[0]);
     TLorentzVector ZHP4 = (*dilep) + HP4;
     gt.ZBosonLep1CosThetaStar = CosThetaStar(looseLeps->at(0)->p4(), looseLeps->at(1)->p4(), ZHP4);
+  }
+}
+
+void AdJetOp::do_execute()
+{
+  if (gt.hbbjtidx[0][0]<0 || gt.hbbjtidx[0][1]<0)
+    return; 
+  auto& jets = **currentJES;
+  auto* h0 = jets.cleaned[gt.hbbjtidx[0][0]]->base; 
+  auto* h1 = jets.cleaned[gt.hbbjtidx[0][1]]->base; 
+  for (auto* jw : jets.central) {
+    if (jw->base == h0 || jw->base == h1)
+     continue; 
+    gt.adjetPt = max(gt.adjetPt, jw->pt);
+    gt.adjetCMVA = max(gt.adjetCMVA, jw->base->cmva);
   }
 }

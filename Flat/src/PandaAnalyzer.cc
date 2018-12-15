@@ -40,6 +40,7 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
   ADDOP(SimplePhotonOp);
   ADDOP(ComplicatedPhotonOp);
   ADDOP(RecoilOp);
+  ADDOP(FatJetReclusterOp<GeneralTree>);
   ADDOP(FatJetOp);
   ADDOP(JetOp);
   ADDOP(TauOp);
@@ -64,6 +65,7 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
   ADDOP(GenJetNuOp);
   ADDOP(HFCountingOp);
   ADDOP(KFactorOp);
+  ADDOP(ZvvHClassOp);
 
   for (auto& op : ops_all)
     op->print();
