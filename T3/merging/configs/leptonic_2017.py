@@ -127,7 +127,7 @@ d = {
                                        'EGamma'],
     'SinglePhoton'                  : ['SinglePhoton'],
     'ggZH125inv'                    : ['ggZH_ZToLL_HToInvisible_M125_13TeV_powheg_pythia8'],
-    'qqZH125inv'                    : ['ZH_ZToMM_HToInvisible_M125_TuneCP5_PSweights_13TeV_powheg_pythia8','ZH_ZToEE_HToInvisible_M125_TuneCP5_PSweights_13TeV_powheg_pythia8'],
+    'qqZH125inv'                    : ['ZH_ZToLL_HToInvisible_M125_13TeV_TuneCP5_powheg_pythia8'],
     'QCD'                           : ['QCD_ht100to200',
                                        'QCD_ht200to300',
                                        'QCD_ht300to500',
