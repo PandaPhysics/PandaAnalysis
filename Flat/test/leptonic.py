@@ -27,7 +27,7 @@ analysis.inpath = torun
 analysis.outpath = output
 analysis.datapath = getenv('CMSSW_BASE') + '/src/PandaAnalysis/data/'
 analysis.isData = False
-utils.set_year(analysis, 2017)
+utils.set_year(analysis, 2018)
 analysis.processType = utils.classify_sample(torun, analysis.isData)
 
 print "Process: ",analysis.processType
