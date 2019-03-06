@@ -169,26 +169,22 @@ namespace pa {
 
   };
 
-  template <typename T>
-  class TmplFatJetMatchingOp : public BaseAnalysisOp<T> {
+  class FatJetMatchingOp : public AnalysisOp {
   public:
-    TmplFatJetMatchingOp(panda::EventAnalysis& event_,
+    FatJetMatchingOp(panda::EventAnalysis& event_,
                       Config& cfg_,
                       Utils& utils_,
-                      T& gt_,
+                      GeneralTree& gt_,
                       int level_=0) :
-      BaseAnalysisOp<T>("fjmatching", event_, cfg_, utils_, gt_, level_) { 
-        jetDef.reset(new fastjet::JetDefinition(fastjet::antikt_algorithm, 
-                                                0.8));
-      }
-    virtual ~TmplFatJetMatchingOp () { }
+      AnalysisOp("fjmatching", event_, cfg_, utils_, gt_, level_) { }
+    virtual ~FatJetMatchingOp () { }
 
-    virtual bool on() { return !this->analysis.genOnly && this->analysis.fatjet && !this->analysis.isData; }
+    virtual bool on() { return !analysis.genOnly && analysis.fatjet && !analysis.isData; }
 
   protected:
     void do_init(Registry& registry) {
       fjPtrs = registry.accessConst<std::vector<panda::FatJet*>>("fjPtrs");
-      if (!this->analysis.isData)
+      if (!analysis.isData)
         genP = registry.accessConst<std::vector<panda::Particle*>>("genP");
     }
     void do_execute();
@@ -197,15 +193,9 @@ namespace pa {
     std::shared_ptr<const std::vector<panda::FatJet*>> fjPtrs{nullptr};
     std::shared_ptr<const std::vector<panda::Particle*>> genP{nullptr};
 
-    std::unique_ptr<fastjet::JetDefinition> jetDef{nullptr};
     std::map<const panda::GenParticle*,float> genObjects; // gen particle -> pt
     const panda::GenParticle* matchGen(double eta, double phi, double r2, int pdgid=0) const;
-    int getGenObjs();
   };
-
-
-  typedef TmplFatJetMatchingOp<GeneralTree> FatJetMatchingOp;
-  typedef TmplFatJetMatchingOp<JetGraphTree> JetGraphOp;
 
   class HRTagOp : public HROp {
   public:

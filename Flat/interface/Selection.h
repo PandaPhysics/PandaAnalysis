@@ -22,7 +22,7 @@ namespace pa {
     virtual ~BaseSelection() { }
     
     virtual void report() const final { 
-      logger.info("Selection::" + name, Form("Accepted %i/%i events", nPassed, nTotal)); 
+      logger.debug("Selection::" + name, Form("Accepted %i/%i events", nPassed, nTotal)); 
     }
     virtual void set_gt(const T* gt_) final { gt = gt_; }
     // if called at a different stage, just return true
@@ -182,11 +182,17 @@ namespace pa {
 
   class VHbbSel : public Selection {
   public:
-    VHbbSel(): Selection(Selection::sReco, "vhbb") { }
+  VHbbSel(): Selection(Selection::sReco, "vhbb") { }
   protected:
     virtual bool do_accept() const;
   };
 
+  class VHbbSelTrigger : public Selection {
+  public:
+  VHbbSelTrigger(): Selection(Selection::sReco, "vhbbtrigger") { }
+  protected:
+    virtual bool do_accept() const;
+  };
 
   class MatchedSel : public HRSelection{
   public:

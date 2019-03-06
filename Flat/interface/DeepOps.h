@@ -2,8 +2,7 @@
 #define DEEPOPS
 
 #include "Operator.h"
-#include <set>
-#include "JetGraphTree.h"
+#include "set"
 #include "PandaAnalysis/Utilities/interface/EnergyCorrelations.h"
 #include "fastjet/contrib/Njettiness.hh"
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
@@ -201,7 +200,6 @@ namespace pa {
     std::unique_ptr<TMVA::Reader> bjetregReader;
     std::unique_ptr<float[]> bjetreg_vars; 
   };
-
 
 }
 

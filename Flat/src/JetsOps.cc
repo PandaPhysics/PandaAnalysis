@@ -17,6 +17,8 @@ inline float centralOnly(float x, float aeta, float def = -1)
 JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
 {
   float pt = jet.pt();
+  smear = false;
+
   if (smear) {
     if (recalcJER) {
       double smearFac=1, smearFacUp=1, smearFacDown=1;
@@ -46,6 +48,7 @@ JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
 
 void BaseJetOp::do_readData(TString dirPath)
 {
+
   if (recalcJER) {
     jer.reset(new JERReader(dirPath+"/jec/"+jerV+"/"+jerV+"_MC_SF_"+jetType+".txt",
                             dirPath+"/jec/"+jerV+"/"+jerV+"_MC_PtResolution_"+jetType+".txt"));
@@ -57,6 +60,7 @@ void BaseJetOp::do_readData(TString dirPath)
   TString jecVFull = jecReco+spacer+jecV;
 
   TString basePath = dirPath+"/jec/"+jecVFull+"/"+campaign+"_"+jecVFull;
+
   vector<JECParams> params = {
     JECParams((basePath+"_MC_L1FastJet_"+jetType+".txt").Data()),
     JECParams((basePath+"_MC_L2Relative_"+jetType+".txt").Data()),
@@ -202,7 +206,6 @@ void JetOp::do_execute()
           jets.bcand.push_back(&jw);
       }
 
-
       if (jw.nominal->maxpt > cfg.minJetPt) {
         // for H->bb, don't consider any jet past NJETSAVED, 
         // for other analyses, consider them, just don't save them
@@ -224,7 +227,6 @@ void JetOp::do_execute()
               ++(gt.isojetNMBtags[shift]);
           }
         }
-
         if (aeta < 2.4) {
           jets.central.push_back(&jw);
 
@@ -257,7 +259,6 @@ void JetOp::do_execute()
             if (!analysis.hbb && jet.matchedGenJet.isValid())
               gt.jotGenPt[njet] = jet.matchedGenJet->pt(); 
             gt.jotSmear[njet] = jw.pt / jet.pt(); // smeared / nominal
-            gt.jotE[njet] = jet.e();
             gt.jotEta[njet] = jet.eta();
             gt.jotPhi[njet] = jet.phi();
             gt.jotM[njet] = jet.m();
@@ -266,7 +267,6 @@ void JetOp::do_execute()
             gt.jotCMVA[njet] = cmva;
             gt.jotVBFID[njet] = (aeta < 2.4) ? (jet.monojet ? 1 : 0) : 1;
             gt.jotIso[njet] = jw.iso ? 1 : 0; 
-            gt.jotRawPt[njet] = jet.rawPt;
 
             bjetreg->execute();
           }
@@ -321,8 +321,8 @@ void JetOp::do_execute()
     }
     hbb->execute();
 
-    if (isNominal)
-      adjet->execute();
+    //if (isNominal)
+    //  adjet->execute();
 
   } // shift loop
   gt.barrelHTMiss = vBarrelJets.Pt();
@@ -429,6 +429,7 @@ void BJetRegOp::do_execute()
   gt.jotNEF[N] = jet.nef;
   gt.jotCHF[N] = jet.chf;
   gt.jotNHF[N] = jet.nhf;
+  gt.jotRawPt[N] = vraw.Pt();
   gt.jotRawMt[N] = vraw.Mt();
   gt.jotRawEt[N] = vraw.Et();
   gt.jotRawM[N] = vraw.M();
@@ -643,25 +644,35 @@ void HbbSystemOp::do_execute()
 
       if (shift == jes2i(shiftjes::kNominal)) {
         deepreg->execute();
-        gt.jotDeepBReg[gt.hbbjtidx[shift][i]] = hbbdJetRef.breg;
-        gt.jotDeepBRegWidth[gt.hbbjtidx[shift][i]] = hbbdJetRef.bregwidth;
-        gt.jotDeepBRegSampled[gt.hbbjtidx[shift][i]] = (event.rng.normal() * hbbdJetRef.bregwidth)  + hbbdJetRef.breg;
+        gt.jotDeepBReg[i] = hbbdJetRef.breg;
+        gt.jotDeepBRegWidth[i] = hbbdJetRef.bregwidth;
+        gt.jotDeepBRegSampled[i] = (event.rng.normal() * hbbdJetRef.bregwidth)  + hbbdJetRef.breg;
       }
       auto scale_fn = [&](float x) { return 1 + (gt.jotPt[shift][idx] / hbbdJetRef.base->pt()) * (x - 1); };
       hbbd_dcorr[i].SetPtEtaPhiM(
-            gt.jotPt[shift][idx] * scale_fn(gt.jotDeepBReg[gt.hbbjtidx[shift][i]]),
+            gt.jotPt[shift][idx] * scale_fn(gt.jotDeepBReg[i]),
             gt.jotEta[idx],
             gt.jotPhi[idx],
             gt.jotM[idx]
           );
       hbbd_qcorr[i].SetPtEtaPhiM(
-            gt.jotPt[shift][idx] * scale_fn(gt.jotDeepBRegSampled[gt.hbbjtidx[shift][i]]),
+            gt.jotPt[shift][idx] * scale_fn(gt.jotDeepBRegSampled[i]),
             gt.jotEta[idx],
             gt.jotPhi[idx],
             gt.jotM[idx]
           );
 
       // Shifted values for the jet energies to perform the b-jet regression
+      if (shift == jes2i(shiftjes::kNominal)) {
+        bdtreg->execute();
+        gt.jotBReg[i] = hbbdJetRef.breg;
+      }
+      hbbd_corr[i].SetPtEtaPhiM(
+            gt.jotBReg[i] * gt.jotPt[shift][idx],
+            gt.jotEta[idx],
+            gt.jotPhi[idx],
+            gt.jotM[idx]
+          );
     }
 
     TLorentzVector hbbsystem_corr = hbbd_corr[0] + hbbd_corr[1];
@@ -733,7 +744,6 @@ void HbbSystemOp::do_execute()
     TLorentzVector ZHP4 = (*dilep) + HP4;
     gt.ZBosonLep1CosThetaStar = CosThetaStar(looseLeps->at(0)->p4(), looseLeps->at(1)->p4(), ZHP4);
   }
-
 }
 
 void AdJetOp::do_execute()

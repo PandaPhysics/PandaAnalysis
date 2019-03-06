@@ -69,7 +69,7 @@ bool MonohiggsSel::do_accept() const
   bool base = RecoilSel::do_accept();
 
   return (base && 
-          (gt->hbbpt[0] < 150 ||
+          (gt->hbbpt[0] < 200 ||
            (gt->nFatJet>=1 && gt->fjPt[0][0]>200)));
 }
 
@@ -116,4 +116,15 @@ bool VHbbSel::do_accept() const
   }
 
   return false;
+}
+
+
+bool VHbbSelTrigger::do_accept() const
+{
+  if (gt->nJet[0]<2)
+    return false;
+  if (gt->jotPt[0][0]>40 && gt->jotPt[0][1]>25 && gt->nLooseMuon>0 && gt->muonPt[0]>25 && gt->nTightMuon>=1)
+    return true;
+  else
+    return false;
 }

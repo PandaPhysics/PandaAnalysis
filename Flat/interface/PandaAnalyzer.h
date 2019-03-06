@@ -14,6 +14,7 @@
 #include "DeepOps.h"
 #include "FatJetsOps.h"
 #include "JetsOps.h"
+#include "JCorrOps.h"
 #include "LepPhoOps.h"
 #include "TheoryOps.h"
 #include "HbbOps.h"
@@ -38,6 +39,7 @@ namespace pa {
 
         //////////////////////////////////////////////////////////////////////////////////////
         std::vector<std::unique_ptr<AnalysisOp>> ops_all;
+	JetCorrOp *precorrop{nullptr};
         GlobalOp *gblop{nullptr};
         ContainerOp *preselop{nullptr}, *postselop{nullptr};
         ConfigOp cfgop;

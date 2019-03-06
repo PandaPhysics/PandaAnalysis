@@ -75,6 +75,7 @@ void SimpleLeptonOp::do_execute()
     if (gt.nLooseElectron>=2) 
       break;
   }
+
   // muons
   for (auto& mu : event.muons) {
     float pt = mu.pt(); float eta = mu.eta(); float aeta = fabs(eta);

@@ -1,10 +1,10 @@
 #include "../interface/CommonOps.h"
-#include "../interface/JetGraphTree.h"
 
 using namespace pa;
 using namespace std;
 using namespace panda;
 
+/*
 void shiftMET(const RecoMet& met, TLorentzVector& v, shiftjes shift) 
 {
   float pt;
@@ -29,6 +29,7 @@ void shiftMET(const RecoMet& met, TLorentzVector& v, shiftjes shift)
 
   v.SetPtEtaPhiM(pt, 0, phi, 0);
 }
+*/
 
 void TriggerOp::do_init(Registry& registry) 
 {
@@ -404,6 +405,8 @@ void GlobalOp::do_execute()
     gt.sf_pu = utils.getCorr(cPU, gt.pu);
   }
 
+  
+  /*
   gt.pfmetRaw = event.rawMet.pt;
   gt.calomet = event.caloMet.pt;
   gt.sumETRaw = event.pfMet.sumETRaw;
@@ -426,6 +429,8 @@ void GlobalOp::do_execute()
 
     jets.vpfMETNoMu.SetMagPhi(gt.pfmet[shift], gt.pfmetphi[shift]);
   }
+  */
+  
 }
 
 template <typename TREE>
@@ -439,7 +444,6 @@ void BaseGenPOp<TREE>::do_execute()
 }
 
 template class BaseGenPOp<GeneralTree>;
-template class BaseGenPOp<JetGraphTree>;
 template class BaseGenPOp<HeavyResTree>;
 
 void RecoilOp::do_execute()

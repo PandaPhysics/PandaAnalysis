@@ -46,7 +46,6 @@ class TagTree : public genericTree {
       TagTree();
       ~TagTree();
       void WriteTree(TTree *t);
-      void ReadTree(TTree* t);
       void Fill() { treePtr->Fill(); }
       void Reset();
 

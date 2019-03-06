@@ -18,10 +18,8 @@ class HeavyResTree : public genericTree {
     HeavyResTree();
     ~HeavyResTree();
     void WriteTree(TTree* t);
-    void ReadTree(TTree* t);
     void Fill() { treePtr->Fill(); }
     void Reset();
-    void SetAuxTree(TTree*);
 // STARTCUSTOM PUBLIC
     const std::vector<double>& get_betas() const { return betas; }
     const std::vector<int>& get_ibetas() const { return ibetas; }
@@ -46,6 +44,7 @@ class HeavyResTree : public genericTree {
       }
     };
     std::map<ECFParams,float> clf_ECFNs;
+    virtual void SetAuxTree(TTree *t);
 // ENDCUSTOM
   private:
 // STARTCUSTOM PRIVATE

@@ -21,6 +21,9 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
   Config& cfg = cfgop.cfg;
   Utils& utils = cfgop.utils;
 
+  //precorrop = new JetCorrOp(event, cfg, utils, gt);
+  //ops_all.emplace_back(precorrop);
+
   gblop = new GlobalOp(event, cfg, utils, gt);
   ops_all.emplace_back(gblop);
 
@@ -34,6 +37,7 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
     ADDOP(DeepGenOp<UnpackedGenParticle>);
   else
     ADDOP(DeepGenOp<GenParticle>);
+  ADDOP(JetCorrOp);
   ADDOP(TriggerOp);
   ADDOP(SimpleLeptonOp);
   ADDOP(ComplicatedLeptonOp);

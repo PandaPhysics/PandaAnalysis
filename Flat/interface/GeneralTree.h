@@ -77,10 +77,8 @@ class GeneralTree : public genericTree {
     GeneralTree();
     ~GeneralTree();
     void WriteTree(TTree* t);
-    void ReadTree(TTree* t);
     void Fill() { treePtr->Fill(); }
-    void Reset();
-    void SetAuxTree(TTree*);
+    void Reset();    void SetAuxTree(TTree*);
 // STARTCUSTOM PUBLIC
     const std::vector<double>& get_betas() const { return betas; }
     const std::vector<int>& get_ibetas() const { return ibetas; }
@@ -396,15 +394,14 @@ class GeneralTree : public genericTree {
   int jetFlav[2];
   int jetIsTight[2];
   int jetIsIso[2];
-  float jotDeepBReg[20];
-  float jotDeepBRegWidth[20];
-  float jotDeepBRegSampled[20];
+  float jotBReg[2];
+  float jotDeepBReg[2];
+  float jotDeepBRegWidth[2];
+  float jotDeepBRegSampled[2];
   float adjetPt;
   float adjetCMVA;
   float zvvhClass;
   float jotPt[43][20];
-  float jotE[20];
-  float jotRawPt[20];
   float jotEta[20];
   float jotPhi[20];
   float jotCSV[20];
@@ -449,6 +446,7 @@ class GeneralTree : public genericTree {
   float jotGenM[20];
   int jotNPt03[20];
   float jotPtD[20];
+  float jotRawPt[20];
   float jotRawMt[20];
   float jotRawEt[20];
   float jotRawM[20];
