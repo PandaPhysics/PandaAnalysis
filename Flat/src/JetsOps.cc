@@ -17,7 +17,7 @@ inline float centralOnly(float x, float aeta, float def = -1)
 JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
 {
   float pt = jet.pt();
-  smear = false;
+  //smear = false;
 
   if (smear) {
     if (recalcJER) {
