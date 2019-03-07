@@ -2,86 +2,29 @@
 #include "TLorentzVector.h"
 
 using namespace pa; 
+using namespace std;
 
 JetCorrector::JetCorrector() 
 { 
-	era = new EraHandler(2016);
 }
-
 
 JetCorrector::~JetCorrector()
 {
 	delete era;
-//	delete outjets;
-//	delete outmet;
-	delete mMCJetCorrector;
-	for (auto& iter : mDataJetCorrectors)
-		delete iter.second;
 }
 
-void JetCorrector::SetMCCorrector(TString fpath)
-{
-	delete mMCJetCorrector;
-	std::vector<TString> levels = {"L1FastJet","L2Relative","L3Absolute","L2L3Residual"};
-	std::vector<JetCorrectorParameters> params;
-	for (auto &level : levels) {
-		params.push_back(
-				JetCorrectorParameters(
-					TString::Format(fpath,level.Data()).Data()
-					)
-				);
-	}
-	mMCJetCorrector = new FactorizedJetCorrector(params);
+void JetCorrector::SetYear(int year){
+  era = new EraHandler(year);
 }
 
-void JetCorrector::SetDataCorrector(TString fpath, TString iov)
+void JetCorrector::RunCorrection(bool isData, float rho, panda::JetCollection *injets_, panda::Met *rawmet_, panda::Met *pfmet_, int runNumber, FactorizedJetCorrector *corrector)
 {
-	std::vector<TString> levels = {"L1FastJet","L2Relative","L3Absolute","L2L3Residual"};
-	std::vector<JetCorrectorParameters> params;
-	for (auto &level : levels) {
-		params.push_back(
-				JetCorrectorParameters(
-					TString::Format(fpath,level.Data()).Data()
-					)
-				);
-	}
-	mDataJetCorrectors[iov] = new FactorizedJetCorrector(params);
-}
+        TVector2 new_met {pfmet_->v()};
+        TVector2 met_correction {};
 
-void JetCorrector::RunCorrection(bool isData, float rho, panda::JetCollection *injets_, panda::Met *rawmet_, int runNumber)
-{
-	FactorizedJetCorrector *corrector=0;
-	if (isData) {
-		if (mDataJetCorrectors.find("all") != mDataJetCorrectors.end()) {
-			// we have an era-independent corrector. use it
-			corrector = mDataJetCorrectors["all"];
-		} else {
-			TString thisEra = era->getEra(runNumber);
-			TString thisEraGroup;
-			for (auto &iter : mDataJetCorrectors) {
-				if (iter.first.Contains(thisEra)) {
-					thisEraGroup = iter.first;
-					corrector = iter.second;
-					break;
-				}
-			}
-		}
-	} else {
-		corrector = mMCJetCorrector;
-	}
-	if (corrector==0) {
-		logger.error("JetCorrector::RunCorrection",
-				TString::Format("Could not determine data era for run %i",runNumber)
-				);
-		assert(corrector!=0);
-	}
-
-	TLorentzVector v_outmet;
-	if (rawmet_) {
-		v_outmet.SetPtEtaPhiM(rawmet_->pt,0,rawmet_->phi,0);
-		outmet = new panda::Met();
-	}
-
+	//TLorentzVector v_outmet;
+	//v_outmet.SetPtEtaPhiM(rawmet_->pt,0,rawmet_->phi,0);
+	outmet = new panda::Met();
 	outjets = new panda::JetCollection();
 
 	TLorentzVector v_j_in, v_j_out;
@@ -95,27 +38,68 @@ void JetCorrector::RunCorrection(bool isData, float rho, panda::JetCollection *i
 			corrector->setJetE(v_j_in.E());
 			corrector->setRho(rho);
 			corrector->setJetA(j_in.area);
-			corrector->setJetEMF(-99);
+			corrector->setJetEMF(j_in.cef + j_in.nef);
 			jecFactor = corrector->getCorrection();
 		}
-		v_j_out.SetPtEtaPhiM(jecFactor*j_in.rawPt,j_in.eta(),j_in.phi(),j_in.m());
+		auto new_pt = jecFactor * j_in.rawPt;
+
+		v_j_out.SetPtEtaPhiM(new_pt,j_in.eta(),j_in.phi(),j_in.m());
 		
 		panda::Jet &j_out = outjets->create_back();
-		j_out.setPtEtaPhiM(jecFactor*j_in.rawPt,j_in.eta(),j_in.phi(),j_in.m());
+		
+		j_out.setPtEtaPhiM(new_pt,j_in.eta(),j_in.phi(),j_in.m());
 		j_out.rawPt = j_in.rawPt;
+		j_out.loose = j_in.loose;
+		j_out.area = j_in.area;
+		j_out.nhf = j_in.nhf;
+		j_out.chf = j_in.chf;
+		j_out.cef = j_in.cef;
+		j_out.nef = j_in.nef;
+		j_out.puid = j_in.puid;
+		j_out.loose = j_in.loose;
+		j_out.tight = j_in.tight;
+		j_out.tightLepVeto = j_in.tightLepVeto;
+		j_out.monojet = j_in.monojet;
+		j_out.matchedGenJet = j_in.matchedGenJet;
+		j_out.constituents = j_in.constituents;
+		j_out.secondaryVertex = j_in.secondaryVertex;
+		j_out.csv = j_in.csv;
+		j_out.qgl = j_in.qgl;
+		j_out.cmva = j_in.cmva;
+		j_out.deepCSVudsg = j_in.deepCSVudsg;
+		j_out.deepCSVb = j_in.deepCSVb;
+		j_out.deepCSVbb = j_in.deepCSVbb;
+		j_out.deepCSVc = j_in.deepCSVc;
+		j_out.deepCSVcc = j_in.deepCSVcc;
+		j_out.deepCMVAudsg = j_in.deepCMVAudsg;
+		j_out.deepCMVAb = j_in.deepCMVAb;
+		j_out.deepCMVAbb = j_in.deepCMVAbb;
+		j_out.deepCMVAc = j_in.deepCMVAc;
+		j_out.deepCMVAcc = j_in.deepCMVAcc;
+		j_out.ptCorrUp = j_in.ptCorrUp;
+		j_out.ptCorrDown = j_in.ptCorrDown;
+		j_out.ptSmear = j_in.ptSmear;
+		j_out.ptSmearUp = j_in.ptSmearUp;
+		j_out.ptSmearDown = j_in.ptSmearDown;
 
-		if (rawmet_) {
-			TLorentzVector v_diff = v_j_in - v_j_out;
-			v_outmet += v_diff;
-		}
-	}
+		met_correction.SetMagPhi(j_in.pt() - new_pt, j_out.phi());		  
 
-	if (rawmet_) {
-		outmet->pt = v_outmet.Pt();
-		outmet->phi = v_outmet.Phi();
+		new_met += met_correction;
+
+		  //TLorentzVector v_diff = v_j_in - v_j_out;
+		  //v_outmet += v_diff;
 	}
+	
+	//outmet->pt = v_outmet.Pt();
+	//outmet->phi = v_outmet.Phi();
+	outmet->setXY(new_met.X(), new_met.Y());
+
+
+	// reorder jets by pT
+	outjets->sort(panda::Particle::PtGreater);
 }
 
 panda::JetCollection *JetCorrector::GetCorrectedJets() { return outjets; outjets = 0; }
 
 panda::Met *JetCorrector::GetCorrectedMet() { return outmet; outmet = 0; }
+

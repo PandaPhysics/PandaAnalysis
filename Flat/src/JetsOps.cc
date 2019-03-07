@@ -17,6 +17,8 @@ inline float centralOnly(float x, float aeta, float def = -1)
 JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
 {
   float pt = jet.pt();
+  //smear = false;
+
   if (smear) {
     if (recalcJER) {
       double smearFac=1, smearFacUp=1, smearFacDown=1;
@@ -46,6 +48,7 @@ JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
 
 void BaseJetOp::do_readData(TString dirPath)
 {
+
   if (recalcJER) {
     jer.reset(new JERReader(dirPath+"/jec/"+jerV+"/"+jerV+"_MC_SF_"+jetType+".txt",
                             dirPath+"/jec/"+jerV+"/"+jerV+"_MC_PtResolution_"+jetType+".txt"));
@@ -57,6 +60,7 @@ void BaseJetOp::do_readData(TString dirPath)
   TString jecVFull = jecReco+spacer+jecV;
 
   TString basePath = dirPath+"/jec/"+jecVFull+"/"+campaign+"_"+jecVFull;
+
   vector<JECParams> params = {
     JECParams((basePath+"_MC_L1FastJet_"+jetType+".txt").Data()),
     JECParams((basePath+"_MC_L2Relative_"+jetType+".txt").Data()),
@@ -202,7 +206,6 @@ void JetOp::do_execute()
           jets.bcand.push_back(&jw);
       }
 
-
       if (jw.nominal->maxpt > cfg.minJetPt) {
         // for H->bb, don't consider any jet past NJETSAVED, 
         // for other analyses, consider them, just don't save them
@@ -224,7 +227,6 @@ void JetOp::do_execute()
               ++(gt.isojetNMBtags[shift]);
           }
         }
-
         if (aeta < 2.4) {
           jets.central.push_back(&jw);
 
@@ -319,8 +321,8 @@ void JetOp::do_execute()
     }
     hbb->execute();
 
-    if (isNominal)
-      adjet->execute();
+    //if (isNominal)
+    //  adjet->execute();
 
   } // shift loop
   gt.barrelHTMiss = vBarrelJets.Pt();

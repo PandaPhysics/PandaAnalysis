@@ -65,9 +65,9 @@ for iV in xrange(len(variables)):
     v,vlabel,vcolor,vstyle = variables[iV]
   roc.CalcROC('h_%s_Top quark jets'%v,'h_%s_qOverg jets'%v,vlabel,vcolor,vstyle,1)
 
-base = getenv('SCRAMJETFLAT')+'/'
-fsig = root.TFile(base+'ZpTT.root'); tsig = fsig.Get('puppiCA15')
-fbkg = root.TFile(base+'QCD_evt8.root'); tbkg = fbkg.Get('puppiCA15')
+#base = getenv('SCRAMJETFLAT')+'/'
+#fsig = root.TFile(base+'ZpTT.root'); tsig = fsig.Get('puppiCA15')
+#fbkg = root.TFile(base+'QCD_evt8.root'); tbkg = fbkg.Get('puppiCA15')
 #roc.CalcWP(tsig,tbkg,1,tAND(xcut,'matched==1&&gensize<1.2'),'ptweight*normalizedWeight',xcut,'ptweight_analytic*normalizedWeight','tau32SD<0.6&&fabs(htt_frec)<0.2','#tau_{32}^{SD}<0.6 && f_{rec}<0.2')
 
 roc.DrawAll(figsdir,cut+'roc')

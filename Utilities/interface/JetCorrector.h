@@ -22,16 +22,17 @@ namespace pa {
 		JetCorrector();
 		~JetCorrector();
 
-		void RunCorrection(bool isData, float rho, panda::JetCollection *injets_, panda::Met *rawmet_=0, int runNumber = 0);
+		void RunCorrection(bool isData, float rho, panda::JetCollection *injets_, panda::Met *rawmet_=0, panda::Met *pfmet_=0,int runNumber = 0, FactorizedJetCorrector *corrector = 0);
 		panda::JetCollection *GetCorrectedJets();
 		panda::Met *GetCorrectedMet();
 
-		void SetMCCorrector(TString fpath);
-		void SetDataCorrector(TString fpath, TString iov = "all");
+		//		void SetMCCorrector(TString fpath);
+		//void SetDataCorrector(TString fpath, TString iov = "all");
+		void SetYear(int year);
 
 	private:
-			FactorizedJetCorrector *mMCJetCorrector;	 
-			std::map<TString,FactorizedJetCorrector *> mDataJetCorrectors;	// map from era to corrector
+		//FactorizedJetCorrector *mMCJetCorrector;	 
+		//std::map<TString,FactorizedJetCorrector *> mDataJetCorrectors;	// map from era to corrector
 
 			panda::JetCollection *outjets = 0;
 			panda::Met *outmet = 0;

@@ -14,7 +14,6 @@ ConfigOp::ConfigOp(Analysis& a_, GeneralTree& gt_, int DEBUG_) :
 
   cfg.isData = analysis.isData;
   int hackYear = analysis.year;
-  if(analysis.year == 2018 ) hackYear = 2017;
   utils.eras.reset(new EraHandler(hackYear));
   cfg.auxFilePath = analysis.outpath;
   cfg.auxFilePath.ReplaceAll(".root","_aux%i.root");
@@ -460,9 +459,15 @@ void ConfigOp::readData(TString dirPath)
                    "h2_results_muon_double_trailingleg",2);
   }
   // Currently out of date for 2017
-  utils.openCorr(cTrigMET,
-                 dirPath+"moriond17/metTriggerEfficiency_recoil_monojet_TH1F.root",
-                 "hden_monojet_recoil_clone_passed",1);
+  if (analysis.year!=2018){
+    utils.openCorr(cTrigMET,
+		   dirPath+"moriond17/metTriggerEfficiency_recoil_monojet_TH1F.root",
+		   "hden_monojet_recoil_clone_passed",1);
+  }
+  else
+    utils.openCorr(cTrigMET,
+		   dirPath+"trigger_eff/met_trigger_effs_2018.root",
+		   "eff",1);
   utils.openCorr(cTrigEle,
                  dirPath+"moriond17/eleTrig.root","hEffEtaPt",2);
   utils.openCorr(cTrigPho,

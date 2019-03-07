@@ -129,10 +129,11 @@ namespace pa {
                int level_=0) :
       AnalysisOp("global", event_, cfg_, utils_, gt_, level_),
       jesShifts(std::v_make_shared<JESHandler>(jes2i(shiftjes::N))) {
-        JESLOOP {
-          (*jesShifts)[shift].shift_idx = shift;
-        }
+	JESLOOP {
+	  (*jesShifts)[shift].shift_idx = shift;
+	}
       }
+
     virtual ~GlobalOp () { }
 
   protected:
