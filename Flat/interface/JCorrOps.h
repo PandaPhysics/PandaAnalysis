@@ -5,6 +5,7 @@
 #include "AnalyzerUtilities.h"
 #include "JetsOps.h"
 
+
 namespace pa {
   class JetCorrOp : public BaseJetOp {
   public: 
@@ -30,8 +31,9 @@ namespace pa {
     }
     void do_execute();
     void do_reset() {
-      for (auto& s : *jesShifts)
+      for (auto& s : *jesShifts){
         s.clear();
+      }
     }    
   private:
     std::shared_ptr<std::vector<JESHandler>> jesShifts;

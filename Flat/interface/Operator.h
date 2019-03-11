@@ -222,7 +222,6 @@ namespace pa {
           m->execute();
       }
       virtual void do_init(Registry& registry) {
-        registry.access<std::vector<JESHandler>>("jesShifts");
       }
   };
 }
