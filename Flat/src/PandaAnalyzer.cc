@@ -21,9 +21,6 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
   Config& cfg = cfgop.cfg;
   Utils& utils = cfgop.utils;
 
-  //precorrop = new JetCorrOp(event, cfg, utils, gt);
-  //ops_all.emplace_back(precorrop);
-
   gblop = new GlobalOp(event, cfg, utils, gt);
   ops_all.emplace_back(gblop);
 
@@ -257,6 +254,7 @@ void PandaAnalyzer::Run()
 
   // EVENTLOOP --------------------------------------------------------------------------
   for (iE=nZero; iE!=nEvents; ++iE) {
+
     pr.Report();
 
     Reset();

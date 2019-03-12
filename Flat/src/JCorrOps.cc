@@ -68,7 +68,7 @@ void JetCorrOp::do_execute()
   panda::Met *out_met = 0;
   out_met = jc->GetCorrectedMet();
 
-  event.chsAK4Jets = *out_jets;
+  //event.chsAK4Jets = *out_jets;
   event.pfMet.pt = out_met->pt;
   event.pfMet.phi = out_met->phi;
 
