@@ -32,7 +32,7 @@ d = {
                                        'WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8',
                                        'WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8'],
     'WZ3l_MG_EWK'                   : ['WLLJJ_WToLNu_EWK_TuneCP5_13TeV_madgraph-madspin-pythia8'],
-    'qqWW'                          : ['WWTo2L2Nu_NNPDF31_TuneCP5_PSweights_13TeV-powheg-pythia8'],
+    'qqWW'                          : ['WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8'],
     'ggWW'                          : ['GluGluToWWToENEN_13TeV_MCFM701_pythia8',
                                        'GluGluToWWToENMN_13TeV_MCFM701_pythia8',
                                        'GluGluToWWToENTN_13TeV_MCFM701_pythia8',
