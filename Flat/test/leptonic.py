@@ -43,7 +43,7 @@ skimmer.isData=analysis.isData
 if skimmer.isData:
     fileName = ''
     if year==2018:
-        fileName = getenv('CMSSW_BASE')+'/src/PandaAnalysis/data/certs/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt'
+        fileName = getenv('CMSSW_BASE')+'/src/PandaAnalysis/data/certs/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'
     elif year==2017:
         fileName = getenv('CMSSW_BASE')+'/src/PandaAnalysis/data/certs/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt'
     elif year==2016:
