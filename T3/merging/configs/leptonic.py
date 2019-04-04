@@ -1,6 +1,8 @@
 
 d = {
     'test'                          : ['Diboson_ww'],
+    'ZZJJ'                          : ['ZZJJTo4L_QCD_13TeV-madgraph-pythia8',
+                                       'ZZJJTo4L_EWK_13TeV-madgraph-pythia8'],
     'qqZZ'                          : ['ZZTo2L2Nu_13TeV_powheg_pythia8',
                                        'ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8',
                                        'ZZTo4L_13TeV_powheg_pythia8'],
@@ -14,9 +16,9 @@ d = {
                                        'GluGluToContinToZZTo2mu2nu_13TeV_MCFM701_pythia8',
                                                                            ],
     'WZ'                            : ['WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8',
-                                        'WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8',
-                                        'WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8',
-                                        'WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8'],
+                                       'WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8',
+                                       'WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8',
+                                       'WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8'],
     'WZ3l_MG_QCD'                   : ['WZTo3LNu_0Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8',
                                        'WZTo3LNu_1Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8',
                                        'WZTo3LNu_2Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8',
