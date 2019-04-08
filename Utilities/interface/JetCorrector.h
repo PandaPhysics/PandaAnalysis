@@ -8,6 +8,7 @@
 #include "TString.h"
 #include "PandaTree/Objects/interface/Jet.h"
 #include "PandaTree/Objects/interface/Met.h"
+#include "PandaTree/Objects/interface/Muon.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 
@@ -22,7 +23,7 @@ namespace pa {
 		JetCorrector();
 		~JetCorrector();
 
-		void RunCorrection(bool isData, float rho, panda::JetCollection *injets_, panda::Met *rawmet_=0, panda::Met *pfmet_=0,int runNumber = 0, FactorizedJetCorrector *corrector = 0);
+		void RunCorrection(bool isData, float rho, panda::MuonCollection *muons_, panda::JetCollection *injets_, panda::Met *rawmet_=0, panda::Met *pfmet_=0,int runNumber = 0, FactorizedJetCorrector *corrector = 0);
 		panda::JetCollection *GetCorrectedJets();
 		panda::Met *GetCorrectedMet();
 

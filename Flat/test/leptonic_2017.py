@@ -22,12 +22,12 @@ import PandaAnalysis.T3.job_utilities as utils
 
 Load('PandaAnalyzer')
 
-year = 2018
+year = 2017
 analysis = vv(True)
 analysis.inpath = torun
 analysis.outpath = output
 analysis.datapath = getenv('CMSSW_BASE') + '/src/PandaAnalysis/data/'
-analysis.isData = True
+analysis.isData = False
 utils.set_year(analysis, year)
 analysis.processType = utils.classify_sample(torun, analysis.isData)
 
@@ -38,7 +38,7 @@ skimmer.AddPresel(root.pa.LeptonSel())
 skimmer.AddPresel(root.pa.TriggerSel())
 
 skimmer.firstEvent=0
-skimmer.lastEvent=10000
+skimmer.lastEvent=-1
 skimmer.isData=analysis.isData
 if skimmer.isData:
     fileName = ''
