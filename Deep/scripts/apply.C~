@@ -1,0 +1,179 @@
+#include "TFile.h"
+#include <TSystem.h>
+#include "TTree.h"
+#include "TROOT.h"
+
+#include <iostream>
+
+#include <PandaAnalysis/Flat/interface/DeepOps.h>
+#include <PandaCore/Tools/interface/Functions.h>
+
+#include <fstream>
+#include <utility>
+#include <vector>
+
+#include "tensorflow/cc/ops/const_op.h"
+#include "tensorflow/cc/ops/standard_ops.h"
+#include "tensorflow/core/framework/graph.pb.h"
+#include "tensorflow/core/framework/tensor.h"
+#include "tensorflow/core/graph/default_device.h"
+#include "tensorflow/core/graph/graph_def_builder.h"
+#include "tensorflow/core/lib/core/errors.h"
+#include "tensorflow/core/lib/core/stringpiece.h"
+#include "tensorflow/core/lib/core/threadpool.h"
+#include "tensorflow/core/lib/io/path.h"
+#include "tensorflow/core/lib/strings/str_util.h"
+#include "tensorflow/core/lib/strings/stringprintf.h"
+#include "tensorflow/core/platform/env.h"
+#include "tensorflow/core/platform/init_main.h"
+#include "tensorflow/core/platform/logging.h"
+#include "tensorflow/core/platform/types.h"
+#include "tensorflow/core/public/session.h"
+#include "tensorflow/core/util/command_line_flags.h"
+#include "tensorflow/cc/ops/standard_ops.h"
+#include "tensorflow/core/framework/tensor.h"
+
+// These are all common classes it's handy to reference with no namespace.
+using tensorflow::Tensor;
+using tensorflow::Status;
+
+using namespace std;
+using namespace pa;
+using namespace panda;
+
+namespace fj = fastjet;
+namespace tf = tensorflow;
+
+Status LoadGraph(const string& graph_file_name,
+                 std::unique_ptr<tf::Session>* session) {
+  tf::GraphDef graph_def;
+  Status load_graph_status =
+    ReadBinaryProto(tf::Env::Default(), graph_file_name, &graph_def);
+  if (!load_graph_status.ok()) {
+    return tf::errors::NotFound("Failed to load compute graph at '",
+                                        graph_file_name, "'");
+  }
+  session->reset(tf::NewSession(tf::SessionOptions()));
+  Status session_create_status = (*session)->Create(graph_def);
+  if (!session_create_status.ok()) {
+    return session_create_status;
+  }
+  return Status::OK();
+}
+
+double SignedDeltaPhi(double phi1, double phi2);
+double DeltaR2(double eta1, double phi1, double eta2, double phi2);
+
+void apply(){
+
+  // Declare input files and set branches
+  TFile* ifile = new TFile("/mnt/hadoop/scratch/bmaier/panda/v_013_full_mueg/batch/ZvvHbb_mH125_426_0.root","READ");
+  TTree* itree = (TTree*)ifile->Get("events");
+
+  Float_t hbbm_dreg;
+  Float_t jotPt[40];
+  Float_t jotEta[40];
+  Float_t jotPhi[40];
+  Float_t jotCSV[40];
+  Int_t hbbjtidx[2];
+  Int_t   nJot=-99;  
+  Int_t   nSoft5=-99;  
+
+  itree->SetBranchAddress("hbbm_dreg",&hbbm_dreg);
+  itree->SetBranchAddress("jotPt",jotPt);
+  itree->SetBranchAddress("jotEta",jotEta);
+  itree->SetBranchAddress("jotPhi",jotPhi);
+  itree->SetBranchAddress("jotCSV",jotCSV);
+  itree->SetBranchAddress("hbbjtidx",hbbjtidx);
+  itree->SetBranchAddress("nJot", &nJot);
+  itree->SetBranchAddress("nSoft5", &nSoft5);
+
+  // Input and output names
+  TString inputName{0};
+  inputName = "input";
+
+  std::vector<std::string> outputNames;
+  outputNames.push_back("output/Softmax");
+
+  int n_inputs = 12;
+  int n_outputs = 1;
+
+  // Create and load session
+  std::unique_ptr<tf::Session> sessions{nullptr};
+  string graph_path = tf::io::JoinPath("/home/bmaier/cms/Hbb/2018/CMSSW_10_3_1/src/", "graph.pb");
+  Status load_graph_status = LoadGraph(graph_path, &sessions);
+    
+  //event loop                                                                                              
+  unsigned nevt = static_cast<unsigned>(itree->GetEntries());
+  cout<<nevt<<" events will be processed"<<endl;
+
+  for (unsigned ievt=0;ievt<nevt;ievt++) {
+
+    itree->GetEntry(ievt);
+
+    // Prepare input tensor with right dimensions
+    tf::NamedTensorList t_i(1);
+    t_i[0] = tf::NamedTensor(inputName.Data(),
+    					  tf::Tensor(tf::DT_FLOAT,
+     						     tf::TensorShape({1, (long long int)n_inputs})));
+    
+    float inputs[12];
+    float outputs;
+    
+    inputs[ 0] = hbbm_dreg;
+    inputs[ 1] = abs(jotEta[hbbjtidx[0]]-jotEta[hbbjtidx[0]]);
+    inputs[ 2] = jotPt[hbbjtidx[0]];
+    inputs[ 3] = jotPt[hbbjtidx[0]];
+    inputs[ 4] = jotCSV[hbbjtidx[0]];
+    inputs[ 5] = jotCSV[hbbjtidx[1]];
+    inputs[ 6] = fabs(SignedDeltaPhi(jotPhi[hbbjtidx[0]],
+    		     jotPhi[hbbjtidx[1]]));
+    inputs[ 7] = DeltaR2(jotEta[hbbjtidx[0]],
+			 jotPhi[hbbjtidx[0]],
+    			 jotEta[hbbjtidx[1]],
+    			 jotPhi[hbbjtidx[1]]);
+    inputs[ 8] = nJot;
+    inputs[ 9] = nSoft5;
+    inputs[10] = 44;
+    inputs[11] = 33;
+
+    cout << "nJot: " << nJot << endl;
+    cout << "hbbjtidx[0]: " << hbbjtidx[0] << endl;
+    cout << "hbbjtidx[1]: " << hbbjtidx[1] << endl;
+    cout << "jotPt[hbbjtidx[1]]: " << jotPt[hbbjtidx[1]] << endl;
+    cout << "jotPhi[hbbjtidx[0]]: " << jotPhi[hbbjtidx[0]] << endl;
+    cout << "jotPhi[hbbjtidx[1]]: " << jotPhi[hbbjtidx[1]] << endl;
+
+
+    // Fill and declare input and output tensors
+    for (int idx=0; idx<n_inputs; idx++) 
+      t_i[0].second.matrix<float>()(0, idx) = inputs[idx];
+    
+    vector<tf::Tensor> t_o;
+    
+    // Run session
+    sessions->Run(t_i, outputNames, {}, &t_o);
+
+    // Evaluation
+    for (int idx = 0; idx != n_outputs; ++idx) {
+      cout << "NN output: " << t_o[0].matrix<float>()(idx,0) << endl;
+    }    
+  }
+}
+
+
+
+//-----------------------------------------------------------------------
+double SignedDeltaPhi(double phi1, double phi2) {
+  double dPhi = phi1-phi2;
+  if (dPhi<-PI)
+    dPhi = 2*PI+dPhi;
+  else if (dPhi>PI)
+    dPhi = -2*PI+dPhi;
+  return dPhi;
+}
+double DeltaR2(double eta1, double phi1, double eta2, double phi2) {
+  float dEta2 = (eta1-eta2); dEta2 *= dEta2;
+  float dPhi = SignedDeltaPhi(phi1,phi2);
+  return dEta2 + dPhi*dPhi;
+}
