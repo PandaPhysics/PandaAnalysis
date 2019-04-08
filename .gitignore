@@ -3,7 +3,6 @@
 *.pcm
 *.bkp
 test*root
-*.txt
 *.jdl
 *.npz
 *.npy
