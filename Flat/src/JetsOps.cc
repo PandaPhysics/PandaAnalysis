@@ -17,6 +17,8 @@ inline float centralOnly(float x, float aeta, float def = -1)
 JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
 {
   float pt = jet.pt();
+  //smear = false;
+
   if (smear) {
     if (recalcJER) {
       double smearFac=1, smearFacUp=1, smearFacDown=1;
@@ -46,6 +48,7 @@ JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
 
 void BaseJetOp::do_readData(TString dirPath)
 {
+
   if (recalcJER) {
     jer.reset(new JERReader(dirPath+"/jec/"+jerV+"/"+jerV+"_MC_SF_"+jetType+".txt",
                             dirPath+"/jec/"+jerV+"/"+jerV+"_MC_PtResolution_"+jetType+".txt"));
@@ -57,6 +60,7 @@ void BaseJetOp::do_readData(TString dirPath)
   TString jecVFull = jecReco+spacer+jecV;
 
   TString basePath = dirPath+"/jec/"+jecVFull+"/"+campaign+"_"+jecVFull;
+
   vector<JECParams> params = {
     JECParams((basePath+"_MC_L1FastJet_"+jetType+".txt").Data()),
     JECParams((basePath+"_MC_L2Relative_"+jetType+".txt").Data()),
@@ -184,7 +188,7 @@ void JetOp::do_execute()
       }
       if (jw.nominal->isLep || jw.nominal->isPho || jw.nominal->isPileupJet)
         continue;
-      if ((analysis.vbf || analysis.hbb) && !jet.loose)
+      if ((analysis.vbf || analysis.hbb) && ((!jet.tight && (analysis.year == 2017 || analysis.year == 2018)) || (!jet.loose && analysis.year == 2016)))
         continue;
 
       float csv = centralOnly( (analysis.useDeepCSV? jet.deepCSVb + jet.deepCSVbb : jet.csv), aeta);
@@ -201,7 +205,6 @@ void JetOp::do_execute()
         if (isNominal)
           jets.bcand.push_back(&jw);
       }
-
 
       if (jw.nominal->maxpt > cfg.minJetPt) {
         // for H->bb, don't consider any jet past NJETSAVED, 
@@ -224,7 +227,6 @@ void JetOp::do_execute()
               ++(gt.isojetNMBtags[shift]);
           }
         }
-
         if (aeta < 2.4) {
           jets.central.push_back(&jw);
 
@@ -254,7 +256,7 @@ void JetOp::do_execute()
           jw.cleaned_idx = njet; 
           gt.jotPt[shift][njet] = pt;
           if (isNominal) {
-            if (!analysis.hbb && jet.matchedGenJet.isValid())
+            if (jet.matchedGenJet.isValid())
               gt.jotGenPt[njet] = jet.matchedGenJet->pt(); 
             gt.jotSmear[njet] = jw.pt / jet.pt(); // smeared / nominal
             gt.jotEta[njet] = jet.eta();
@@ -319,8 +321,8 @@ void JetOp::do_execute()
     }
     hbb->execute();
 
-    if (isNominal)
-      adjet->execute();
+    //if (isNominal)
+    //  adjet->execute();
 
   } // shift loop
   gt.barrelHTMiss = vBarrelJets.Pt();

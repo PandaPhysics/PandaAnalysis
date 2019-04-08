@@ -7,7 +7,7 @@ from re import sub, match
 from sys import argv
 import argparse
 
-args = parse(('--catalog',{'type':str, 'default':'/home/cmsprod/catalog/t2mit/pandaf/012'}),
+args = parse(('--catalog',{'type':str, 'default':'/home/cmsprod/catalog/t2mit/pandaf/013'}),
              ('--user_catalog', STORE_TRUE),
              '--mc_catalog',
              '--data_catalog',

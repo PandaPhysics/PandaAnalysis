@@ -70,6 +70,8 @@ namespace pa {
       //n_inputs = 43;
       n_inputs = 51;
       n_outputs = 3;
+      //if (analysis.year == 2018)
+      //n_outputs = 1;
       //inputName = "ffwd_inp";
       inputName = "input";
       outputNames.reserve(n_outputs);
@@ -84,8 +86,14 @@ namespace pa {
       TString modelfile = dirPath+"/trainings/breg_graph.pb";
       //downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/breg/v2/quantiles/graph.pb",
       //downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/breg_training_2017_updated.pb",
-      downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/sidbreg_v0/graph.pb",
-                   modelfile, true);
+
+      if (analysis.year != 2018)
+	downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/sidbreg_v0/graph.pb",
+		     modelfile, true);
+      else 
+	downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v1_2018.pb",
+		     modelfile, true);
+	
       build(modelfile);
     }
     virtual void do_init(Registry& registry) {

@@ -3,6 +3,7 @@
 import json
 import curses
 import cPickle as pickle
+import sys
 
 import os 
 from re import sub
@@ -16,6 +17,7 @@ from os import getenv,path,popen,makedirs
 import subprocess as sp 
 from shutil import rmtree
 from itertools import chain
+
 
 from PandaCore.Tools.script import * 
 import PandaCore.Tools.job_management as jm

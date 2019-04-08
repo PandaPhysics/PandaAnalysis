@@ -7,12 +7,12 @@ from re import sub
 from random import shuffle
 
 parser = ArgumentParser()
-parser.add_argument('--nmax',type=int,default=25)
-parser.add_argument('--nmin',type=int,default=10)
+parser.add_argument('--nmax',type=int,default=20)
+parser.add_argument('--nmin',type=int,default=5)
 parser.add_argument('--proc',type=str)
 args = parser.parse_args()
 
-outdir = getenv('SUBMIT_OUTDIR')
+outdir = getenv('SUBMIT_NPY')
 npydir = getenv('SUBMIT_NPY')
 
 if args.proc == 'Top':
@@ -37,6 +37,8 @@ elif 'QCD_' in args.proc:
 else:
     fs = glob(outdir + '/' + args.proc + '*.npz')
 
+print fs
+
 pd_map = {}
 for f in fs:
     f_ = f.split('/')[-1]
@@ -45,6 +47,9 @@ for f in fs:
         pd_map[pd] = []
     pd_map[pd].append(f)
 
+
+
+print pd_map
 
 npartition = max(args.nmin, min(map(len, pd_map.values())))
 

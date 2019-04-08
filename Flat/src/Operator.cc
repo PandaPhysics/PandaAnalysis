@@ -14,7 +14,7 @@ ConfigOp::ConfigOp(Analysis& a_, GeneralTree& gt_, int DEBUG_) :
 
   cfg.isData = analysis.isData;
   int hackYear = analysis.year;
-  if(analysis.year == 2018 ) hackYear = 2017;
+  //if( analysis.year == 2018 ) hackYear = 2017;
   utils.eras.reset(new EraHandler(hackYear));
   cfg.auxFilePath = analysis.outpath;
   cfg.auxFilePath.ReplaceAll(".root","_aux%i.root");
@@ -67,8 +67,11 @@ ConfigOp::ConfigOp(Analysis& a_, GeneralTree& gt_, int DEBUG_) :
   if (analysis.hbb || analysis.monoh)
     cfg.NJETSAVED = NJET;
 
-  cfg.maxshiftJES = analysis.varyJESTotal ? jes2i(shiftjes::kJESTotalDown) + 1 :
-                                            (analysis.varyJES ? jes2i(shiftjes::N) : 1);
+  //cfg.maxshiftJES = analysis.varyJESTotal ? jes2i(shiftjes::kJESTotalDown) + 1 :
+  //                                          (analysis.varyJES ? jes2i(shiftjes::N) : 1);
+  cfg.maxshiftJES = analysis.varyJESTotal ? 2 + 1 :
+                                             (analysis.varyJES ? 43 : 1);
+
 
   cfg.ibetas = gt.get_ibetas();
   cfg.Ns = gt.get_Ns();
@@ -158,8 +161,7 @@ void ConfigOp::set_outputBranches()
       keepable.push_back("jetNMBtags");
     }
     gt.RemoveBranches({"genMuon.*","genElectron.*","genTau.*",
-                       "puppiU.*","pfU.*","dphipfU.*","dphipuppi.*","jet.*",
-                       "nIsoJet.*","isojet*","isojetNBtags_*","nJet_.*"},keepable);
+                       "jet.*", "nIsoJet.*","isojet*","isojetNBtags_*","nJet_.*"},keepable);
   }
   if (!analysis.varyJES)
     gt.RemoveBranches({".*JES.*"},{});
@@ -418,9 +420,16 @@ void ConfigOp::readData(TString dirPath)
                    "h2_results_muon_double_trailingleg",2);
   }
   // Currently out of date for 2017
-  utils.openCorr(cTrigMET,
-                 dirPath+"moriond17/metTriggerEfficiency_recoil_monojet_TH1F.root",
-                 "hden_monojet_recoil_clone_passed",1);
+  if (analysis.year!=2018){
+    utils.openCorr(cTrigMET,
+		   dirPath+"moriond17/metTriggerEfficiency_recoil_monojet_TH1F.root",
+		   "hden_monojet_recoil_clone_passed",1);
+  }
+  else
+    utils.openCorr(cTrigMET,
+		   dirPath+"trigger_eff/met_trigger_effs_2018.root",
+		   "eff",1);
+    
   utils.openCorr(cTrigEle,
                  dirPath+"moriond17/eleTrig.root","hEffEtaPt",2);
   utils.openCorr(cTrigPho,

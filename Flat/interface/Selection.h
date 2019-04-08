@@ -182,11 +182,17 @@ namespace pa {
 
   class VHbbSel : public Selection {
   public:
-    VHbbSel(): Selection(Selection::sReco, "vhbb") { }
+  VHbbSel(): Selection(Selection::sReco, "vhbb") { }
   protected:
     virtual bool do_accept() const;
   };
 
+  class VHbbSelTrigger : public Selection {
+  public:
+  VHbbSelTrigger(): Selection(Selection::sReco, "vhbbtrigger") { }
+  protected:
+    virtual bool do_accept() const;
+  };
 
   class MatchedSel : public HRSelection{
   public:

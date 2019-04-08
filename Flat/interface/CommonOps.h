@@ -127,26 +127,16 @@ namespace pa {
                Utils& utils_,
                GeneralTree& gt_,
                int level_=0) :
-      AnalysisOp("global", event_, cfg_, utils_, gt_, level_),
-      jesShifts(std::v_make_shared<JESHandler>(jes2i(shiftjes::N))) {
-        JESLOOP {
-          (*jesShifts)[shift].shift_idx = shift;
-        }
-      }
+            AnalysisOp("global", event_, cfg_, utils_, gt_, level_) { }
+
     virtual ~GlobalOp () { }
 
   protected:
     void do_init(Registry& registry) {
-      registry.publish("jesShifts", jesShifts);
-      auto dummy = registry.access<std::vector<JESHandler>>("jesShifts");
     }
     void do_execute();
     void do_reset() {
-      for (auto& s : *jesShifts)
-        s.clear();
     }
-  private:
-    std::shared_ptr<std::vector<JESHandler>> jesShifts;
   };
 
   template <typename T>

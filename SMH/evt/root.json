@@ -1,5 +1,5 @@
 {
-    "base": "/data/t3home000/hbb/zhnn/v12/sr/train/",
+    "base": "/data/t3home000/hbb/zhnn/2018_v1/sr/train/",
     "samples": [
         {
             "name": "VH",
@@ -32,7 +32,7 @@
         "jotPt[hbbjtidx[1]]", "jotPt[hbbjtidx[0]]", "jotCSV[hbbjtidx[1]]", "jotCSV[hbbjtidx[0]]",
         "fabs(SignedDeltaPhi(jotPhi[hbbjtidx[0]],jotPhi[hbbjtidx[1]]))", 
         "DeltaR2(jotEta[hbbjtidx[0]],jotPhi[hbbjtidx[0]],jotEta[hbbjtidx[1]],jotPhi[hbbjtidx[1]])",
-        "nJot", "nSoft5", "adjetCMVA", "adjetPt"
+        "nJot", "nSoft5"
             ],
     "weight": "normalizedWeight * sf_metTrig * sf_pu * sf_qcdV * sf_ewkV * sf_vh * sf_csvWeight_Cent",
     "cut": "1==1"

@@ -14,8 +14,13 @@ BTagCorrs::BTagCorrs(TString dirPath, const Analysis& analysis, GeneralTree& gt_
         if (analysis.useDeepCSV) {
           if (analysis.year==2016)
             calib.reset(new BTagCalibration("DeepCSV", (dirPath+"csv/DeepCSV_Moriond17_B_H.csv").Data()));
-          else if (analysis.year==2017 || analysis.year==2018)
+          else if (analysis.year==2017)
             calib.reset(new BTagCalibration("DeepCSV", (dirPath+"csv/DeepCSV_94XSF_V2_B_F.csv").Data()));
+          else if (analysis.year==2018){
+	    cout << "Using deep csv reweightingg" << endl;
+	    //calib.reset(new BTagCalibration("DeepCSV", "/home/bmaier/cms/Hbb/2018/CMSSW_10_3_1/src/PandaAnalysis/data/csv/DeepCSV_94XSF_V2_B_F.csv"));
+	    calib.reset(new BTagCalibration("DeepCSV", "/home/bmaier/cms/Hbb/2018/CMSSW_10_3_1/src/PandaAnalysis/data/csv/DeepCSV_102XSF_V1.csv"));
+	  }
         } else {
           if (analysis.year==2016)
             calib.reset(new BTagCalibration("csvv2", (dirPath+"moriond17/CSVv2_Moriond17_B_H.csv").Data()));
@@ -78,15 +83,22 @@ BTagCorrs::BTagCorrs(TString dirPath, const Analysis& analysis, GeneralTree& gt_
           logger.warning("BTagCorrs::BTagCorrs","CMVA is not supported in 2017!");
           reshaper_calib.reset(new BTagCalibration("cMVAv2", (dirPath+"moriond17/cMVAv2_Moriond17_B_H.csv").Data()));
         } else {
-          if (analysis.useDeepCSV)
-            reshaper_calib.reset(new BTagCalibration("DeepCSV", (dirPath+"csv/DeepCSV_94XSF_V2_B_F.csv").Data()));
+          if (analysis.useDeepCSV){
+	    if (analysis.year==2017){
+	      reshaper_calib.reset(new BTagCalibration("DeepCSV", (dirPath+"csv/DeepCSV_94XSF_V2_B_F.csv").Data()));
+	    }
+	    else if (analysis.year==2018){
+	      //reshaper_calib.reset(new BTagCalibration("DeepCSV", (dirPath+"csv/DeepCSV_94XSF_V2_B_F.csv").Data()));
+	      reshaper_calib.reset(new BTagCalibration("DeepCSV", (dirPath+"csv/DeepCSV_102XSF_V1.csv").Data()));
+	    }
           else
             reshaper_calib.reset(new BTagCalibration("csvv2", (dirPath+"csv/CSVv2_94XSF_V2_B_F.csv").Data()));
+	  }
         }
       }
-      reshaper->load(*(reshaper_calib), BTagEntry::FLAV_B, "iterativeFit");
-      reshaper->load(*(reshaper_calib), BTagEntry::FLAV_C, "iterativeFit");
-      reshaper->load(*(reshaper_calib), BTagEntry::FLAV_UDSG, "iterativeFit");
+      reshaper->load(*(reshaper_calib), BTagEntry::FLAV_B, "iterativefit");
+      reshaper->load(*(reshaper_calib), BTagEntry::FLAV_C, "iterativefit");
+      reshaper->load(*(reshaper_calib), BTagEntry::FLAV_UDSG, "iterativefit");
     }
 }
 

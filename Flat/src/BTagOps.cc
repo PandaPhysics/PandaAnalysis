@@ -67,10 +67,13 @@ void BTagWeightOp::do_execute()
   if (bcands.size() < 1) 
     return;
 
+  cout << "New Event" << endl;
+
   for (unsigned iShift=0; iShift<GeneralTree::nCsvShifts; iShift++) {
     GeneralTree::csvShift shift = gt.csvShifts[iShift];
     gt.sf_csvWeights[shift]=1;
     for (auto* jw : bcands) {
+
       auto& jet = jw->get_base();
       float discr;
       if      (analysis.useCMVA   ) discr = jet.cmva;
@@ -79,17 +82,22 @@ void BTagWeightOp::do_execute()
       unsigned absid = abs(jw->flavor);
       auto flav = absid == 5 ? BTagEntry::FLAV_B : 
                                (absid == 4 ? BTagEntry::FLAV_C : BTagEntry::FLAV_UDSG);
+
       float reshapeFactor = utils.btag->reshaper->eval_auto_bounds(
             GeneralTree::csvShiftName(shift).Data(),
-            flav, jet.eta(), jw->pt, discr
+            flav, abs(jet.eta()), jw->pt, discr
             );
-      if (reshapeFactor > 0.001)
+      if (reshapeFactor > 0.001){
         gt.sf_csvWeights[shift] *= reshapeFactor;
-      else
+      }
+      else{
         gt.sf_csvWeights[shift] *= utils.btag->reshaper->eval_auto_bounds(
             GeneralTree::csvShiftName(GeneralTree::csvCent).Data(),
-            flav, jet.eta(), jw->pt, discr
+            flav, abs(jet.eta()), jw->pt, discr
             );
+	
+      }
     }
+
   }
 }

@@ -235,18 +235,30 @@ namespace pa {
             csvL = 0.5426; csvM = 0.8484; 
           }
         } 
-	else if (analysis.year == 2017 || analysis.year == 2018) {
-          jecV = "V8"; jecReco = "17Nov2017";
-          //jecV = "V32"; jecReco = "17Nov2017"; // missing V32 for now
+	else if (analysis.year == 2017) {
+          //jecV = "V8"; jecReco = "17Nov2017";
+          jecV = "V32"; jecReco = "17Nov2017"; // missing V32 for now
           campaign = "Fall17";
           jerV = "Fall17_25nsV1";
-          eraGroups = {"B","C","D","E","F"};
-          // eraGroups = {"B","C","DE","F"}; // missing V32 for now
+          //eraGroups = {"B","C","D","E","F"};
+          eraGroups = {"B","C","DE","F"}; // missing V32 for now
           spacer = "_";
           if (analysis.useDeepCSV) { 
             csvL = 0.1522; csvM = 0.4941; 
           } else { 
             csvL = 0.5803; csvM = 0.8838; 
+          }
+	}
+	else if (analysis.year == 2018) {
+          jecV = "V8"; jecReco = "Autumn18";
+          campaign = "Winter19";
+          jerV = "Fall17_25nsV1"; // using 2017 for now
+          eraGroups = {"A","B","C","DE"};
+          spacer = "_";
+          if (analysis.useDeepCSV) { 
+            csvL = 0.1241; csvM = 0.4184; 
+          } else { 
+            csvL = 0.1241; csvM = 0.4184; 
           }
         }
       }

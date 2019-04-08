@@ -155,6 +155,18 @@ void FatJetOp::do_execute()
       else
         gt.fjGenNumB[iFJ] = 0;
     }
+
+    // Fill constituents list from position 100 on. The first 100 came from the AK4 dijet system.
+    if (analysis.hbb && analysis.advTraining) {
+      int counter = 100;
+      for (const auto& pf : fj.constituents) {
+	gt.hbbconstpt[counter] = pf->pt();
+	gt.hbbconsteta[counter] = pf->eta();
+	gt.hbbconstphi[counter] = pf->phi();
+	gt.hbbconstphi[counter] = pf->e();
+	counter++;
+      }
+    }
   }
   gt.fjVIdx = 1 - gt.fjHiggsIdx; 
 

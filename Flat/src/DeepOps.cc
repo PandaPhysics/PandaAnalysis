@@ -75,6 +75,7 @@ void BRegDeepOp::do_execute()
   eval();
 
   jw.breg = outputs[0];
+
   jw.bregwidth = 0.5 * (outputs[2] - outputs[1]);
 }
 

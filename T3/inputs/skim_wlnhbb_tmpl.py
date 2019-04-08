@@ -37,8 +37,8 @@ def fn(input_name, isData, full_path):
         a.reclusterGen = True # only turn on if necessary
 
     skimmer = root.pa.PandaAnalyzer(a)
-    skimmer.AddPresel(root.pa.VHbbSel())
-    skimmer.AddPresel(root.pa.TriggerSel())
+    #skimmer.AddPresel(root.pa.VHbbSel())
+    #skimmer.AddPresel(root.pa.TriggerSel())
 
     return utils.run_PandaAnalyzer(skimmer, isData, a.outpath)
 

@@ -34,6 +34,7 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
     ADDOP(DeepGenOp<UnpackedGenParticle>);
   else
     ADDOP(DeepGenOp<GenParticle>);
+  ADDOP(JetCorrOp);
   ADDOP(TriggerOp);
   ADDOP(SimpleLeptonOp);
   ADDOP(ComplicatedLeptonOp);
@@ -121,6 +122,7 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
   gt.is_photonic       = analysis.complicatedPhotons;
   gt.is_monotop        = !(analysis.monoh || analysis.hbb || analysis.vbf);
   gt.is_breg           = analysis.bjetRegTraining;
+  gt.is_adv            = analysis.advTraining;
   gt.btagWeights       = analysis.btagWeights;
   gt.useCMVA           = analysis.useCMVA;
   for (auto& id : *wIDs)
@@ -253,6 +255,7 @@ void PandaAnalyzer::Run()
 
   // EVENTLOOP --------------------------------------------------------------------------
   for (iE=nZero; iE!=nEvents; ++iE) {
+
     pr.Report();
 
     Reset();

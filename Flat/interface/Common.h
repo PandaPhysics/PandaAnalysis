@@ -100,7 +100,8 @@ namespace pa {
     bool vbf = false;
     bool vbfhbb = false; 
     bool vqqhbb = false; 
-    bool zllhbb = false; 
+    bool zllhbb = false;
+    bool advTraining = false;
   };
 
   enum CorrectionType { //!< enum listing relevant corrections applied to MC
