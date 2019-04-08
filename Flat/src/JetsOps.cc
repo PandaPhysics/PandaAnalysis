@@ -162,20 +162,12 @@ void JetOp::do_execute()
     bool metShift = (i2jes(shift) <= shiftjes::kJESTotalDown);
     JESHandler& jets = (*jesShifts)[shift];
     (*currentJES) = &jets;
-    TLorentzVector vBadJets(0,0,0,0);
     for (auto& jw : jets.all) {
       (*currentJet) = &jw;
       auto& jet = jw.get_base();
       float aeta = abs(jet.eta());
       float pt = jw.pt;
 
-      if (metShift) {
-        if(aeta > 2.650 && aeta < 3.139 && jet.rawPt < 50){
-          TLorentzVector vj;
-          vj.SetPtEtaPhiM(pt, 0, jet.phi(), 0);
-          vBadJets = vBadJets + vj;
-        }
-      }
       if (analysis.year == 2016 || analysis.year == 2017) {
         if (isNominal && !isMatched(matchVeryLoosePhos.get(),0.16,jet.eta(),jet.phi())) {
           // prefiring weights
@@ -326,11 +318,6 @@ void JetOp::do_execute()
     if (metShift) {
       jets.sort();
       vbf->execute();
-      TLorentzVector vmet;
-      vmet.SetPtEtaPhiM(gt.pfmet[shift], 0, gt.pfmetphi[shift], 0);
-      vmet = vmet + vBadJets;
-      gt.puppimet[shift] = vmet.Pt();
-      gt.puppimetphi[shift] = vmet.Phi();
     }
     hbb->execute();
 
