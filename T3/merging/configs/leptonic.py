@@ -86,6 +86,8 @@ d = {
     'WJets'                         : ['WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8'],
     'TT'                            : ['TT_TuneCUETP8M2T4_13TeV-powheg-pythia8'],
     'ZH_ZToLL_HToGDarkG_M125'       : ['ZH_ZToLL_HToGDarkG_M125_13TeV_powheg_pythia8'],
+    'ZH_ZToLL_HToGDarkG_M200'       : ['ZH_ZToLL_HToGDarkG_M200_13TeV_powheg_pythia8'],
+    'ZH_ZToLL_HToGDarkG_M300'       : ['ZH_ZToLL_HToGDarkG_M300_13TeV_powheg_pythia8'],
     'ggZH125inv'                    : ['ggZH_HToInv_ZToLL_M125_13TeV_powheg_pythia8'],
     'qqZH110inv'                    : ['ZH_ZToMM_HToInvisible_M110_13TeV_powheg_pythia8','ZH_ZToEE_HToInvisible_M110_13TeV_powheg_pythia8'],
     'qqZH125inv'                    : ['ZH_ZToMM_HToInvisible_M125_13TeV_powheg_pythia8','ZH_ZToEE_HToInvisible_M125_13TeV_powheg_pythia8'],
