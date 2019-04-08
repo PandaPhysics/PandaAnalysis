@@ -22,6 +22,28 @@ static float best_recoil(const GeneralTree *gt, bool include_var) {
 
 bool LeptonSel::do_accept() const 
 { 
+  if (gt->nLooseLep < 1)
+    return false;
+
+  // lepton-photon pair selection
+  if (gt->nLooseElectron == 1 && gt->electronPt[0] > 25 && gt->loosePho1Pt > 25){
+    TLorentzVector vLepTemp;
+    vLepTemp.SetPtEtaPhiM(gt->electronPt[0],gt->electronEta[0],gt->electronPhi[0],0.000510998928);
+    TLorentzVector vPhoTemp;
+    vPhoTemp.SetPtEtaPhiM(gt->loosePho1Pt,gt->loosePho1Eta,gt->loosePho1Phi,0);
+    if (TMath::Abs((vLepTemp+vPhoTemp).M()-91.1876) < 15)
+      return true;
+  }
+  if (gt->nLooseMuon == 1 && gt->muonPt[0] > 25 && gt->loosePho1Pt > 25){
+    TLorentzVector vLepTemp;
+    vLepTemp.SetPtEtaPhiM(gt->muonPt[0],gt->muonEta[0],gt->muonPhi[0],0.10566);
+    TLorentzVector vPhoTemp;
+    vPhoTemp.SetPtEtaPhiM(gt->loosePho1Pt,gt->loosePho1Eta,gt->loosePho1Phi,0);
+    if (TMath::Abs((vLepTemp+vPhoTemp).M()-91.1876) < 15)
+      return true;
+  }
+
+  // dilepton pair selection
   if (gt->nLooseLep < 2)
     return false;
   if (gt->nLooseElectron >= 2 && gt->electronPt[0] > 20 && gt->electronPt[1] > 20)

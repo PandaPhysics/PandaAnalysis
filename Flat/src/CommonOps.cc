@@ -205,10 +205,12 @@ void TriggerOp::do_init(Registry& registry)
     // double muon
     if (analysis.year==2016) { 
       paths = {
+        "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ",
+        "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ",
+        "HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ",
         "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL",
         "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL",
-        "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ",
-        "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ"
+	"HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL"
       };
     } else if (analysis.year==2017) {
       paths = {

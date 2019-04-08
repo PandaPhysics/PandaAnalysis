@@ -61,7 +61,7 @@ void JetCorrOp::do_execute()
 
   JetCorrector *jc = new JetCorrector();
   jc->SetYear(analysis.year);
-  jc->RunCorrection(analysis.isData,event.rho,&event.chsAK4Jets,&event.rawMet,&event.pfMet,event.runNumber, scale);
+  jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.pfMet,event.runNumber, scale);
 
   panda::JetCollection *out_jets = 0;
   out_jets = jc->GetCorrectedJets();

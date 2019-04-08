@@ -17,17 +17,17 @@ argv = []
 
 import ROOT as root
 from PandaCore.Utils.load import *
-from PandaAnalysis.Flat.analysis import vv
+from PandaAnalysis.Flat.analysis import vv2016
 import PandaAnalysis.T3.job_utilities as utils
 
 Load('PandaAnalyzer')
 
-year = 2018
-analysis = vv(True)
+year = 2016
+analysis = vv2016(True)
 analysis.inpath = torun
 analysis.outpath = output
 analysis.datapath = getenv('CMSSW_BASE') + '/src/PandaAnalysis/data/'
-analysis.isData = True
+analysis.isData = False
 utils.set_year(analysis, year)
 analysis.processType = utils.classify_sample(torun, analysis.isData)
 
@@ -38,7 +38,7 @@ skimmer.AddPresel(root.pa.LeptonSel())
 skimmer.AddPresel(root.pa.TriggerSel())
 
 skimmer.firstEvent=0
-skimmer.lastEvent=10000
+skimmer.lastEvent=-1
 skimmer.isData=analysis.isData
 if skimmer.isData:
     fileName = ''

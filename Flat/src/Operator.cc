@@ -14,7 +14,6 @@ ConfigOp::ConfigOp(Analysis& a_, GeneralTree& gt_, int DEBUG_) :
 
   cfg.isData = analysis.isData;
   int hackYear = analysis.year;
-  //if( analysis.year == 2018 ) hackYear = 2017;
   utils.eras.reset(new EraHandler(hackYear));
   cfg.auxFilePath = analysis.outpath;
   cfg.auxFilePath.ReplaceAll(".root","_aux%i.root");
@@ -219,7 +218,48 @@ void ConfigOp::readData(TString dirPath)
   }
 
   if (analysis.complicatedLeptons) {
-    if (analysis.year==2017 || analysis.year==2018) {
+    if (analysis.year==2018) {
+      utils.openCorr(cMuLooseID,
+                     dirPath+"leptonic/2018_muon_RunABCD_SF_ID.root",
+                     "NUM_LooseID_DEN_genTracks_pt_abseta",2);
+      utils.openCorr(cMuMediumID,
+                     dirPath+"leptonic/2018_muon_RunABCD_SF_ID.root",
+                     "NUM_MediumID_DEN_genTracks_pt_abseta",2);
+      utils.openCorr(cMuTightID,
+                     dirPath+"leptonic/2018_muon_RunABCD_SF_ID.root",
+                     "NUM_TightID_DEN_genTracks_pt_abseta",2);
+      utils.openCorr(cMuLooseIso,
+                     dirPath+"leptonic/2018_muon_RunABCD_SF_ISO.root",
+                     "NUM_LooseRelIso_DEN_LooseID_pt_abseta",2);
+      utils.openCorr(cMuMediumIso,
+                     dirPath+"leptonic/2018_muon_RunABCD_SF_ISO.root",
+                     "NUM_TightRelIso_DEN_MediumID_pt_abseta",2);
+      utils.openCorr(cMuTightIso,
+                     dirPath+"leptonic/2018_muon_RunABCD_SF_ISO.root",
+                     "NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta",2);
+      utils.openCorr(cEleVeto,
+                     dirPath+"leptonic/egammaEffi.txt_EGM2D_runBCDEF_passingVeto94X.root",
+                     "EGamma_SF2D",2);
+      utils.openCorr(cEleLoose,
+                     dirPath+"leptonic/2018_ElectronLoose.root",
+                     "EGamma_SF2D",2);
+      utils.openCorr(cEleMedium,
+                     dirPath+"leptonic/2018_ElectronMedium.root",
+                     "EGamma_SF2D",2);
+      utils.openCorr(cEleTight,
+                     dirPath+"leptonic/2018_ElectronTight.root",
+                     "EGamma_SF2D",2);
+      utils.openCorr(cEleMvaWP80,
+                     dirPath+"leptonic/2018_ElectronMVA80.root",
+                     "EGamma_SF2D",2);
+      utils.openCorr(cEleMvaWP90,
+                     dirPath+"leptonic/2018_ElectronMVA90.root",
+                     "EGamma_SF2D",2);
+      utils.openCorr(cEleReco,
+                     dirPath+"leptonic/2018_reco_ptgt20.root",
+                     "EGamma_SF2D",2);
+    } 
+    else if (analysis.year==2017) {
       utils.openCorr(cMuLooseID,
                      dirPath+"leptonic/scalefactors_muons_2017_id.root",
                      "NUM_LooseID_DEN_genTracks_pt_abseta",2);
@@ -259,7 +299,8 @@ void ConfigOp::readData(TString dirPath)
       utils.openCorr(cEleReco,
                      dirPath+"leptonic/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root",
                      "EGamma_SF2D",2);
-    } else {
+    } 
+    else {
       utils.openCorr(cMuLooseID,
                      dirPath+"leptonic/muon_scalefactors_37ifb.root",
                      "scalefactors_MuonLooseId_Muon",2);
@@ -429,7 +470,6 @@ void ConfigOp::readData(TString dirPath)
     utils.openCorr(cTrigMET,
 		   dirPath+"trigger_eff/met_trigger_effs_2018.root",
 		   "eff",1);
-    
   utils.openCorr(cTrigEle,
                  dirPath+"moriond17/eleTrig.root","hEffEtaPt",2);
   utils.openCorr(cTrigPho,

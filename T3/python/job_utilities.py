@@ -171,6 +171,8 @@ def request_data(xrd_path, first_attempt):
     if ret:
         logger.error(_sname+'.request_data', 'Failed to xrdcopy %s'%input_path)
         return None 
+    if cache: # give it a few seconds
+        sleep(20)
     if _validate_file(input_path):
         if cache:
             payload = {'path' : input_path, 
@@ -402,8 +404,8 @@ def classify_sample(full_path, isData):
                 (root.pa.kW      , ['WJets', 'W1Jets', 'W2Jets']), 
                 (root.pa.kA      , 'GJets'), 
                 (root.pa.kTT     , ['TTJets', 'TT_', 'TTTo']), 
-                (root.pa.kH      , 'HTo'), 
-                (root.pa.kVV     , ['WW', 'WZ', 'ZZ', 'WpWp']), 
+                (root.pa.kH      , ['HTo', 'ZH']),
+                (root.pa.kVV     , ['WW', 'WZ', 'ZZ', 'WpWp', 'WLLJJ']),
             ]
     if not isData:
         for e, pattern in _classification:
@@ -440,7 +442,7 @@ class BDTAdder(object):
 _jsons = {
         2016 : '/certs/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt', 
         2017 : '/certs/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt', 
-        2018 : '/certs/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt', 
+        2018 : '/certs/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt', 
         }
 def add_json(skimmer):
     json_path = _jsons.get(_year, None)
