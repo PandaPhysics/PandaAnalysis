@@ -69,6 +69,35 @@ void BRegDeepOp::do_execute()
   inputs[49] = gt.jotNeRing[4][N];
   inputs[50] = gt.rho;
 
+  if (analysis.bjetDeepReg_withPFs){
+    inputs[51] = gt.jotPFPt[0][N];
+    inputs[52] = gt.jotPFPt[1][N];
+    inputs[53] = gt.jotPFPt[2][N];
+    inputs[54] = gt.jotPFPt[3][N];
+    inputs[55] = gt.jotPFPt[4][N];
+    inputs[56] = gt.jotPFEta[0][N];
+    inputs[57] = gt.jotPFEta[1][N];
+    inputs[58] = gt.jotPFEta[2][N];
+    inputs[59] = gt.jotPFEta[3][N];
+    inputs[60] = gt.jotPFEta[4][N];
+    inputs[61] = gt.jotPFPhi[0][N];
+    inputs[62] = gt.jotPFPhi[1][N];
+    inputs[63] = gt.jotPFPhi[2][N];
+    inputs[64] = gt.jotPFPhi[3][N];
+    inputs[65] = gt.jotPFPhi[4][N];
+    inputs[66] = gt.jotPFId[0][N];
+    inputs[67] = gt.jotPFId[1][N];
+    inputs[68] = gt.jotPFId[2][N];
+    inputs[69] = gt.jotPFId[3][N];
+    inputs[70] = gt.jotPFId[4][N];
+    inputs[71] = gt.jotPFpuppiW[0][N];
+    inputs[72] = gt.jotPFpuppiW[1][N];
+    inputs[73] = gt.jotPFpuppiW[2][N];
+    inputs[74] = gt.jotPFpuppiW[3][N];
+    inputs[75] = gt.jotPFpuppiW[4][N];
+  }
+
+
   for (auto& i : inputs)
     i = dnn_clean(i); 
 

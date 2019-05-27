@@ -33,8 +33,8 @@ void JetCorrector::RunCorrection(bool isData, float rho, panda::MuonCollection *
 	  v_j_in.SetPtEtaPhiM(j_in.rawPt,j_in.eta(),j_in.phi(),j_in.m());
 	  v_j_in_corr.SetPtEtaPhiM(j_in.pt(),j_in.eta(),j_in.phi(),j_in.m());
 	  if (fabs(j_in.eta())<5.191) {
- 	    corrector->setJetPt (v_j_in.Pt());
  	    corrector->setJetEta(v_j_in.Eta());
+ 	    corrector->setJetPt (v_j_in.Pt());
  	    corrector->setJetPhi(v_j_in.Phi());
  	    corrector->setJetE  (v_j_in.E());
 	    corrector->setRho(rho);

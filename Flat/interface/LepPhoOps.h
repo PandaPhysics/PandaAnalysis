@@ -57,6 +57,10 @@ namespace pa {
       registry.publishConst("lepPdgId", lepPdgId);
       registry.publishConst("dilep", dilep);
       jesShifts = registry.access<std::vector<JESHandler>>("jesShifts");
+      if (analysis.darkg){
+	loosePhos = registry.accessConst<std::vector<panda::Photon*>>("loosePhos");
+	tightPhos = registry.accessConst<std::vector<panda::Photon*>>("tightPhos");
+      }
     }
     virtual void do_execute();
     virtual void do_reset() {
@@ -72,7 +76,9 @@ namespace pa {
     std::shared_ptr<std::array<int,4>> lepPdgId;
     std::shared_ptr<std::vector<JESHandler>> jesShifts{nullptr};
     std::shared_ptr<TLorentzVector> dilep;
-
+  private:
+    std::shared_ptr<const std::vector<panda::Photon*>> loosePhos{nullptr};
+    std::shared_ptr<const std::vector<panda::Photon*>> tightPhos{nullptr};
   };
 
   class ComplicatedLeptonOp : public SimpleLeptonOp {
@@ -94,10 +100,16 @@ namespace pa {
       SimpleLeptonOp::do_init(registry);
       if (analysis.hbb) 
         pfCandsMap = registry.access<EtaPhiMap<panda::PFCand>>("pfCandsMap"); 
+      if (analysis.darkg){
+	loosePhos = registry.accessConst<std::vector<panda::Photon*>>("loosePhos");
+	tightPhos = registry.accessConst<std::vector<panda::Photon*>>("tightPhos");
+      }
     }
   private:
     std::unique_ptr<RoccoR> rochesterCorrection{nullptr};
     std::shared_ptr<EtaPhiMap<panda::PFCand>> pfCandsMap{nullptr}; 
+    std::shared_ptr<const std::vector<panda::Photon*>> loosePhos{nullptr};
+    std::shared_ptr<const std::vector<panda::Photon*>> tightPhos{nullptr};
   };
 
 
@@ -151,7 +163,8 @@ namespace pa {
   protected:
     void do_init(Registry& registry) {
       SimplePhotonOp::do_init(registry);
-      matchLeps = registry.accessConst<std::vector<panda::Lepton*>>("matchLeps");
+      if (!analysis.darkg)
+	matchLeps = registry.accessConst<std::vector<panda::Lepton*>>("matchLeps");
     }
     void do_execute();
   private:

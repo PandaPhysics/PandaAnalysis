@@ -315,6 +315,33 @@ void TriggerOp::do_init(Registry& registry)
     };
     triggerHandlers[kEleFakeTrig].addTriggers(paths);
 
+
+    // VBF+Pho
+    if (analysis.year == 2016){
+      paths = {
+	"HLT_Photon75_R9Id90_HE10_Iso40_EBOnly_VBF"
+      };
+    }
+    else if (analysis.year == 2017){
+      paths = {
+	"HLT_DiJet110_35_Mjj650_PFMET110",
+	"HLT_DiJet110_35_Mjj650_PFMET120",
+	"HLT_DiJet110_35_Mjj650_PFMET130",
+	"HLT_PFMET120_PFMHT120_IDTight",
+	"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight",
+	"HLT_Photon200"
+      };
+    }
+    if (analysis.year == 2018){
+      paths = {
+	"HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ300_PFJetsMJJ400DEta3_v5",
+	"HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ400_PFJetsMJJ600DEta3_v5",
+	"HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ300DEta3_v5",
+	"HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_PFJetsMJJ600DEta3_v5",
+      };
+    }
+    triggerHandlers[kVBFPhoTrig].addTriggers(paths);
+
     for (auto &th : triggerHandlers) {
       unsigned N = th.paths.size();
       for (unsigned i = 0; i != N; i++) {

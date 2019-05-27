@@ -36,10 +36,18 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
     ADDOP(DeepGenOp<GenParticle>);
   ADDOP(JetCorrOp);
   ADDOP(TriggerOp);
-  ADDOP(SimpleLeptonOp);
-  ADDOP(ComplicatedLeptonOp);
-  ADDOP(SimplePhotonOp);
-  ADDOP(ComplicatedPhotonOp);
+  if (analysis.darkg){
+    ADDOP(SimplePhotonOp);
+    ADDOP(ComplicatedPhotonOp);
+    ADDOP(SimpleLeptonOp);
+    ADDOP(ComplicatedLeptonOp);
+  }
+  else{
+    ADDOP(SimpleLeptonOp);
+    ADDOP(ComplicatedLeptonOp);
+    ADDOP(SimplePhotonOp);
+    ADDOP(ComplicatedPhotonOp);
+  }
   ADDOP(RecoilOp);
   ADDOP(FatJetReclusterOp<GeneralTree>);
   ADDOP(FatJetOp);

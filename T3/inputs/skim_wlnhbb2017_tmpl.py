@@ -17,7 +17,7 @@ from PandaCore.Utils.load import *
 import PandaCore.Tools.job_config as cb
 import PandaAnalysis.Tagging.cfg_v8 as tagcfg
 import PandaAnalysis.T3.job_utilities as utils
-from PandaAnalysis.Flat.analysis import wlnhbb2017
+from PandaAnalysis.Flat.analysis import wlnhbb
 
 Load('PandaAnalyzer')
 data_dir = getenv('CMSSW_BASE') + '/src/PandaAnalysis/data/'
@@ -26,7 +26,7 @@ def fn(input_name, isData, full_path):
     
     logger.info(sname+'.fn','Starting to process '+input_name)
     # now we instantiate and configure the analyzer
-    a = wlnhbb2017(True)
+    a = wlnhbb(True)
     a.inpath = input_name
     a.outpath = utils.input_to_output(input_name)
     a.datapath = data_dir
@@ -38,7 +38,7 @@ def fn(input_name, isData, full_path):
 
     skimmer = root.pa.PandaAnalyzer(a)
     skimmer.AddPresel(root.pa.VHbbSel())
-    skimmer.AddPresel(root.pa.TriggerSel())
+    #skimmer.AddPresel(root.pa.TriggerSel())
 
     return utils.run_PandaAnalyzer(skimmer, isData, a.outpath)
 

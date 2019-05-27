@@ -63,7 +63,7 @@ ConfigOp::ConfigOp(Analysis& a_, GeneralTree& gt_, int DEBUG_) :
   }
   if (analysis.vbf || analysis.hbb || analysis.complicatedLeptons)
     cfg.minBJetPt = 20;
-  if (analysis.hbb || analysis.monoh)
+  if (analysis.hbb || analysis.monoh || analysis.darkg)
     cfg.NJETSAVED = NJET;
 
   //cfg.maxshiftJES = analysis.varyJESTotal ? jes2i(shiftjes::kJESTotalDown) + 1 :

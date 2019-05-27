@@ -64,6 +64,8 @@ namespace pa {
     bool bjetRegTraining = false;
     bool bjetBDTReg = false;
     bool bjetDeepReg = false; 
+    bool bjetDeepReg_withPFs = false; 
+    bool bjetDeepReg_withPFs_10 = false; 
     bool btagSFs = true;
     bool btagWeights = false;
     bool complicatedLeptons = false;
@@ -102,6 +104,7 @@ namespace pa {
     bool vqqhbb = false; 
     bool zllhbb = false;
     bool advTraining = false;
+    bool darkg = false;
   };
 
   enum CorrectionType { //!< enum listing relevant corrections applied to MC
@@ -209,6 +212,7 @@ namespace pa {
     kJetHTTrig,
     kMuFakeTrig,
     kEleFakeTrig,
+    kVBFPhoTrig,
     kNTrig
   };
 

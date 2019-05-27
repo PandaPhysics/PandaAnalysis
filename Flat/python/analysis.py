@@ -57,6 +57,20 @@ vbf = lambda v=False : _analysis(
         puppiJets = False
     )
 
+vbfg = lambda v=False : _analysis(
+        name = 'vbfg',
+        verbose = v,
+        vbf = True,
+        fatjet = False,
+        btagSFs = False,
+        puppiJets = False,
+        darkg = True,
+        rerunJES = True,
+        rerunJER = True,
+        complicatedPhotons = True,
+        complicatedLeptons = True
+    )
+
 vqqhbb = lambda v=False : _analysis(
         name = 'vbfhbb',
         verbose = v,
@@ -173,10 +187,38 @@ wlnhbb = lambda v=False : _analysis(
         useDeepCSV = True,
         complicatedLeptons = True,
         hfCounting = True,
-        recluster = False,
-        bjetRegTraining = False,
+        recluster = True,
+        bjetRegTraining = True,
         bjetBDTReg = False,
         bjetDeepReg = True,
+        bjetDeepReg_withPFs_10 = False,
+        varyJES = True,
+        rerunJES = True,
+        rerunJER = True,
+        jetFlavorPartons = False,
+        jetFlavorJets = True,
+        mcTriggers = True,
+    )
+
+wlnhbb15 = lambda v=False : _analysis(
+        name = 'wlnhbb',
+        verbose = v,
+        ak8 = False,
+        hbb = True,
+        monoh = False,
+        recoil = True,
+        fatjet = True,
+        btagSFs = True,
+        btagWeights = True,
+        useCMVA = False,
+        useDeepCSV = True,
+        complicatedLeptons = True,
+        hfCounting = True,
+        recluster = True,
+        bjetRegTraining = True,
+        bjetBDTReg = False,
+        bjetDeepReg = True,
+        bjetDeepReg_withPFs_10 = False,
         varyJES = True,
         rerunJES = True,
         rerunJER = True,

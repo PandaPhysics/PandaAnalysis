@@ -78,6 +78,16 @@ TString jesName(shiftjes e) {
     default : return "N";
   }
 }
+TString pfsName(shiftpfs e) {
+  switch(e) {
+    case shiftpfs::k0 : return "0";
+    case shiftpfs::k1 : return "1";
+    case shiftpfs::k2 : return "2";
+    case shiftpfs::k3 : return "3";
+    case shiftpfs::k4 : return "4";
+    default : return "N";
+  }
+}
 TString jetringsName(shiftjetrings e) {
   switch(e) {
     case shiftjetrings::k0 : return "0";
@@ -262,6 +272,12 @@ void GeneralTree::Reset() {
   loosePho1Pt = -99;
   loosePho1Eta = -99;
   loosePho1Phi = -99;
+  loosePho1r9 = -99;
+  loosePho1chIso = -99;
+  loosePho1nhIso = -99;
+  loosePho1phIso = -99;
+  loosePho1hOverE = -99;
+  loosePho1sieie = -99;
   loosePho1SelBit = 0;
   looseGenPho1PdgId = 0;
   nLooseLep = 0;
@@ -324,38 +340,12 @@ void GeneralTree::Reset() {
   lheHT = -99;
   lheNjets = 0;
   isGS = 0;
-  for (int iA=0; iA!=4; ++iA) {
-    electronPt[iA] = -99;
-    electronEta[iA] = -99;
-    electronPhi[iA] = -99;
-    electronSelBit[iA] = 0;
-    electronPdgId[iA] = 0;
-    electronSfLoose[iA] = -99;
-    electronSfMedium[iA] = -99;
-    electronSfTight[iA] = -99;
-    electronSfMvaWP90[iA] = -99;
-    electronSfMvaWP80[iA] = -99;
-    electronSfUnc[iA] = -99;
-    electronSfReco[iA] = -99;
-    electronD0[iA] = -99;
-    electronDZ[iA] = -99;
-    electronNMissingHits[iA] = 0;
-    electronTripleCharge[iA] = 0;
-    electronCombIso[iA] = -99;
-    muonPt[iA] = -99;
-    muonEta[iA] = -99;
-    muonPhi[iA] = -99;
-    muonSelBit[iA] = 0;
-    muonPdgId[iA] = 0;
-    muonSfLoose[iA] = -99;
-    muonSfMedium[iA] = -99;
-    muonSfTight[iA] = -99;
-    muonSfUnc[iA] = -99;
-    muonSfReco[iA] = -99;
-    muonD0[iA] = -99;
-    muonDZ[iA] = -99;
-    muonIsSoftMuon[iA] = 0;
-    muonCombIso[iA] = -99;
+  for (int iA=0; iA!=200; ++iA) {
+    hbbconstpt[iA] = 0;
+    hbbconsteta[iA] = 0;
+    hbbconstphi[iA] = 0;
+    hbbconste[iA] = 0;
+    hbbconstid[iA] = 0;
   }
   for (int iA=0; iA!=2; ++iA) {
     fjsjPt[iA] = -99;
@@ -364,13 +354,6 @@ void GeneralTree::Reset() {
     fjsjM[iA] = -99;
     fjsjCSV[iA] = -99;
     fjsjQGL[iA] = -99;
-  }
-  for (int iA=0; iA!=200; ++iA) {
-    hbbconstpt[iA] = 0;
-    hbbconsteta[iA] = 0;
-    hbbconstphi[iA] = 0;
-    hbbconste[iA] = 0;
-    hbbconstid[iA] = 0;
   }
   for (int iA=0; iA!=2; ++iA) {
     jetPt[iA] = -99;
@@ -481,6 +464,62 @@ void GeneralTree::Reset() {
     jotRawM[iA] = -99;
     jotRawE[iA] = -99;
   }
+  for (int iA=0; iA!=4; ++iA) {
+    electronPt[iA] = -99;
+    electronEta[iA] = -99;
+    electronPhi[iA] = -99;
+    electronSelBit[iA] = 0;
+    electronPdgId[iA] = 0;
+    electronPhoMatch[iA] = 0;
+    electronLPhoMatch[iA] = 0;
+    electronSfLoose[iA] = -99;
+    electronSfMedium[iA] = -99;
+    electronSfTight[iA] = -99;
+    electronSfMvaWP90[iA] = -99;
+    electronSfMvaWP80[iA] = -99;
+    electronSfUnc[iA] = -99;
+    electronSfReco[iA] = -99;
+    electronD0[iA] = -99;
+    electronDZ[iA] = -99;
+    electronNMissingHits[iA] = 0;
+    electronTripleCharge[iA] = 0;
+    electronCombIso[iA] = -99;
+    muonPt[iA] = -99;
+    muonEta[iA] = -99;
+    muonPhi[iA] = -99;
+    muonSelBit[iA] = 0;
+    muonPdgId[iA] = 0;
+    muonSfLoose[iA] = -99;
+    muonSfMedium[iA] = -99;
+    muonSfTight[iA] = -99;
+    muonSfUnc[iA] = -99;
+    muonSfReco[iA] = -99;
+    muonD0[iA] = -99;
+    muonDZ[iA] = -99;
+    muonIsSoftMuon[iA] = 0;
+    muonCombIso[iA] = -99;
+  }
+  for (int iS=0; iS!=43; ++iS) {
+    nJet[iS] = 0;
+    nJot[iS] = 0;
+    nIsoJet[iS] = 0;
+    jetNBtags[iS] = 0;
+    jetNMBtags[iS] = 0;
+    isojetNBtags[iS] = 0;
+    isojetNMBtags[iS] = 0;
+    hbbpt[iS] = -99;
+    hbbeta[iS] = -99;
+    hbbphi[iS] = -99;
+    hbbm[iS] = -99;
+    hbbm_reg[iS] = -99;
+    hbbpt_reg[iS] = -99;
+    hbbm_dreg[iS] = -99;
+    hbbpt_dreg[iS] = -99;
+    hbbm_qreg[iS] = -99;
+    hbbpt_qreg[iS] = -99;
+    hbbCosThetaJJ[iS] = -99;
+    hbbCosThetaCSJ1[iS] = -99;
+  }
   for (int iS=0; iS!=3; ++iS) {
     pfmet[iS] = -99;
     pfmetphi[iS] = -99;
@@ -524,26 +563,19 @@ void GeneralTree::Reset() {
     topMassLep1Met[iS] = -99;
     topWBosonCosThetaCS[iS] = -99;
   }
+  for (int iS=0; iS!=5; ++iS) {
+    for (int iA=0; iA!=20; ++iA) {
+      jotPFPt[iS][iA] = -99;
+      jotPFEta[iS][iA] = -99;
+      jotPFPhi[iS][iA] = -99;
+      jotPFId[iS][iA] = -99;
+      jotPFpuppiW[iS][iA] = -99;
+    }
+  }
   for (int iS=0; iS!=43; ++iS) {
-    nJet[iS] = 0;
-    nJot[iS] = 0;
-    nIsoJet[iS] = 0;
-    jetNBtags[iS] = 0;
-    jetNMBtags[iS] = 0;
-    isojetNBtags[iS] = 0;
-    isojetNMBtags[iS] = 0;
-    hbbpt[iS] = -99;
-    hbbeta[iS] = -99;
-    hbbphi[iS] = -99;
-    hbbm[iS] = -99;
-    hbbm_reg[iS] = -99;
-    hbbpt_reg[iS] = -99;
-    hbbm_dreg[iS] = -99;
-    hbbpt_dreg[iS] = -99;
-    hbbm_qreg[iS] = -99;
-    hbbpt_qreg[iS] = -99;
-    hbbCosThetaJJ[iS] = -99;
-    hbbCosThetaCSJ1[iS] = -99;
+    for (int iA=0; iA!=20; ++iA) {
+      jotPt[iS][iA] = -99;
+    }
   }
   for (int iS=0; iS!=43; ++iS) {
     for (int iA=0; iA!=2; ++iA) {
@@ -552,11 +584,6 @@ void GeneralTree::Reset() {
       fjPt[iS][iA] = -99;
       fjM[iS][iA] = -99;
       hbbjtidx[iS][iA] = 0;
-    }
-  }
-  for (int iS=0; iS!=43; ++iS) {
-    for (int iA=0; iA!=20; ++iA) {
-      jotPt[iS][iA] = -99;
     }
   }
   for (int iS=0; iS!=5; ++iS) {
@@ -1143,6 +1170,12 @@ void GeneralTree::WriteTree(TTree *t) {
   Book("loosePho1Pt",&loosePho1Pt,"loosePho1Pt/F");
   Book("loosePho1Eta",&loosePho1Eta,"loosePho1Eta/F");
   Book("loosePho1Phi",&loosePho1Phi,"loosePho1Phi/F");
+  Book("loosePho1r9",&loosePho1r9,"loosePho1r9/F");
+  Book("loosePho1chIso",&loosePho1chIso,"loosePho1chIso/F");
+  Book("loosePho1nhIso",&loosePho1nhIso,"loosePho1nhIso/F");
+  Book("loosePho1phIso",&loosePho1phIso,"loosePho1phIso/F");
+  Book("loosePho1hOverE",&loosePho1hOverE,"loosePho1hOverE/F");
+  Book("loosePho1sieie",&loosePho1sieie,"loosePho1sieie/F");
   Book("loosePho1SelBit",&loosePho1SelBit,"loosePho1SelBit/I");
   Book("looseGenPho1PdgId",&looseGenPho1PdgId,"looseGenPho1PdgId/I");
   Book("nLooseLep",&nLooseLep,"nLooseLep/I");
@@ -1156,6 +1189,8 @@ void GeneralTree::WriteTree(TTree *t) {
   Book("electronPhi",electronPhi,"electronPhi["+TString("nLooseElectron")+"]/F");
   Book("electronSelBit",electronSelBit,"electronSelBit["+TString("nLooseElectron")+"]/I");
   Book("electronPdgId",electronPdgId,"electronPdgId["+TString("nLooseElectron")+"]/I");
+  Book("electronPhoMatch",electronPhoMatch,"electronPhoMatch["+TString("nLooseElectron")+"]/I");
+  Book("electronLPhoMatch",electronLPhoMatch,"electronLPhoMatch["+TString("nLooseElectron")+"]/I");
   Book("muonPt",muonPt,"muonPt["+TString("nLooseMuon")+"]/F");
   Book("muonEta",muonEta,"muonEta["+TString("nLooseMuon")+"]/F");
   Book("muonPhi",muonPhi,"muonPhi["+TString("nLooseMuon")+"]/F");
@@ -1400,42 +1435,6 @@ void GeneralTree::WriteTree(TTree *t) {
     Book("fjPartonEta",fjPartonEta,"fjPartonEta["+TString("nFatJetTrunc")+"]/F");
     Book("fjGenNumB",fjGenNumB,"fjGenNumB["+TString("nFatJetTrunc")+"]/I");
   }
-  if (is_monohiggs||is_hbb) {
-    if (is_breg) {
-      Book("jotRho",jotRho,"jotRho["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotArea",jotArea,"jotArea["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotGenDEta",jotGenDEta,"jotGenDEta["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotGenDPhi",jotGenDPhi,"jotGenDPhi["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotQGL",jotQGL,"jotQGL["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotLep1Pt",jotLep1Pt,"jotLep1Pt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotLep1Eta",jotLep1Eta,"jotLep1Eta["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotLep1Phi",jotLep1Phi,"jotLep1Phi["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotLep1PtRel",jotLep1PtRel,"jotLep1PtRel["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotLep1PtRelRaw",jotLep1PtRelRaw,"jotLep1PtRelRaw["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotLep1PtRelRawInv",jotLep1PtRelRawInv,"jotLep1PtRelRawInv["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotLep1DeltaR",jotLep1DeltaR,"jotLep1DeltaR["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChTrk1Pt",jotChTrk1Pt,"jotChTrk1Pt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotTrk1Pt",jotTrk1Pt,"jotTrk1Pt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotVtxPt",jotVtxPt,"jotVtxPt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotVtxMass",jotVtxMass,"jotVtxMass["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotVtx3DVal",jotVtx3DVal,"jotVtx3DVal["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotVtx3DErr",jotVtx3DErr,"jotVtx3DErr["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotVtxNtrk",jotVtxNtrk,"jotVtxNtrk["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/I");
-      Book("jotLep1IsEle",jotLep1IsEle,"jotLep1IsEle["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/I");
-      Book("jotLep1IsMu",jotLep1IsMu,"jotLep1IsMu["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/I");
-      Book("jotLep1IsOther",jotLep1IsOther,"jotLep1IsOther["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/I");
-      Book("jotGenEta",jotGenEta,"jotGenEta["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotGenPhi",jotGenPhi,"jotGenPhi["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotGenM",jotGenM,"jotGenM["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNPt03",jotNPt03,"jotNPt03["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/I");
-      Book("jotPtD",jotPtD,"jotPtD["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotRawPt",jotRawPt,"jotRawPt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotRawMt",jotRawMt,"jotRawMt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotRawEt",jotRawEt,"jotRawEt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotRawM",jotRawM,"jotRawM["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotRawE",jotRawE,"jotRawE["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-    }
-  }
   if (is_vbf) {
     Book("genMuonPt",&genMuonPt,"genMuonPt/F");
     Book("genMuonEta",&genMuonEta,"genMuonEta/F");
@@ -1492,126 +1491,40 @@ void GeneralTree::WriteTree(TTree *t) {
     Book("looseGenLep3PdgId",&looseGenLep3PdgId,"looseGenLep3PdgId/I");
     Book("looseGenLep4PdgId",&looseGenLep4PdgId,"looseGenLep4PdgId/I");
   }
-  if (is_adv) {
-    Book("hbbconstpt",hbbconstpt,"hbbconstpt["+TString("200")+"]/F");
-    Book("hbbconsteta",hbbconsteta,"hbbconsteta["+TString("200")+"]/F");
-    Book("hbbconstphi",hbbconstphi,"hbbconstphi["+TString("200")+"]/F");
-    Book("hbbconste",hbbconste,"hbbconste["+TString("200")+"]/F");
-    Book("hbbconstid",hbbconstid,"hbbconstid["+TString("200")+"]/I");
-  }
-  if (is_fatjet) {
-    if (is_monohiggs||is_hbb) {
-      Book("fjHiggsIdx",&fjHiggsIdx,"fjHiggsIdx/I");
-      Book("fjVIdx",&fjVIdx,"fjVIdx/I");
-    }
-  }
-  if (is_monotop||is_vbf) {
-    Book("jetPt",jetPt,"jetPt["+TString("2")+"]/F");
-    Book("jetEta",jetEta,"jetEta["+TString("2")+"]/F");
-    Book("jetPhi",jetPhi,"jetPhi["+TString("2")+"]/F");
-    Book("jetGenPt",jetGenPt,"jetGenPt["+TString("2")+"]/F");
-    Book("jetCSV",jetCSV,"jetCSV["+TString("2")+"]/F");
-    Book("jetFlav",jetFlav,"jetFlav["+TString("2")+"]/I");
-    Book("jetIsTight",jetIsTight,"jetIsTight["+TString("2")+"]/I");
-    Book("jetIsIso",jetIsIso,"jetIsIso["+TString("2")+"]/I");
-  }
-  if (is_vh) {
-    Book("genHPt",&genHPt,"genHPt/F");
-    Book("genHEta",&genHEta,"genHEta/F");
-    Book("genHPhi",&genHPhi,"genHPhi/F");
-    Book("genHSize",&genHSize,"genHSize/F");
-    Book("genVPt",&genVPt,"genVPt/F");
-    Book("genVEta",&genVEta,"genVEta/F");
-    Book("genVPhi",&genVPhi,"genVPhi/F");
-    Book("genVSize",&genVSize,"genVSize/F");
-  }
   if (is_monohiggs||is_hbb) {
     if (is_breg) {
-      Book("jotEMRing_0",jotEMRing[0],"jotEMRing_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMRing_1",jotEMRing[1],"jotEMRing_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMRing_2",jotEMRing[2],"jotEMRing_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMRing_3",jotEMRing[3],"jotEMRing_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMRing_4",jotEMRing[4],"jotEMRing_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChRing_0",jotChRing[0],"jotChRing_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChRing_1",jotChRing[1],"jotChRing_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChRing_2",jotChRing[2],"jotChRing_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChRing_3",jotChRing[3],"jotChRing_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChRing_4",jotChRing[4],"jotChRing_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuRing_0",jotMuRing[0],"jotMuRing_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuRing_1",jotMuRing[1],"jotMuRing_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuRing_2",jotMuRing[2],"jotMuRing_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuRing_3",jotMuRing[3],"jotMuRing_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuRing_4",jotMuRing[4],"jotMuRing_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeRing_0",jotNeRing[0],"jotNeRing_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeRing_1",jotNeRing[1],"jotNeRing_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeRing_2",jotNeRing[2],"jotNeRing_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeRing_3",jotNeRing[3],"jotNeRing_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeRing_4",jotNeRing[4],"jotNeRing_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMEta_0",jotEMEta[0],"jotEMEta_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMEta_1",jotEMEta[1],"jotEMEta_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMEta_2",jotEMEta[2],"jotEMEta_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMEta_3",jotEMEta[3],"jotEMEta_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMEta_4",jotEMEta[4],"jotEMEta_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChEta_0",jotChEta[0],"jotChEta_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChEta_1",jotChEta[1],"jotChEta_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChEta_2",jotChEta[2],"jotChEta_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChEta_3",jotChEta[3],"jotChEta_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChEta_4",jotChEta[4],"jotChEta_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuEta_0",jotMuEta[0],"jotMuEta_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuEta_1",jotMuEta[1],"jotMuEta_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuEta_2",jotMuEta[2],"jotMuEta_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuEta_3",jotMuEta[3],"jotMuEta_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuEta_4",jotMuEta[4],"jotMuEta_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeEta_0",jotNeEta[0],"jotNeEta_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeEta_1",jotNeEta[1],"jotNeEta_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeEta_2",jotNeEta[2],"jotNeEta_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeEta_3",jotNeEta[3],"jotNeEta_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeEta_4",jotNeEta[4],"jotNeEta_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMPhi_0",jotEMPhi[0],"jotEMPhi_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMPhi_1",jotEMPhi[1],"jotEMPhi_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMPhi_2",jotEMPhi[2],"jotEMPhi_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMPhi_3",jotEMPhi[3],"jotEMPhi_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMPhi_4",jotEMPhi[4],"jotEMPhi_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChPhi_0",jotChPhi[0],"jotChPhi_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChPhi_1",jotChPhi[1],"jotChPhi_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChPhi_2",jotChPhi[2],"jotChPhi_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChPhi_3",jotChPhi[3],"jotChPhi_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChPhi_4",jotChPhi[4],"jotChPhi_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuPhi_0",jotMuPhi[0],"jotMuPhi_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuPhi_1",jotMuPhi[1],"jotMuPhi_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuPhi_2",jotMuPhi[2],"jotMuPhi_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuPhi_3",jotMuPhi[3],"jotMuPhi_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuPhi_4",jotMuPhi[4],"jotMuPhi_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNePhi_0",jotNePhi[0],"jotNePhi_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNePhi_1",jotNePhi[1],"jotNePhi_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNePhi_2",jotNePhi[2],"jotNePhi_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNePhi_3",jotNePhi[3],"jotNePhi_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNePhi_4",jotNePhi[4],"jotNePhi_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMDR_0",jotEMDR[0],"jotEMDR_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMDR_1",jotEMDR[1],"jotEMDR_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMDR_2",jotEMDR[2],"jotEMDR_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMDR_3",jotEMDR[3],"jotEMDR_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotEMDR_4",jotEMDR[4],"jotEMDR_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChDR_0",jotChDR[0],"jotChDR_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChDR_1",jotChDR[1],"jotChDR_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChDR_2",jotChDR[2],"jotChDR_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChDR_3",jotChDR[3],"jotChDR_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotChDR_4",jotChDR[4],"jotChDR_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuDR_0",jotMuDR[0],"jotMuDR_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuDR_1",jotMuDR[1],"jotMuDR_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuDR_2",jotMuDR[2],"jotMuDR_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuDR_3",jotMuDR[3],"jotMuDR_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotMuDR_4",jotMuDR[4],"jotMuDR_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeDR_0",jotNeDR[0],"jotNeDR_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeDR_1",jotNeDR[1],"jotNeDR_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeDR_2",jotNeDR[2],"jotNeDR_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeDR_3",jotNeDR[3],"jotNeDR_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-      Book("jotNeDR_4",jotNeDR[4],"jotNeDR_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-    }
-  }
-  if (is_fatjet) {
-    if (is_vh) {
-      Book("fjQ",fjQ,"fjQ["+TString("nFatJetTrunc")+"]/F");
+      Book("jotRho",jotRho,"jotRho["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotArea",jotArea,"jotArea["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotGenDEta",jotGenDEta,"jotGenDEta["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotGenDPhi",jotGenDPhi,"jotGenDPhi["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotQGL",jotQGL,"jotQGL["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotLep1Pt",jotLep1Pt,"jotLep1Pt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotLep1Eta",jotLep1Eta,"jotLep1Eta["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotLep1Phi",jotLep1Phi,"jotLep1Phi["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotLep1PtRel",jotLep1PtRel,"jotLep1PtRel["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotLep1PtRelRaw",jotLep1PtRelRaw,"jotLep1PtRelRaw["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotLep1PtRelRawInv",jotLep1PtRelRawInv,"jotLep1PtRelRawInv["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotLep1DeltaR",jotLep1DeltaR,"jotLep1DeltaR["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChTrk1Pt",jotChTrk1Pt,"jotChTrk1Pt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotTrk1Pt",jotTrk1Pt,"jotTrk1Pt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotVtxPt",jotVtxPt,"jotVtxPt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotVtxMass",jotVtxMass,"jotVtxMass["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotVtx3DVal",jotVtx3DVal,"jotVtx3DVal["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotVtx3DErr",jotVtx3DErr,"jotVtx3DErr["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotVtxNtrk",jotVtxNtrk,"jotVtxNtrk["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/I");
+      Book("jotLep1IsEle",jotLep1IsEle,"jotLep1IsEle["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/I");
+      Book("jotLep1IsMu",jotLep1IsMu,"jotLep1IsMu["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/I");
+      Book("jotLep1IsOther",jotLep1IsOther,"jotLep1IsOther["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/I");
+      Book("jotGenEta",jotGenEta,"jotGenEta["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotGenPhi",jotGenPhi,"jotGenPhi["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotGenM",jotGenM,"jotGenM["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNPt03",jotNPt03,"jotNPt03["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/I");
+      Book("jotPtD",jotPtD,"jotPtD["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotRawPt",jotRawPt,"jotRawPt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotRawMt",jotRawMt,"jotRawMt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotRawEt",jotRawEt,"jotRawEt["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotRawM",jotRawM,"jotRawM["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotRawE",jotRawE,"jotRawE["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
     }
   }
   if (is_monohiggs||is_hbb) {
@@ -2223,5 +2136,156 @@ void GeneralTree::WriteTree(TTree *t) {
     Book("ZBosonLep1CosThetaCS",&ZBosonLep1CosThetaCS,"ZBosonLep1CosThetaCS/F");
     Book("ZBosonLep1CosThetaStar",&ZBosonLep1CosThetaStar,"ZBosonLep1CosThetaStar/F");
     Book("ZBosonLep1CosThetaStarFJ",&ZBosonLep1CosThetaStarFJ,"ZBosonLep1CosThetaStarFJ/F");
+  }
+  if (is_vh) {
+    Book("genHPt",&genHPt,"genHPt/F");
+    Book("genHEta",&genHEta,"genHEta/F");
+    Book("genHPhi",&genHPhi,"genHPhi/F");
+    Book("genHSize",&genHSize,"genHSize/F");
+    Book("genVPt",&genVPt,"genVPt/F");
+    Book("genVEta",&genVEta,"genVEta/F");
+    Book("genVPhi",&genVPhi,"genVPhi/F");
+    Book("genVSize",&genVSize,"genVSize/F");
+  }
+  if (is_monotop||is_vbf) {
+    Book("jetPt",jetPt,"jetPt["+TString("2")+"]/F");
+    Book("jetEta",jetEta,"jetEta["+TString("2")+"]/F");
+    Book("jetPhi",jetPhi,"jetPhi["+TString("2")+"]/F");
+    Book("jetGenPt",jetGenPt,"jetGenPt["+TString("2")+"]/F");
+    Book("jetCSV",jetCSV,"jetCSV["+TString("2")+"]/F");
+    Book("jetFlav",jetFlav,"jetFlav["+TString("2")+"]/I");
+    Book("jetIsTight",jetIsTight,"jetIsTight["+TString("2")+"]/I");
+    Book("jetIsIso",jetIsIso,"jetIsIso["+TString("2")+"]/I");
+  }
+  if (is_fatjet) {
+    if (is_vh) {
+      Book("fjQ",fjQ,"fjQ["+TString("nFatJetTrunc")+"]/F");
+    }
+  }
+  if (is_fatjet) {
+    if (is_monohiggs||is_hbb) {
+      Book("fjHiggsIdx",&fjHiggsIdx,"fjHiggsIdx/I");
+      Book("fjVIdx",&fjVIdx,"fjVIdx/I");
+    }
+  }
+  if (is_monohiggs||is_hbb) {
+    if (is_breg) {
+      Book("jotEMRing_0",jotEMRing[0],"jotEMRing_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMRing_1",jotEMRing[1],"jotEMRing_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMRing_2",jotEMRing[2],"jotEMRing_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMRing_3",jotEMRing[3],"jotEMRing_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMRing_4",jotEMRing[4],"jotEMRing_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChRing_0",jotChRing[0],"jotChRing_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChRing_1",jotChRing[1],"jotChRing_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChRing_2",jotChRing[2],"jotChRing_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChRing_3",jotChRing[3],"jotChRing_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChRing_4",jotChRing[4],"jotChRing_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuRing_0",jotMuRing[0],"jotMuRing_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuRing_1",jotMuRing[1],"jotMuRing_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuRing_2",jotMuRing[2],"jotMuRing_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuRing_3",jotMuRing[3],"jotMuRing_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuRing_4",jotMuRing[4],"jotMuRing_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeRing_0",jotNeRing[0],"jotNeRing_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeRing_1",jotNeRing[1],"jotNeRing_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeRing_2",jotNeRing[2],"jotNeRing_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeRing_3",jotNeRing[3],"jotNeRing_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeRing_4",jotNeRing[4],"jotNeRing_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMEta_0",jotEMEta[0],"jotEMEta_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMEta_1",jotEMEta[1],"jotEMEta_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMEta_2",jotEMEta[2],"jotEMEta_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMEta_3",jotEMEta[3],"jotEMEta_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMEta_4",jotEMEta[4],"jotEMEta_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChEta_0",jotChEta[0],"jotChEta_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChEta_1",jotChEta[1],"jotChEta_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChEta_2",jotChEta[2],"jotChEta_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChEta_3",jotChEta[3],"jotChEta_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChEta_4",jotChEta[4],"jotChEta_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuEta_0",jotMuEta[0],"jotMuEta_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuEta_1",jotMuEta[1],"jotMuEta_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuEta_2",jotMuEta[2],"jotMuEta_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuEta_3",jotMuEta[3],"jotMuEta_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuEta_4",jotMuEta[4],"jotMuEta_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeEta_0",jotNeEta[0],"jotNeEta_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeEta_1",jotNeEta[1],"jotNeEta_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeEta_2",jotNeEta[2],"jotNeEta_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeEta_3",jotNeEta[3],"jotNeEta_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeEta_4",jotNeEta[4],"jotNeEta_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMPhi_0",jotEMPhi[0],"jotEMPhi_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMPhi_1",jotEMPhi[1],"jotEMPhi_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMPhi_2",jotEMPhi[2],"jotEMPhi_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMPhi_3",jotEMPhi[3],"jotEMPhi_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMPhi_4",jotEMPhi[4],"jotEMPhi_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChPhi_0",jotChPhi[0],"jotChPhi_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChPhi_1",jotChPhi[1],"jotChPhi_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChPhi_2",jotChPhi[2],"jotChPhi_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChPhi_3",jotChPhi[3],"jotChPhi_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChPhi_4",jotChPhi[4],"jotChPhi_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuPhi_0",jotMuPhi[0],"jotMuPhi_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuPhi_1",jotMuPhi[1],"jotMuPhi_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuPhi_2",jotMuPhi[2],"jotMuPhi_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuPhi_3",jotMuPhi[3],"jotMuPhi_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuPhi_4",jotMuPhi[4],"jotMuPhi_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNePhi_0",jotNePhi[0],"jotNePhi_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNePhi_1",jotNePhi[1],"jotNePhi_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNePhi_2",jotNePhi[2],"jotNePhi_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNePhi_3",jotNePhi[3],"jotNePhi_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNePhi_4",jotNePhi[4],"jotNePhi_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMDR_0",jotEMDR[0],"jotEMDR_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMDR_1",jotEMDR[1],"jotEMDR_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMDR_2",jotEMDR[2],"jotEMDR_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMDR_3",jotEMDR[3],"jotEMDR_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotEMDR_4",jotEMDR[4],"jotEMDR_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChDR_0",jotChDR[0],"jotChDR_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChDR_1",jotChDR[1],"jotChDR_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChDR_2",jotChDR[2],"jotChDR_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChDR_3",jotChDR[3],"jotChDR_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotChDR_4",jotChDR[4],"jotChDR_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuDR_0",jotMuDR[0],"jotMuDR_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuDR_1",jotMuDR[1],"jotMuDR_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuDR_2",jotMuDR[2],"jotMuDR_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuDR_3",jotMuDR[3],"jotMuDR_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotMuDR_4",jotMuDR[4],"jotMuDR_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeDR_0",jotNeDR[0],"jotNeDR_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeDR_1",jotNeDR[1],"jotNeDR_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeDR_2",jotNeDR[2],"jotNeDR_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeDR_3",jotNeDR[3],"jotNeDR_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotNeDR_4",jotNeDR[4],"jotNeDR_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+    }
+  }
+  if (is_monohiggs||is_hbb) {
+    if (is_breg) {
+      Book("jotPFPt_0",jotPFPt[0],"jotPFPt_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFPt_1",jotPFPt[1],"jotPFPt_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFPt_2",jotPFPt[2],"jotPFPt_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFPt_3",jotPFPt[3],"jotPFPt_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFPt_4",jotPFPt[4],"jotPFPt_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFEta_0",jotPFEta[0],"jotPFEta_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFEta_1",jotPFEta[1],"jotPFEta_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFEta_2",jotPFEta[2],"jotPFEta_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFEta_3",jotPFEta[3],"jotPFEta_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFEta_4",jotPFEta[4],"jotPFEta_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFPhi_0",jotPFPhi[0],"jotPFPhi_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFPhi_1",jotPFPhi[1],"jotPFPhi_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFPhi_2",jotPFPhi[2],"jotPFPhi_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFPhi_3",jotPFPhi[3],"jotPFPhi_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFPhi_4",jotPFPhi[4],"jotPFPhi_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFId_0",jotPFId[0],"jotPFId_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFId_1",jotPFId[1],"jotPFId_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFId_2",jotPFId[2],"jotPFId_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFId_3",jotPFId[3],"jotPFId_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFId_4",jotPFId[4],"jotPFId_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFpuppiW_0",jotPFpuppiW[0],"jotPFpuppiW_0["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFpuppiW_1",jotPFpuppiW[1],"jotPFpuppiW_1["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFpuppiW_2",jotPFpuppiW[2],"jotPFpuppiW_2["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFpuppiW_3",jotPFpuppiW[3],"jotPFpuppiW_3["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+      Book("jotPFpuppiW_4",jotPFpuppiW[4],"jotPFpuppiW_4["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+    }
+  }
+  if (is_adv) {
+    Book("hbbconstpt",hbbconstpt,"hbbconstpt["+TString("200")+"]/F");
+    Book("hbbconsteta",hbbconsteta,"hbbconsteta["+TString("200")+"]/F");
+    Book("hbbconstphi",hbbconstphi,"hbbconstphi["+TString("200")+"]/F");
+    Book("hbbconste",hbbconste,"hbbconste["+TString("200")+"]/F");
+    Book("hbbconstid",hbbconstid,"hbbconstid["+TString("200")+"]/I");
   }
 }

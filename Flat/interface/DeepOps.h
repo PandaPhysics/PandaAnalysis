@@ -69,9 +69,12 @@ namespace pa {
       TFInferOp("bregdeep", event_, cfg_, utils_, gt_, level_) {
       //n_inputs = 43;
       n_inputs = 51;
+      if (analysis.bjetDeepReg_withPFs)
+	n_inputs = 76;
+      if (analysis.bjetDeepReg_withPFs_10)
+	n_inputs = 101;
       n_outputs = 3;
-      //if (analysis.year == 2018)
-      //n_outputs = 1;
+
       //inputName = "ffwd_inp";
       inputName = "input";
       outputNames.reserve(n_outputs);
@@ -87,11 +90,25 @@ namespace pa {
       //downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/breg/v2/quantiles/graph.pb",
       //downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/breg_training_2017_updated.pb",
 
-      if (analysis.year != 2018)
+      if (analysis.year == 2016)
 	downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/sidbreg_v0/graph.pb",
 		     modelfile, true);
+      else if (analysis.year == 2017){
+	if (analysis.bjetDeepReg_withPFs)
+	  downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2017_withPFs.pb",
+		     modelfile, true);
+	else if (analysis.bjetDeepReg_withPFs_10)
+	  downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2017_withPFs_10.pb",
+		     modelfile, true);
+	else{
+	  downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2017_2017.pb",
+		       modelfile, true);
+	  //downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/sidbreg_v0/graph.pb",
+	  //	     modelfile, true);
+	}
+      }
       else 
-	downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v1_2018.pb",
+	downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2018_2018.pb",
 		     modelfile, true);
 	
       build(modelfile);

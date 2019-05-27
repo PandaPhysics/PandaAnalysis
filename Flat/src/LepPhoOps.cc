@@ -72,7 +72,7 @@ void SimpleLeptonOp::do_execute()
     looseLeps->push_back(&ele);
     matchLeps->push_back(&ele); 
     gt.nLooseElectron++;
-    if (gt.nLooseElectron>=2) 
+    if (gt.nLooseElectron>=3) 
       break;
   }
 
@@ -116,7 +116,7 @@ void SimpleLeptonOp::do_execute()
       (*jesShifts)[shift].vpfMETNoMu += vMu;
     }
     gt.nLooseMuon++;
-    if (gt.nLooseMuon>=2) 
+    if (gt.nLooseMuon>=3)
       break;
   }
   METLOOP {
@@ -242,6 +242,12 @@ void ComplicatedLeptonOp::do_execute()
     gt.electronNMissingHits[iL] = ele.nMissingHits;
     gt.electronTripleCharge[iL] = ele.tripleCharge;
     gt.electronCombIso[iL] = ele.combIso();
+    if (analysis.darkg && isMatched(loosePhos.get(),0.16,eta,ele.phi())){
+      gt.electronPhoMatch[iL] = 1;
+    }
+    if (analysis.darkg && gt.nLoosePhoton>0 && DeltaR2(gt.loosePho1Eta,gt.loosePho1Phi,eta,ele.phi())<0.16)
+      gt.electronLPhoMatch[iL] = 1;      
+
     looseLeps->push_back(&ele);
     // WARNING: The definition of "loose" here may not match your analysis 
     // definition of a loose electron for lepton multiplicity or jet cleaning 
@@ -504,7 +510,7 @@ void ComplicatedPhotonOp::do_execute()
     float eta = pho.eta(), phi = pho.phi();
     if (pt<25 || fabs(eta)>2.5)
       continue;
-    if (isMatched(matchLeps.get(),0.16,pho.eta(),pho.phi()))
+    if (!analysis.darkg && isMatched(matchLeps.get(),0.16,pho.eta(),pho.phi()))
       continue;
     loosePhos->push_back(&pho);
     gt.nLoosePhoton++;
@@ -512,6 +518,12 @@ void ComplicatedPhotonOp::do_execute()
       gt.loosePho1Pt = pt;
       gt.loosePho1Eta = eta;
       gt.loosePho1Phi = phi;
+      gt.loosePho1sieie = pho.sieie;
+      gt.loosePho1r9 = pho.r9;
+      gt.loosePho1hOverE = pho.hOverE;
+      gt.loosePho1chIso = pho.chIso;
+      gt.loosePho1phIso = pho.phIso;
+      gt.loosePho1nhIso = pho.nhIso;
       int phoSelBit = 0;
       // this is always true as of now, but safer to have it like this
       if (pho.medium)                 phoSelBit |= pMedium; 
