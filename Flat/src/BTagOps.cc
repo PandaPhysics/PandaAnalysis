@@ -67,8 +67,6 @@ void BTagWeightOp::do_execute()
   if (bcands.size() < 1) 
     return;
 
-  cout << "New Event" << endl;
-
   for (unsigned iShift=0; iShift<GeneralTree::nCsvShifts; iShift++) {
     GeneralTree::csvShift shift = gt.csvShifts[iShift];
     gt.sf_csvWeights[shift]=1;
