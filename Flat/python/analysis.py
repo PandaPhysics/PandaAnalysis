@@ -42,10 +42,14 @@ monotop = lambda v=False : _analysis(
 dimuon = lambda v=False : _analysis(
         name = 'dimuon',
         verbose = v,
-        vbf = True,
+        vbf = False,
         fatjet = False,
         btagSFs = True,
         puppiJets = True,
+        rerunJES = False,
+        rerunJER = True,
+        complicatedPhotons = True,
+        complicatedLeptons = True
     )
 
 vbf = lambda v=False : _analysis(

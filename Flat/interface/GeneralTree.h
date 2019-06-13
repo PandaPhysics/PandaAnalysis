@@ -196,7 +196,7 @@ class GeneralTree : public genericTree {
     // public config
     bool is_monohiggs=false, is_vbf=false, is_fatjet=true, 
          is_leptonic=false, is_photonic=false, is_monotop=true,
-         is_hbb=false, is_breg=false, is_adv=false, is_vh;
+         is_hbb=false, is_breg=false, is_adv=false, is_darkg=false, is_vh;
     bool btagWeights=false, useCMVA=false;
     std::map<ECFParams,float*> fjECFNs;
     std::map<BTagParams,float> sf_btags;
@@ -675,6 +675,9 @@ class GeneralTree : public genericTree {
   float hbbconstphi[200];
   float hbbconste[200];
   int hbbconstid[200];
+  float genPho1Pt;
+  float genPho1Eta;
+  float genPho1Phi;
   float scaleUp;
   float scaleDown;
   float pdfUp;

@@ -32,6 +32,34 @@ namespace pa {
     
   };
 
+  class GenStudyPhoOp : public AnalysisOp {
+  public: 
+    GenStudyPhoOp(panda::EventAnalysis& event_, 
+                    Config& cfg_,
+                    Utils& utils_,
+                    GeneralTree& gt_,
+                    int level_=0) : 
+      AnalysisOp("genstudypho", event_, cfg_, utils_, gt_, level_) { }
+    virtual ~GenStudyPhoOp () { }
+
+    virtual bool on() { return !analysis.isData && !analysis.genOnly && analysis.complicatedPhotons; }
+    
+  protected:
+    virtual void do_init(Registry& registry) {
+      genP = registry.accessConst<std::vector<panda::Particle*>>("genP");
+      looseLeps = registry.accessConst<std::vector<panda::Lepton*>>("looseLeps");
+      loosePhos = registry.accessConst<std::vector<panda::Photon*>>("loosePhos");
+      lepPdgId = registry.accessConst<std::array<int,4>>("lepPdgId"); 
+    }
+    virtual void do_execute(); 
+  private:
+    std::shared_ptr<const std::vector<panda::Particle*>> genP{nullptr};
+    std::shared_ptr<const std::vector<panda::Lepton*>> looseLeps{nullptr}; 
+    std::shared_ptr<const std::vector<panda::Photon*>> loosePhos{nullptr}; 
+    std::shared_ptr<const std::array<int,4>> lepPdgId{nullptr};
+    
+  };
+
 
   class QCDUncOp : public AnalysisOp {
   public: 

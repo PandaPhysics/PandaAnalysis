@@ -58,19 +58,21 @@ void JetCorrOp::do_execute()
     scaleUnc = &(scaleUncs["MC"]);
     scale = scales["MC"].get();
   }
-
-  JetCorrector *jc = new JetCorrector();
-  jc->SetYear(analysis.year);
-  jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.pfMet,event.runNumber, scale);
-
+  
   panda::JetCollection *out_jets = 0;
-  out_jets = jc->GetCorrectedJets();
   panda::Met *out_met = 0;
-  out_met = jc->GetCorrectedMet();
+  if (analysis.rerunJES){
+    JetCorrector *jc = new JetCorrector();
+    jc->SetYear(analysis.year);
+    jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.pfMet,event.runNumber, scale);
 
-  //event.chsAK4Jets = *out_jets;
-  event.pfMet.pt = out_met->pt;
-  event.pfMet.phi = out_met->phi;
+    out_jets = jc->GetCorrectedJets();
+    out_met = jc->GetCorrectedMet();
+
+    //event.chsAK4Jets = *out_jets;
+    event.pfMet.pt = out_met->pt;
+    event.pfMet.phi = out_met->phi;
+  }
 
   METLOOP {
     auto& jets = (*jesShifts)[shift];

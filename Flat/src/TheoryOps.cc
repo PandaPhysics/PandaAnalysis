@@ -776,3 +776,26 @@ void KFactorOp::do_vpt()
       }  
     }
 }
+
+
+void GenStudyPhoOp::do_execute()
+{
+  gt.genPho1Pt = -99;
+  gt.genPho1Eta = -99;
+  gt.genPho1Phi = -99;
+  if (analysis.isData) return;
+
+  int nGen = genP->size();
+  for (int iG=0; iG!=nGen; ++iG) {
+    auto& part = pToGRef(genP->at(iG));
+    int pdgid = part.pdgid;
+    unsigned int abspdgid = abs(pdgid);
+         
+    if (abspdgid == 22 && part.finalState && (part.testFlag(GenParticle::kIsPrompt) || part.statusFlags == GenParticle::kIsPrompt)){
+      gt.genPho1Pt = part.pt();
+      gt.genPho1Eta = part.eta();
+      gt.genPho1Phi = part.phi();
+      break;
+    }
+  }
+}

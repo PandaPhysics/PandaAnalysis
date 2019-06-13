@@ -69,6 +69,7 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
   ADDOP(BTagWeightOp);
   ADDOP(TriggerEffOp);
   ADDOP(GenStudyEWKOp);
+  ADDOP(GenStudyPhoOp);
   ADDOP(QCDUncOp);
   ADDOP(GenLepOp);
   ADDOP(GenJetNuOp);
