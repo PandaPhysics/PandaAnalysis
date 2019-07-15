@@ -15,7 +15,7 @@ import json
 
 gROOT.ProcessLine(
 "struct TreeStruct {\
-Float_t dnnoutput;\
+Float_t classdnn;\
 }")
 
 ##############################################################################
@@ -52,15 +52,15 @@ def infer(tt,ifile,payload,features,h5):
 
        	nent = int(tt.GetEntries())
 	
-	if (0!=tt.FindBranch("dnnoutput")):
-		tt.SetBranchStatus("dnnoutput",0);
+	if (0!=tt.FindBranch("classdnn")):
+		tt.SetBranchStatus("classdnn",0);
 
 	output = ifile + "_tmp"
 	ofile = ROOT.TFile(output,"RECREATE");
 
 	otree = tt.CloneTree()
-	dnnoutput = array.array( 'f', [-99.0])
-	o_dnnoutput = otree.Branch("dnnoutput" , AddressOf(treestruct,'dnnoutput'), "dnnoutput/F" )
+	classdnn = array.array( 'f', [-99.0])
+	o_classdnn = otree.Branch("classdnn" , AddressOf(treestruct,'classdnn'), "classdnn/F" )
 
 	model = load_model(h5)
 	s = Selector()
@@ -80,12 +80,12 @@ def infer(tt,ifile,payload,features,h5):
 
 		x = np.array([float(s[f][i]) for f in features])
 		x = x.reshape((1,x.shape[0]))
-		print x
-		print model.predict(x)                                                                                                     
-		treestruct.dnnoutput = model.predict(x)[0,0]
-		print treestruct.dnnoutput
+		#print x
+		#print model.predict(x)                                                                                                     
+		treestruct.classdnn = model.predict(x)[0,0]
+		#print treestruct.clasdnn
 		
-		o_dnnoutput.Fill()
+		o_classdnn.Fill()
 		
 		
 	ofile.Write()

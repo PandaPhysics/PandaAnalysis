@@ -213,10 +213,13 @@ void GenJetNuOp::do_execute()
   for (unsigned i = 0; i != N; ++i) {
     const panda::Jet& reco = jets.cleaned[i]->get_base();
     for (auto &pj : allJets) {
-      if (DeltaR2(pj.eta(), pj.phi(), reco.eta(), reco.phi()) < 0.09) {
+      float phi = pj.phi();
+      if (phi>3.1415926)
+	phi = phi-2*3.1415926;
+      if (DeltaR2(pj.eta(), phi, reco.eta(), reco.phi()) < 0.09) {
         gt.jotGenPt[i] = pj.pt();
         gt.jotGenEta[i] = pj.eta();
-        gt.jotGenPhi[i] = pj.phi();
+        gt.jotGenPhi[i] = phi;
         gt.jotGenM[i] = pj.m();
         gt.jotFlav[i] = flavorMap[&pj];
         gt.jotGenDEta[i] = gt.jotGenEta[i] - gt.jotEta[i];

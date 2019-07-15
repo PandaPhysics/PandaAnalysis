@@ -149,7 +149,8 @@ class Branch(object):
         elif self.ctype == 'int':
             self.default = 0 
         else:
-            self.default = -99;
+            #self.default = -99;
+            self.default = 0;
     def write_public(self):
         s = self.ctype + ' ' + self.name 
         if self.shift:

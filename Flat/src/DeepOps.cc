@@ -69,14 +69,104 @@ void BRegDeepOp::do_execute()
   inputs[49] = gt.jotNeRing[4][N];
   inputs[50] = gt.rho;
 
-  for (auto& i : inputs)
-    i = dnn_clean(i); 
+  if (analysis.bjetDeepReg_withPFs){
+    inputs[51] = gt.jotPFPt[0][N];
+    inputs[52] = gt.jotPFPt[1][N];
+    inputs[53] = gt.jotPFPt[2][N];
+    inputs[54] = gt.jotPFPt[3][N];
+    inputs[55] = gt.jotPFPt[4][N];
+    inputs[56] = gt.jotPFEta[0][N];
+    inputs[57] = gt.jotPFEta[1][N];
+    inputs[58] = gt.jotPFEta[2][N];
+    inputs[59] = gt.jotPFEta[3][N];
+    inputs[60] = gt.jotPFEta[4][N];
+    inputs[61] = gt.jotPFPhi[0][N];
+    inputs[62] = gt.jotPFPhi[1][N];
+    inputs[63] = gt.jotPFPhi[2][N];
+    inputs[64] = gt.jotPFPhi[3][N];
+    inputs[65] = gt.jotPFPhi[4][N];
+    inputs[66] = gt.jotPFId[0][N];
+    inputs[67] = gt.jotPFId[1][N];
+    inputs[68] = gt.jotPFId[2][N];
+    inputs[69] = gt.jotPFId[3][N];
+    inputs[70] = gt.jotPFId[4][N];
+    inputs[71] = gt.jotPFpuppiW[0][N];
+    inputs[72] = gt.jotPFpuppiW[1][N];
+    inputs[73] = gt.jotPFpuppiW[2][N];
+    inputs[74] = gt.jotPFpuppiW[3][N];
+    inputs[75] = gt.jotPFpuppiW[4][N];
+  }
+
+  if (analysis.bjetDeepReg_withPFs_3){
+    inputs[51] = gt.jotPFPt[0][N];
+    inputs[52] = gt.jotPFPt[1][N];
+    inputs[53] = gt.jotPFPt[2][N];
+    inputs[54] = gt.jotPFEta[0][N];
+    inputs[55] = gt.jotPFEta[1][N];
+    inputs[56] = gt.jotPFEta[2][N];
+    inputs[57] = gt.jotPFPhi[0][N];
+    inputs[58] = gt.jotPFPhi[1][N];
+    inputs[59] = gt.jotPFPhi[2][N];
+    inputs[60] = gt.jotPFId[0][N];
+    inputs[61] = gt.jotPFId[1][N];
+    inputs[62] = gt.jotPFId[2][N];
+    inputs[63] = gt.jotPFpuppiW[0][N];
+    inputs[64] = gt.jotPFpuppiW[1][N];
+    inputs[65] = gt.jotPFpuppiW[2][N];
+  }
+
+  if (analysis.bjetDeepReg_withD0){
+    inputs[51] = gt.jotPFPt[0][N];
+    inputs[52] = gt.jotPFPt[1][N];
+    inputs[53] = gt.jotPFPt[2][N];
+    inputs[54] = gt.jotPFPt[3][N];
+    inputs[55] = gt.jotPFPt[4][N];
+    inputs[56] = gt.jotPFEta[0][N];
+    inputs[57] = gt.jotPFEta[1][N];
+    inputs[58] = gt.jotPFEta[2][N];
+    inputs[59] = gt.jotPFEta[3][N];
+    inputs[60] = gt.jotPFEta[4][N];
+    inputs[61] = gt.jotPFPhi[0][N];
+    inputs[62] = gt.jotPFPhi[1][N];
+    inputs[63] = gt.jotPFPhi[2][N];
+    inputs[64] = gt.jotPFPhi[3][N];
+    inputs[65] = gt.jotPFPhi[4][N];
+    inputs[66] = gt.jotPFId[0][N];
+    inputs[67] = gt.jotPFId[1][N];
+    inputs[68] = gt.jotPFId[2][N];
+    inputs[69] = gt.jotPFId[3][N];
+    inputs[70] = gt.jotPFId[4][N];
+    inputs[71] = gt.jotPFpuppiW[0][N];
+    inputs[72] = gt.jotPFpuppiW[1][N];
+    inputs[73] = gt.jotPFpuppiW[2][N];
+    inputs[74] = gt.jotPFpuppiW[3][N];
+    inputs[75] = gt.jotPFpuppiW[4][N];
+    inputs[76] = gt.jotPFdz[0][N];
+    inputs[77] = gt.jotPFdz[1][N];
+    inputs[78] = gt.jotPFdz[2][N];
+    inputs[79] = gt.jotPFdz[3][N];
+    inputs[80] = gt.jotPFdz[4][N];
+    inputs[81] = gt.jotPFdxy[0][N];
+    inputs[82] = gt.jotPFdxy[1][N];
+    inputs[83] = gt.jotPFdxy[2][N];
+    inputs[84] = gt.jotPFdxy[3][N];
+    inputs[85] = gt.jotPFdxy[4][N];
+  }
+
+  //for (auto& i : inputs)
+  //  i = dnn_clean(i); 
 
   eval();
 
   jw.breg = outputs[0];
 
   jw.bregwidth = 0.5 * (outputs[2] - outputs[1]);
+
+  if (analysis.bjetDeepReg_EtaPhi){
+    jw.bregeta = outputs[3];
+    jw.bregphi = outputs[4];
+  }
+
 }
 
 void ZvvHClassOp::do_execute()
@@ -116,6 +206,170 @@ void TFInferOp::build(TString weightpath)
   t_i[0] = tf::NamedTensor(inputName.Data(),
                            tf::Tensor(tf::DT_FLOAT,
                                       tf::TensorShape({1, (long long int)n_inputs})));
+}
+
+
+void PrepareLSTMOp::do_execute()
+{
+
+  auto& jw = **currentJet;
+  int N = jw.cleaned_idx;
+
+  auto& jetbase = jw.get_base();
+  recoJetInfo.pt = jetbase.pt();
+  recoJetInfo.eta = jetbase.eta();
+  recoJetInfo.phi = jetbase.phi();
+  if (jetbase.matchedGenJet.isValid())
+    recoJetInfo.genjetpt = jetbase.matchedGenJet->pt()/jetbase.pt();
+  else
+    recoJetInfo.genjetpt = -1;
+
+  VPseudoJet particles = convertPFCands(jetbase.constituents,false,0.01);
+
+  fastjet::ClusterSequenceArea seq(particles,*jetDef,*(utils.areaDef));
+  
+  VPseudoJet allJets(seq.inclusive_jets(0.));
+
+  fastjet::PseudoJet *pj{nullptr};
+  double minDR2 = 999;
+  for (auto &jet : allJets) {
+    double dr2 = DeltaR2(jet.eta(),jet.phi_std(),jetbase.eta(),jetbase.phi());
+    if (dr2<minDR2) {
+      minDR2 = dr2;
+      pj = &jet;
+    }
+  }
+  if (pj == nullptr)
+    return;
+  
+  VPseudoJet allConstituents = fastjet::sorted_by_pt(pj->constituents());
+
+  // get the hardest particle with angle wrt jet axis > 0.1                                                                                                     
+  fj::PseudoJet* axis2 = NULL;
+  for (auto& c : allConstituents) {
+    if (DeltaR2(c.eta(), c.phi(), pj->eta(), pj->phi()) > 0.01) {
+      if (!axis2 || (c.perp() > axis2->perp())) {
+        axis2 = &c;
+      }
+    }
+  }
+
+  JetRotation rot(pj->px(), pj->py(), pj->pz(),
+                  axis2->px(), axis2->py(), axis2->pz());
+
+  unsigned nC = allConstituents.size();
+
+  vector<int> indices;
+  vector<int> unclustered; // I honestly don't know where these come from...
+  if (analysis.deepAntiKtSort) {
+    indices.reserve(nC);
+    vector<bool> mask(nC, false);
+
+    JetTree jt(*pj);
+
+    vector<int> terminalIdx = jt.GetTerminals();
+    for (auto uidx : terminalIdx) {
+      if (uidx != -1) {
+        auto iter = find_if(allConstituents.begin(), allConstituents.end(),
+                                 JetTree::compare(uidx));
+        if (iter == allConstituents.end())
+          continue;
+
+        int idx = static_cast<int>(iter - allConstituents.begin());
+        indices.push_back(idx);
+        mask[idx] = true;
+      }
+    }
+
+    unclustered.reserve(nC/5); // whatever, just an estimate
+    for (unsigned iC = 0; iC != nC; ++iC) {
+      if (!mask[iC])
+        unclustered.push_back(iC);
+    }
+  }
+
+  nC = min(nC, (unsigned)cfg.NMAXPF);
+  for (unsigned iC = 0; iC != nC; ++iC) {
+    unsigned iC_ = iC;
+
+    if (analysis.deepAntiKtSort) {
+      if (iC < indices.size()) {
+        iC_ = indices.at(iC);
+      } else {
+        iC_ = unclustered.at(iC - indices.size());
+      }
+    }
+    fj::PseudoJet &c = allConstituents.at(iC_);
+    
+
+    if (c.perp() < 0.001) // not a real particle                                                                                                                
+      continue;
+
+    float angle = DeltaR2(c.eta(), c.phi(), recoJetInfo.eta, recoJetInfo.phi);
+    float x=c.px(), y=c.py(), z=c.pz();
+    rot.Rotate(x, y, z);  // perform two rotations on the jet
+    recoJetInfo.particles[iC][0] = x;
+    recoJetInfo.particles[iC][1] = y;
+    recoJetInfo.particles[iC][2] = z;
+    recoJetInfo.particles[iC][3] = c.e();
+    recoJetInfo.particles[iC][4] = angle;
+    recoJetInfo.particles[iC][5] = jetbase.constituents.at(iC_)->puppiW();
+    recoJetInfo.particles[iC][6] = jetbase.constituents.at(iC_)->pdgId();
+  }
+  tAux->Fill();
+  std::cout << "iiIIIiiIIIIIiiiiIIIIiiiiiiIIIII" << std::endl;
+  std::cout << tAux->GetEntries() << std::endl;
+  //if (tAux->GetEntries() == 20){
+  //  incrementAux(true);
+  //}
+}
+
+void PrepareLSTMOp::incrementAux(bool close)
+{
+  std::cout << "Helloooooooooooooooooooooooooooooooooooooooo" << std::endl;
+  std::cout << close << std::endl;
+
+  if (fAux) {
+    fAux->WriteTObject(tAux.get(), "inputs", "Overwrite");
+    TString path = TString::Format(cfg.auxFilePath.Data(),auxCounter);
+    fAux->Close();
+  }
+
+
+  std::cout << "Helloooooooooooooooooooooooooooooooooooooooo1" << std::endl;
+
+  if (close)
+    return;
+
+  std::cout << "Helloooooooooooooooooooooooooooooooooooooooo2" << std::endl;
+
+  TString path = TString::Format(cfg.auxFilePath.Data(),auxCounter++);
+  fAux.reset(TFile::Open(path.Data(), "RECREATE"));
+  tAux.reset(new TTree("inputs","inputs"));
+
+  std::cout << "Helloooooooooooooooooooooooooooooooooooooooo3" << std::endl;
+
+  recoJetInfo.particles.resize(cfg.NMAXPF);
+  for (int i = 0; i != cfg.NMAXPF; ++i) {
+    recoJetInfo.particles[i].resize(cfg.NPFPROPS);
+  }
+
+  std::cout << "Helloooooooooooooooooooooooooooooooooooooooo4" << std::endl;
+  std::cout << &(recoJetInfo.pt) << std::endl;
+  std::cout << recoJetInfo.pt << std::endl;
+
+  tAux->Branch("eventNumber",&(gt.eventNumber),"eventNumber/l");
+  std::cout << "Helloooooooooooooooooooooooooooooooooooooooo41" << std::endl;
+  tAux->Branch("pt",&(recoJetInfo.pt),"pt/F");
+  std::cout << "Helloooooooooooooooooooooooooooooooooooooooo42" << std::endl;
+  tAux->Branch("eta",&(recoJetInfo.eta),"eta/F");
+  std::cout << "Helloooooooooooooooooooooooooooooooooooooooo43" << std::endl;
+  tAux->Branch("phi",&(recoJetInfo.phi),"phi/F");
+  std::cout << "Helloooooooooooooooooooooooooooooooooooooooo44" << std::endl;
+  tAux->Branch("kinematics",&(recoJetInfo.particles));
+  std::cout << "Helloooooooooooooooooooooooooooooooooooooooo5" << std::endl;
+
+  fOut->cd();
 }
 
 void TFInferOp::eval()
@@ -536,6 +790,12 @@ void DeepGenOp<GENP>::incrementAux(bool close)
     return;
 
   TString path = TString::Format(cfg.auxFilePath.Data(),auxCounter++);
+  std::cout << "XXXXXXXXX" << std::endl;
+  
+  std::cout << cfg.auxFilePath.Data() << std::endl;
+  std::cout << "XXXXXXXXX" << std::endl;
+  
+  std::cout << path << std::endl;
   fAux.reset(TFile::Open(path.Data(), "RECREATE"));
   tAux.reset(new TTree("inputs","inputs"));
 

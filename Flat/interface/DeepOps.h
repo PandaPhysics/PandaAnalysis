@@ -69,9 +69,18 @@ namespace pa {
       TFInferOp("bregdeep", event_, cfg_, utils_, gt_, level_) {
       //n_inputs = 43;
       n_inputs = 51;
+      if (analysis.bjetDeepReg_withPFs)
+	n_inputs = 76;
+      if (analysis.bjetDeepReg_withPFs_3)
+	n_inputs = 66;
+      if (analysis.bjetDeepReg_withPFs_10)
+	n_inputs = 101;
+      if (analysis.bjetDeepReg_withD0)
+	n_inputs = 86;
       n_outputs = 3;
-      //if (analysis.year == 2018)
-      //n_outputs = 1;
+      if (analysis.bjetDeepReg_EtaPhi)
+	n_outputs = 5;
+
       //inputName = "ffwd_inp";
       inputName = "input";
       outputNames.reserve(n_outputs);
@@ -87,13 +96,43 @@ namespace pa {
       //downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/breg/v2/quantiles/graph.pb",
       //downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/breg_training_2017_updated.pb",
 
-      if (analysis.year != 2018)
+      if (analysis.year == 2016)
 	downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/sidbreg_v0/graph.pb",
 		     modelfile, true);
-      else 
-	downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v1_2018.pb",
+      else if (analysis.year == 2017){
+	if (analysis.bjetDeepReg_withPFs)
+	  downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2017_withPFs.pb",
 		     modelfile, true);
-	
+	else if (analysis.bjetDeepReg_withPFs_3)
+	  downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2017_withPFs_3.pb",
+		     modelfile, true);
+	else if (analysis.bjetDeepReg_withD0)
+	  downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2017_withD0.pb",
+		     modelfile, true);
+	else{
+	  downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2017_2017.pb",
+		       modelfile, true);
+	  //downloadData("http://t3serv001.mit.edu/~snarayan/pandadata/trainings/sidbreg_v0/graph.pb",
+	  //	     modelfile, true);
+	}
+      }
+      else{
+	if (analysis.bjetDeepReg_EtaPhi)
+	  downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2018_withPFs_EtaPhi.pb",
+		       modelfile, true);
+	else if (analysis.bjetDeepReg_withPFs){
+	  downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2018_withPFs_defaultfix_0.pb",
+	  	       modelfile, true);
+	}
+	else if (analysis.bjetDeepReg_withD0)
+	  downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2018_withD0_defaultfix_0.pb",
+		       modelfile, true);
+	else {
+	  downloadData("http://t3serv001.mit.edu/~bmaier/figs/hbb/regression/graph_v2018_defaultfix_0.pb",
+	  	     modelfile, true);
+	  
+	}
+      }
       build(modelfile);
     }
     virtual void do_init(Registry& registry) {
@@ -136,6 +175,43 @@ namespace pa {
       TFInferOp::do_init(registry);
     }
     void do_execute();
+  };
+
+  class PrepareLSTMOp : public AnalysisOp {
+  public:
+    PrepareLSTMOp(panda::EventAnalysis& event_,
+	    Config& cfg_,
+            Utils& utils_,
+            GeneralTree& gt_,
+            int level_=0) :
+    AnalysisOp("lstm", event_, cfg_, utils_, gt_, level_) { 
+      jetDef.reset(new fastjet::JetDefinition(fastjet::antikt_algorithm,0.4));
+    };
+
+    virtual ~PrepareLSTMOp() { }
+    bool on() { return analysis.hbb; }
+  protected:
+    void do_init(Registry& registry) {
+      currentJet = registry.access<JetWrapper*>("higgsDaughterJet");
+      fOut = registry.access<TFile>("fOut");
+      incrementAux(false);
+    }
+    void do_execute();
+    void do_reset() {
+      recoJetInfo.reset();
+    }
+    void do_terminate() {
+      incrementAux(true);
+    }
+    void incrementAux(bool close = false);
+  private:
+    std::shared_ptr<TFile> fOut{nullptr};
+    std::shared_ptr<JetWrapper*> currentJet{nullptr};
+    std::unique_ptr<fastjet::JetDefinition> jetDef{nullptr};
+    std::unique_ptr<TFile>fAux{nullptr};
+    std::unique_ptr<TTree>tAux{nullptr};
+    int auxCounter{0};
+    RecoJetInfo recoJetInfo;
   };
 
   template <typename GENP>

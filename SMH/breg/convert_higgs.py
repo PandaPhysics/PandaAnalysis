@@ -18,6 +18,8 @@ def add_idx(x, i):
 
 branches = {}
 cats = ['inputs', 'targets', 'misc_higgs']
+#cats = ['inputs_withPFs', 'targets', 'misc_higgs']
+
 #cats = ['inputs', 'inputs_dr', 'inputs_etaphi', 'targets', 'misc']
 for cat in cats:
     f = open(basedir+cat+'.cfg')

@@ -38,6 +38,7 @@ namespace pa {
       hbbdJet(std::make_shared<JetWrapper*>(nullptr)) {
         deepreg = addSubOp<BRegDeepOp>();
         bdtreg = addSubOp<BRegBDTOp>();
+        lstmreg = addSubOp<PrepareLSTMOp>();
       }
     virtual ~HbbSystemOp() { }
 
@@ -60,6 +61,7 @@ namespace pa {
 
     std::shared_ptr<JetWrapper*> hbbdJet;
     BRegDeepOp *deepreg{nullptr};
+    PrepareLSTMOp *lstmreg{nullptr};
     BRegBDTOp *bdtreg{nullptr};
   };
 
@@ -250,19 +252,7 @@ namespace pa {
 	else if (analysis.year == 2018) {
           jecV = "V8"; jecReco = "Autumn18";
           campaign = "Winter19";
-          jerV = "Fall17_25nsV1"; // using 2017 for now
-          eraGroups = {"A","B","C","DE"};
-          spacer = "_";
-          if (analysis.useDeepCSV) { 
-            csvL = 0.1241; csvM = 0.4184; 
-          } else { 
-            csvL = 0.1241; csvM = 0.4184; 
-          }
-        }
-	else if (analysis.year == 2018) {
-          jecV = "V8"; jecReco = "Autumn18";
-          campaign = "Winter19";
-          jerV = "Fall17_25nsV1";
+          jerV = "Autumn18_V1";
           eraGroups = {"A","B","C","DE"};
           spacer = "_";
           if (analysis.useDeepCSV) { 

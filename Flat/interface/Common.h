@@ -61,9 +61,15 @@ namespace pa {
     bool ak = false; 
     bool ak8 = false;
     bool applyJER = false; 
+    bool lstm = false;
     bool bjetRegTraining = false;
     bool bjetBDTReg = false;
     bool bjetDeepReg = false; 
+    bool bjetDeepReg_withD0 = false; 
+    bool bjetDeepReg_withPFs = false; 
+    bool bjetDeepReg_withPFs_3 = false; 
+    bool bjetDeepReg_withPFs_10 = false; 
+    bool bjetDeepReg_EtaPhi = false; 
     bool btagSFs = true;
     bool btagWeights = false;
     bool complicatedLeptons = false;

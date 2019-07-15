@@ -14,7 +14,11 @@ import numpy as np
 
 branches = {}
 #cats = ['inputs', 'inputs_dr', 'inputs_etaphi', 'targets', 'misc']
+
 cats = ['inputs', 'targets', 'misc']
+#cats = ['inputs_withPFs', 'targets', 'misc']
+
+
 for cat in cats:
     branches[cat] = []
     f = open(basedir+cat+'.cfg')
@@ -27,10 +31,12 @@ for cat in cats:
         else:
             branches[cat].append(x)
 
-cut = 'jotFlav == 5 && fabs(jotEta)<2.5 && jotGenPt>10 && jotGenEta>-10'
+cut = 'jotFlav == 5 && fabs(jotEta)<2.5 && jotGenPt>15 && jotGenEta>-10 && jotPt>15'
 all_branches = [cut]
 for _,v in branches.iteritems():
     all_branches += v
+
+print all_branches
 
 xarr = read_files(filenames = [infile],
                   branches = all_branches)

@@ -202,7 +202,7 @@ for pd in args:
     unmergedSize = 0
     for unmergedFile in unmergedFiles:
         unmergedSize += path.getsize(unmergedFile)
-    if unmergedSize > 16106127360: # 15 GB
+    if unmergedSize > 38106127360: # 15 GB
         disk="scratch5"
     else:
         disk="tmp"
@@ -213,7 +213,7 @@ for pd in args:
     merge(args[pd],pd)
     merged_file = merged_dir + '%s.root'%(pd)
     hadd(merged_file ,outbase) # really an mv
-    if merged_file.startswith('/tmp'):
-        system('rm -f %s'%merged_file)
+    #if merged_file.startswith('/tmp'):
+    system('rm -f %s'%merged_file)
     logger.info(sname,'finished with '+pd)
 

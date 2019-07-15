@@ -28,7 +28,7 @@ ConfigOp::ConfigOp(Analysis& a_, GeneralTree& gt_, int DEBUG_) :
 
   if (analysis.recluster || analysis.bjetRegTraining ||
       analysis.deep || analysis.deepGen || analysis.hbb || 
-      analysis.recalcECF ) {
+      analysis.recalcECF || analysis.lstm) {
     int activeAreaRepeats = 1;
     double ghostArea = 0.01;
     double ghostEtaMax = 7.0;
@@ -58,9 +58,12 @@ ConfigOp::ConfigOp(Analysis& a_, GeneralTree& gt_, int DEBUG_) :
   }
 
   if (analysis.hbb) {
-    cfg.minJetPt = 20;
+    cfg.minJetPt = 15;
     cfg.minGenFatJetPt = 200;
+    cfg.NMAXPF = 100;
+    cfg.NPFPROPS = 7;
   }
+
   if (analysis.vbf || analysis.hbb || analysis.complicatedLeptons)
     cfg.minBJetPt = 20;
   if (analysis.hbb || analysis.monoh)

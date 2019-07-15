@@ -9,7 +9,7 @@ from glob import glob
 
 NORM = True
 singletons = deep_utils.singleton_branches
-truth = ['nPartons', 'nBPartons', 'nCPartons']
+truth = ['jotGenPt[hbbjtidx[0]]/jotPt[hbbjtidx[0]]']
 events = ['eventNumber']
 fractions = {'train':0.7, 'test':0.15}
 fcfg = open(argv[1])
@@ -19,32 +19,11 @@ datadir = getenv('CMSSW_BASE') + '/src/PandaAnalysis/data/deep/'
 me = argv[0].split('/')[-1]
 argv = []
 
-n_partons_proc = {
-            'QCD'   : 1,
-            'Top'   : 3,
-            'ZpTT'  : 3,
-            'ZpWW'  : 2,
-            'ZpA0h' : 2,
-            'Higgs' : 2,
-            'W'     : 2,
-        }
-n_partons = 1
-for k,v in n_partons_proc.iteritems():
-    if k in name:
-        n_partons = v
-        break
-
-
-import ROOT as root 
-f_pt = root.TFile.Open(datadir + 'flatten.root')
-h_pt = f_pt.Get('h_%s'%(name.split('_')[0]))
-f_pt_scaled = root.TFile.Open(datadir + 'flatten_scaled.root')
-h_pt_scaled = f_pt_scaled.Get('h_%s'%(name.split('_')[0]))
 
 data = {}
 for fpath in fcfg.readlines():
     d = np.load(fpath.strip())
-    mask = (d['nPartons'] == n_partons)
+    mask = (d['jotGenPt[hbbjtidx[0]]/jotPt[hbbjtidx[0]]'] > 0.5)
     for k,v in d.iteritems():
         if v.shape[0]:
             if k not in data:
@@ -114,8 +93,8 @@ def dump(idx, partition):
     
 
 
-pt = data['rawpt']
-mask = np.logical_and(pt > 450, pt < 1200)
+ptratio = data['jotGenPt[hbbjtidx[0]]/jotPt[hbbjtidx[0]]']
+mask = np.logical_and(ptratio > 0.5, ptratio < 2)
 
 indices = np.array(range(data['eventNumber'].shape[0]))
 indices = indices[mask] # only within pT window

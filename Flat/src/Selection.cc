@@ -140,6 +140,35 @@ bool VHbbSel::do_accept() const
   return false;
 }
 
+bool ZllHbbSel::do_accept() const
+{
+  float bestMet = -1, bestJet1 = -1, bestJet2 = -1;
+  int maxshift = jes2i(shiftjes::kJESTotalDown)+1;
+  for (int shift = 0; shift != maxshift; ++ shift) {
+    bestMet = std::max(bestMet, gt->pfmet[shift]);
+  }
+  maxshift = jes2i(shiftjes::N);
+  for (int shift = 0; shift != maxshift; ++ shift) {
+    bestJet1 = std::max(bestJet1, gt->jotPt[shift][0]);
+    bestJet2 = std::max(bestJet2, gt->jotPt[shift][1]);
+  }
+
+  // zllhbb
+  if ((((gt->nLooseElectron>1 && gt->electronPt[0]>20 && gt->electronPt[1]>15) ||
+       (gt->nLooseMuon>1 && gt->muonPt[0]>20 && gt->muonPt[1]>10) ||
+       (gt->nLooseMuon>0 && gt->nLooseElectron>0 && (
+         (gt->electronPt[0]>25 && gt->muonPt[0]>10) ||
+         (gt->electronPt[0]>10 && gt->muonPt[0]>25) 
+       ))
+      ) &&
+       (gt->nJot[0]==1)) || (gt->nLooseElectron==1 && gt->nLooseMuon==1 && gt->nJot[0]==2 && gt->electronPt[0]>25 && gt->muonPt[0]>20 && gt->jotCSV[0]>0.44 && gt->jotCSV[0]>0.44))
+  {
+    return true;
+  }
+
+  return false;
+}
+
 
 bool VHbbSelTrigger::do_accept() const
 {

@@ -187,6 +187,13 @@ namespace pa {
     virtual bool do_accept() const;
   };
 
+  class ZllHbbSel : public Selection {
+  public:
+  ZllHbbSel(): Selection(Selection::sReco, "zllhbb") { }
+  protected:
+    virtual bool do_accept() const;
+  };
+
   class VHbbSelTrigger : public Selection {
   public:
   VHbbSelTrigger(): Selection(Selection::sReco, "vhbbtrigger") { }

@@ -42,11 +42,18 @@ W = s[weight]
 #W *= 1000 / W.sum()
 Y = y * np.ones(shape=W.shape)
 
-def save(arr, label):
-    fout = args.out+'/'+args.name+'_'+label+'.npy'
+def save(arr, label, additional_label=None):
+    if additional_label == None:
+        fout = args.out+'/'+args.name+'_'+label+'.npy'
+    else:
+        fout = args.out+'/'+args.name+'_'+additional_label+'_'+label+'.npy'
     np.save(fout, arr)
     logger.info(sys.argv[0], 'Saved to '+fout)
 
 save(X, 'x')
 save(Y, 'y')
 save(W, 'w')
+
+#save(X, 'x', 'with_fj')
+#save(Y, 'y', 'with_fj')
+#save(W, 'w', 'with_fj')

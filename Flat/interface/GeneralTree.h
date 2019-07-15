@@ -62,6 +62,15 @@ enum class shiftjes {
   N
 }; 
 TString jesName(shiftjes);
+enum class shiftpfs { 
+  k0,
+  k1,
+  k2,
+  k3,
+  k4,
+  N
+}; 
+TString pfsName(shiftpfs);
 #define NLEP 4
 enum class shiftjetrings { 
   k0,
@@ -396,6 +405,8 @@ class GeneralTree : public genericTree {
   int jetIsIso[2];
   float jotBReg[2];
   float jotDeepBReg[2];
+  float jotDeepBRegEta[2];
+  float jotDeepBRegPhi[2];
   float jotDeepBRegWidth[2];
   float jotDeepBRegSampled[2];
   float adjetPt;
@@ -467,6 +478,13 @@ class GeneralTree : public genericTree {
   float jotChDR[5][20];
   float jotMuDR[5][20];
   float jotNeDR[5][20];
+  float jotPFPt[5][20];
+  float jotPFEta[5][20];
+  float jotPFPhi[5][20];
+  float jotPFId[5][20];
+  float jotPFpuppiW[5][20];
+  float jotPFdz[5][20];
+  float jotPFdxy[5][20];
   float barrelJet1Pt;
   float barrelJet1Eta;
   float barrelHT;

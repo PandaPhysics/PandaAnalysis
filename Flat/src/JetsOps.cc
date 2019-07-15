@@ -162,20 +162,12 @@ void JetOp::do_execute()
     bool metShift = (i2jes(shift) <= shiftjes::kJESTotalDown);
     JESHandler& jets = (*jesShifts)[shift];
     (*currentJES) = &jets;
-    TLorentzVector vBadJets(0,0,0,0);
     for (auto& jw : jets.all) {
       (*currentJet) = &jw;
       auto& jet = jw.get_base();
       float aeta = abs(jet.eta());
       float pt = jw.pt;
 
-      if (metShift) {
-        if(aeta > 2.650 && aeta < 3.139 && jet.rawPt < 50){
-          TLorentzVector vj;
-          vj.SetPtEtaPhiM(pt, 0, jet.phi(), 0);
-          vBadJets = vBadJets + vj;
-        }
-      }
       if (analysis.year == 2016 || analysis.year == 2017) {
         if (isNominal && !isMatched(matchVeryLoosePhos.get(),0.16,jet.eta(),jet.phi())) {
           // prefiring weights
@@ -196,7 +188,7 @@ void JetOp::do_execute()
       }
       if (jw.nominal->isLep || jw.nominal->isPho || jw.nominal->isPileupJet)
         continue;
-      if ((analysis.vbf || analysis.hbb) && ((!jet.tight && (analysis.year == 2017 || analysis.year == 2018)) || (!jet.loose && analysis.year == 2016)))
+      if ((analysis.vbf || analysis.hbb) && ((!jet.tight && analysis.year == 2018) || (!jet.loose && (analysis.year == 2017 || analysis.year == 2016))))
         continue;
 
       float csv = centralOnly( (analysis.useDeepCSV? jet.deepCSVb + jet.deepCSVbb : jet.csv), aeta);
@@ -326,11 +318,6 @@ void JetOp::do_execute()
     if (metShift) {
       jets.sort();
       vbf->execute();
-      TLorentzVector vmet;
-      vmet.SetPtEtaPhiM(gt.pfmet[shift], 0, gt.pfmetphi[shift], 0);
-      vmet = vmet + vBadJets;
-      gt.puppimet[shift] = vmet.Pt();
-      gt.puppimetphi[shift] = vmet.Phi();
     }
     hbb->execute();
 
@@ -453,12 +440,42 @@ void BJetRegOp::do_execute()
 
   float sumpt{0}, sumpt2{0};
   int leadingLepPdgId = 0;
+
+  /*
+  for(int p=0; p<10; p++){
+    gt.jotPFPt[p][N] = -99;
+    gt.jotPFEta[p][N] = -99;
+    gt.jotPFPhi[p][N] = -99;
+    gt.jotPFId[p][N] = -99;
+    gt.jotPFpuppiW[p][N] = -99;
+    }
+  */
+
+  int how_manyth_pf = 0;
   for (const auto& pf : jet.constituents) {
     if (!pf.isValid()) {
       // not sure why this is happening, but catch it 
       logger.warning("BJetRegOp::do_execute",Form("Cannot access PF at idx %i out of %i", pf.idx(), event.pfCandidates.size()));
       continue; 
     }
+
+    if (how_manyth_pf < 5 && how_manyth_pf < jet.constituents.size()-1){
+      gt.jotPFPt[how_manyth_pf][N] = pf->pt()/jet.pt();
+      gt.jotPFEta[how_manyth_pf][N] = pf->eta()-jet.eta();
+      gt.jotPFPhi[how_manyth_pf][N] = pf->phi()-jet.phi();
+      gt.jotPFId[how_manyth_pf][N] = pf->pdgId();
+      gt.jotPFpuppiW[how_manyth_pf][N] = pf->puppiW();
+      if (pf->track.isValid()){
+	gt.jotPFdz[how_manyth_pf][N] = pf->track.get()->dz();
+	gt.jotPFdxy[how_manyth_pf][N] = pf->track.get()->dxy();
+      }
+      else{
+	gt.jotPFdz[how_manyth_pf][N] = -1.;
+	gt.jotPFdxy[how_manyth_pf][N] = -1.;
+      }
+    }
+    how_manyth_pf += 1;
+
     TLorentzVector v(pf->p4());
     float dr2 = DeltaR2(v.Eta(), v.Phi(), vraw.Eta(), vraw.Phi());
     float pt = pf->pt();
@@ -511,6 +528,7 @@ void BJetRegOp::do_execute()
     gt.jotMuRing[b][N] = energies.get_e(b, Energies::pmu);
     gt.jotNeRing[b][N] = energies.get_e(b, Energies::pne);
   }
+
   /*
   for (int pf_type = Energies::pem; pf_type != (int)Energies::pN; ++pf_type) {
     static std::array<float, static_cast<long unsigned>(shiftjetrings::N)> moments;
@@ -561,6 +579,10 @@ void BJetRegOp::do_execute()
     gt.jotVtx3DErr[N] = vert->vtx3DeVal;
     gt.jotVtxNtrk[N] = vert->ntrk;
   }
+
+
+  // information about 10 hardest and 10 softest PF candidates
+
 }
 
 void VBFSystemOp::do_execute()
@@ -618,6 +640,18 @@ void HbbSystemOp::do_execute()
   auto& jets = **currentJES;
   int shift = jets.shift_idx;
 
+  
+  if (shift == jes2i(shiftjes::kNominal)) {
+    if (gt.nJot[shift] == 1 && abs(gt.jotEta[0])<2.5){
+      (*hbbdJet) = jets.cleaned[0];
+      auto& hbbdJetRef = **hbbdJet;
+      deepreg->execute();
+      lstmreg->execute();
+      gt.jotDeepBReg[0] = hbbdJetRef.breg;
+   }
+  }	
+  
+
   if (jets.central.size() < 2)
     return;
 
@@ -657,7 +691,12 @@ void HbbSystemOp::do_execute()
 
       if (shift == jes2i(shiftjes::kNominal)) {
         deepreg->execute();
+        lstmreg->execute();
         gt.jotDeepBReg[i] = hbbdJetRef.breg;
+	if (analysis.bjetDeepReg_EtaPhi){
+	  gt.jotDeepBRegEta[i] = hbbdJetRef.bregeta;
+	  gt.jotDeepBRegPhi[i] = hbbdJetRef.bregphi;
+	}
         gt.jotDeepBRegWidth[i] = hbbdJetRef.bregwidth;
         gt.jotDeepBRegSampled[i] = (event.rng.normal() * hbbdJetRef.bregwidth)  + hbbdJetRef.breg;
       }

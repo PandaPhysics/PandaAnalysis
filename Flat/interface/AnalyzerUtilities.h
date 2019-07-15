@@ -297,6 +297,20 @@ namespace pa {
     }
   };
 
+  struct RecoJetInfo {
+  public:
+    double pt=-1, eta=-1, phi=-1;
+    double genjetpt=-1;
+    std::vector<std::vector<float>> particles;
+    void reset() {
+      pt=-1; eta=-1; phi=-1;
+      genjetpt=-1;
+      for (auto& v : particles) {
+        std::fill(v.begin(), v.end(), 0);
+      }
+    }
+  };
+
   struct JetHistory {
     int user_idx;
     int child_idx;
@@ -314,6 +328,8 @@ namespace pa {
     int central_idx{-1};
     int cleaned_idx{-1};
     float breg{-1}, bregwidth{-1}; 
+    float bregeta{-1}, bregetawidth{-1}; 
+    float bregphi{-1}, bregphiwidth{-1}; 
     const panda::Jet* base;
     const JetWrapper* nominal{nullptr}; 
 
