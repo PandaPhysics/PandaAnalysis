@@ -69,8 +69,10 @@ vbfg = lambda v=False : _analysis(
         btagSFs = False,
         puppiJets = False,
         darkg = True,
+        varyJES = True,
         rerunJES = True,
         rerunJER = True,
+        mcTriggers = True,
         complicatedPhotons = True,
         complicatedLeptons = True
     )

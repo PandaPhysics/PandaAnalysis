@@ -201,6 +201,13 @@ namespace pa {
     virtual bool do_accept() const;
   };
 
+  class VBFGamma : public Selection {
+  public:
+  VBFGamma(): Selection(Selection::sReco, "vbfgamma") { }
+  protected:
+    virtual bool do_accept() const;
+  };
+
   class MatchedSel : public HRSelection{
   public:
     MatchedSel(): HRSelection(HRSelection::sGen, "matched") { }

@@ -179,3 +179,66 @@ bool VHbbSelTrigger::do_accept() const
   else
     return false;
 }
+
+
+bool VBFGamma::do_accept() const
+{
+  
+  if (gt->nLoosePhoton>=1)
+    if (gt->loosePho1Pt>=80)
+      return true;
+
+  if (gt->nLooseMuon>=1)
+    if (gt->muonPt[0]>=80)
+      return true;
+
+  if (gt->nLooseElectron>=1)
+    if (gt->electronPt[0]>80)
+      return true;
+    
+  return false;
+
+  /*if (gt->nLoosePhoton<1 && (gt->nLooseMuon<1 && gt->nLooseElectron<1))
+    return false;
+
+  
+  if (gt->nLoosePhoton>=1) {
+    if (gt->loosePho1Pt>=80)
+      return true;
+    //else
+      return false;
+  }
+  else {
+    if (gt->nLooseMuon>=1) {
+      if (gt->muonPt[0]>30)
+	return true;
+      else {
+	if (gt->nLooseElectron>=1)
+	  if (gt->electronPt[0]>30)
+	    return true;
+	  else
+	    return false;
+	else
+	  return false;
+      }
+    }
+    if (gt->nLooseElectron>=1) {
+      if (gt->electronPt[0]>30)
+	return true;
+      else {
+	if (gt->nLooseMuon>=1)
+	  if (gt->muonPt[0]>30)
+	    return true;
+	  else
+	    return false;
+	else
+	  return false;
+      }
+    }
+  }
+
+  
+  return true;
+  */
+}
+

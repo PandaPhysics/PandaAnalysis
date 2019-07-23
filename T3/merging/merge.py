@@ -202,7 +202,7 @@ for pd in args:
     unmergedSize = 0
     for unmergedFile in unmergedFiles:
         unmergedSize += path.getsize(unmergedFile)
-    if unmergedSize > 16106127360: # 15 GB
+    if unmergedSize > 15106127360: # 15 GB
         disk="scratch5"
     else:
         disk="tmp"
