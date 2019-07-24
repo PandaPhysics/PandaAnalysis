@@ -502,7 +502,7 @@ void SimplePhotonOp::do_execute()
 void ComplicatedPhotonOp::do_execute()
 {
   for (auto& pho : event.photons) {
-    if (!pho.medium)
+    if (!(pho.medium || pho.sieie > 0.))
       continue;
     float pt = pho.pt();
     if (pt<1) 
