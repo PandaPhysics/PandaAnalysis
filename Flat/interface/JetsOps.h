@@ -250,7 +250,7 @@ namespace pa {
 	else if (analysis.year == 2018) {
           jecV = "V8"; jecReco = "Autumn18";
           campaign = "Winter19";
-          jerV = "Fall17_25nsV1";
+          jerV = "Autumn18_V1";
           eraGroups = {"A","B","C","DE"};
           spacer = "_";
           if (analysis.useDeepCSV) { 

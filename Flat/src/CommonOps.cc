@@ -332,7 +332,7 @@ void TriggerOp::do_init(Registry& registry)
 	"HLT_Photon200"
       };
     }
-    if (analysis.year == 2018){
+    else if (analysis.year == 2018){
       paths = {
 	"HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ300_PFJetsMJJ400DEta3_v5",
 	"HLT_Photon75_R9Id90_HE10_IsoM_EBOnly_CaloMJJ400_PFJetsMJJ600DEta3_v5",
