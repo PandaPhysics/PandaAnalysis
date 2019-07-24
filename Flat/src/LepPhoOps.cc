@@ -507,13 +507,15 @@ void ComplicatedPhotonOp::do_execute()
     
     float nhiso_barrel = 1.189 + 0.01512*pho.pt() + 2.259e-5*pho.pt()*pho.pt();
     float phiso_barrel = 2.08 + 0.004017*pho.pt();
-    bool pho_medium_barrel = (abs(pho.eta()) < 1.479 && pho.sieie > 0.01015 && pho.hOverE > 0.02197 && pho.chIso > 1.141 && pho.nhIso > nhiso_barrel && pho.phIso > phiso_barrel);
-    bool pho_medium_barrel_NM1 = (abs(pho.eta()) < 1.479 && pho.hOverE > 0.02197 && pho.chIso > 1.141 && pho.nhIso > nhiso_barrel && pho.phIso > phiso_barrel);
+    float chiso_barrel = 1.141;
+    bool pho_medium_barrel = (abs(pho.eta()) < 1.479 && pho.sieie > 0.01015 && pho.hOverE > 0.02197 && pho.chIso > chiso_barrel && pho.nhIso > nhiso_barrel && pho.phIso > phiso_barrel);
+    bool pho_medium_barrel_NM1 = (abs(pho.eta()) < 1.479 && pho.hOverE > 0.02197 && pho.chIso > chiso_barrel && pho.nhIso > nhiso_barrel && pho.phIso > phiso_barrel);
 
     float nhiso_endcap = 2.718 + 0.0117*pho.pt() + 2.3e-5*pho.pt()*pho.pt();
     float phiso_endcap = 3.867 + 0.0037*pho.pt();
-    bool pho_medium_endcap = (abs(pho.eta()) > 1.479 && pho.sieie > 0.01015 && pho.hOverE > 0.02197 && pho.chIso > 1.051 && pho.nhIso > nhiso_endcap && pho.phIso > phiso_endcap);
-    bool pho_medium_endcap_NM1 = (abs(pho.eta()) > 1.479 && pho.hOverE > 0.02197 && pho.chIso > 1.051 && pho.nhIso > nhiso_endcap && pho.phIso > phiso_endcap);
+    float chiso_endcap = 1.051;
+    bool pho_medium_endcap = (abs(pho.eta()) > 1.479 && pho.sieie > 0.01015 && pho.hOverE > 0.02197 && pho.chIso > chiso_endcap && pho.nhIso > nhiso_endcap && pho.phIso > phiso_endcap);
+    bool pho_medium_endcap_NM1 = (abs(pho.eta()) > 1.479 && pho.hOverE > 0.02197 && pho.chIso > chiso_endcap && pho.nhIso > nhiso_endcap && pho.phIso > phiso_endcap);
 
     if (!(pho_medium_barrel_NM1 || pho_medium_endcap_NM1))
       continue;
