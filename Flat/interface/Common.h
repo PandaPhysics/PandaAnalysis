@@ -198,7 +198,8 @@ namespace pa {
    pHighPt  =(1<<2),
    pCsafeVeto =(1<<3),
    pPixelVeto =(1<<4),
-   pTrkVeto   =(1<<5)
+   pTrkVeto   =(1<<5),
+   pMediumNM1  =(1<<6)
   };
 
   enum TriggerBits {

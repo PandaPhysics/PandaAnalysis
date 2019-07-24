@@ -543,12 +543,14 @@ void ComplicatedPhotonOp::do_execute()
       gt.loosePho1nhIso = pho.nhIso;
       int phoSelBit = 0;
       // this is always true as of now, but safer to have it like this
-      if (pho.medium)                 phoSelBit |= pMedium; 
+      if (pho_medium_barrel||pho_medium_endcap) phoSelBit |= pMedium;
+      //if (pho.medium)                 phoSelBit |= pMedium; 
       if (pho.tight)                  phoSelBit |= pTight;
       if (pho.highpt)                 phoSelBit |= pHighPt;
       if (pho.csafeVeto)              phoSelBit |= pCsafeVeto;
       if (pho.pixelVeto)              phoSelBit |= pPixelVeto;
       if (!pfChargedPhotonMatch(pho)) phoSelBit |= pTrkVeto;
+      if (pho_medium_barrel_NM1||pho_medium_endcap_NM1) phoSelBit |= pMediumNM1;
       gt.loosePho1SelBit = phoSelBit;
       if (pho.medium && pho.csafeVeto && pho.pixelVeto) gt.loosePho1IsTight = 1;
       else                                              gt.loosePho1IsTight = 0;
