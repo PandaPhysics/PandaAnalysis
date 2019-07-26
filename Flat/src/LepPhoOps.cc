@@ -503,6 +503,14 @@ void ComplicatedPhotonOp::do_execute()
 {
   for (auto& pho : event.photons) {
     
+
+    //if (!(pho.medium))
+    //  continue;
+
+    float pt = pho.pt();
+    if (pt<1) 
+      continue;
+
     //https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedPhotonIdentificationRun2
     
     float nhiso_barrel = 1.189 + 0.01512*pho.pt() + 2.259e-5*pho.pt()*pho.pt();
@@ -520,12 +528,6 @@ void ComplicatedPhotonOp::do_execute()
     if (!(pho_medium_barrel_NM1 || pho_medium_endcap_NM1))
       continue;
 
-    //if (!(pho.medium))
-    //  continue;
-
-    float pt = pho.pt();
-    if (pt<1) 
-      continue;
     float eta = pho.eta(), phi = pho.phi();
     if (pt<25 || fabs(eta)>2.5)
       continue;
