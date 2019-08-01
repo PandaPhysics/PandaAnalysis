@@ -502,13 +502,12 @@ void SimplePhotonOp::do_execute()
 void ComplicatedPhotonOp::do_execute()
 {
   for (auto& pho : event.photons) {
-    
-
-    //if (!(pho.medium))
-    //  continue;
-
     float pt = pho.pt();
-    if (pt<1) 
+    float eta = pho.eta(), phi = pho.phi();
+    if (pt<25 || fabs(eta)>2.5)
+      continue;
+
+    if (!analysis.darkg && isMatched(matchLeps.get(),0.16,pho.eta(),pho.phi()))
       continue;
 
     //https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedPhotonIdentificationRun2
@@ -518,27 +517,53 @@ void ComplicatedPhotonOp::do_execute()
     float chiso_barrel = 1.141;
     float sieie_barrel = 0.01015;
     float hovere_barrel = 0.02197;
-    bool pho_medium_barrel = (abs(pho.eta()) < 1.479 && pho.sieie > sieie_barrel && pho.hOverE > hovere_barrel && pho.chIso > chiso_barrel && pho.nhIso > nhiso_barrel && pho.phIso > phiso_barrel);
-    bool pho_medium_barrel_NM1 = (abs(pho.eta()) < 1.479 && pho.hOverE > hovere_barrel && pho.chIso > chiso_barrel && pho.nhIso > nhiso_barrel && pho.phIso > phiso_barrel);
+    bool pho_medium_barrel = (abs(pho.eta()) < 1.479 && pho.sieie < sieie_barrel && pho.hOverE < hovere_barrel && pho.chIso < chiso_barrel && pho.nhIso < nhiso_barrel && pho.phIso < phiso_barrel);
+
+    float nhiso_barrel_loose = 10.910+0.0148*pho.pt()+0.000017*pho.pt()*pho.pt();
+    float phiso_barrel_loose = 3.630+0.0047*pho.pt();
+    bool pho_medium_barrel_alter = (abs(pho.eta()) < 1.479 && pho.hOverE < hovere_barrel && pho.chIso > chiso_barrel && pho.chIso < 11. && pho.nhIso < nhiso_barrel_loose && pho.phIso < phiso_barrel_loose);
 
     float nhiso_endcap = 2.718 + 0.0117*pho.pt() + 2.3e-5*pho.pt()*pho.pt();
     float phiso_endcap = 3.867 + 0.0037*pho.pt();
     float chiso_endcap = 1.051;
     float sieie_endcap = 0.0272;
     float hovere_endcap = 0.0326;
-    bool pho_medium_endcap = (abs(pho.eta()) > 1.479 && pho.sieie > sieie_endcap && pho.hOverE > hovere_endcap && pho.chIso > chiso_endcap && pho.nhIso > nhiso_endcap && pho.phIso > phiso_endcap);
-    bool pho_medium_endcap_NM1 = (abs(pho.eta()) > 1.479 && pho.hOverE > hovere_endcap && pho.chIso > chiso_endcap && pho.nhIso > nhiso_endcap && pho.phIso > phiso_endcap);
 
-    if (!(pho_medium_barrel_NM1 || pho_medium_endcap_NM1))
-      continue;
-    //if (!(pho_medium_barrel || pho_medium_endcap))
-    //  continue;
+    float nhiso_endcap_loose = 5.931+0.0163*pho.pt()+0.000014*pho.pt()*pho.pt();
+    float phiso_endcap_loose = 6.641+0.0034*pho.pt();
 
-    float eta = pho.eta(), phi = pho.phi();
-    if (pt<25 || fabs(eta)>2.5)
+    bool pho_medium_endcap = (abs(pho.eta()) > 1.479 && pho.sieie < sieie_endcap && pho.hOverE < hovere_endcap && pho.chIso < chiso_endcap && pho.nhIso < nhiso_endcap && pho.phIso < phiso_endcap);
+    bool pho_medium_endcap_alter = (abs(pho.eta()) > 1.479 && pho.hOverE < hovere_endcap && pho.chIso > chiso_endcap && pho.chIso < 11. && pho.nhIso < nhiso_endcap_loose && pho.phIso < phiso_endcap_loose);
+
+
+    if (!(pho_medium_barrel || pho_medium_endcap)){
+      if (pho_medium_barrel_alter || pho_medium_endcap_alter){
+	if (gt.alterPho1Pt < pt){
+	  gt.alterPho1Pt = pt;
+	  gt.alterPho1Eta = eta;
+	  gt.alterPho1Phi = phi;
+	  gt.alterPho1sieie = pho.sieie;
+	  gt.alterPho1r9 = pho.r9;
+	  gt.alterPho1hOverE = pho.hOverE;
+	  gt.alterPho1chIso = pho.chIso;
+	  gt.alterPho1phIso = pho.phIso;
+	  gt.alterPho1nhIso = pho.nhIso;
+	  int phoSelBit = 0;
+	  // this is always true as of now, but safer to have it like this
+	  if (pho_medium_barrel||pho_medium_endcap) phoSelBit |= pMedium;
+	  if (pho.tight)                  phoSelBit |= pTight;
+	  if (pho.highpt)                 phoSelBit |= pHighPt;
+	  if (pho.csafeVeto)              phoSelBit |= pCsafeVeto;
+	  if (pho.pixelVeto)              phoSelBit |= pPixelVeto;
+	  if (!pfChargedPhotonMatch(pho)) phoSelBit |= pTrkVeto;
+	  if (pho_medium_barrel_alter||pho_medium_endcap_alter) phoSelBit |= pMediumNM1;
+	  if (pho.medium)                 phoSelBit |= pMediumPanda; 
+	  gt.alterPho1SelBit = phoSelBit;
+	}
+	continue;
+      }
       continue;
-    if (!analysis.darkg && isMatched(matchLeps.get(),0.16,pho.eta(),pho.phi()))
-      continue;
+    }
     loosePhos->push_back(&pho);
     gt.nLoosePhoton++;
     if (gt.loosePho1Pt < pt) {
@@ -554,13 +579,13 @@ void ComplicatedPhotonOp::do_execute()
       int phoSelBit = 0;
       // this is always true as of now, but safer to have it like this
       if (pho_medium_barrel||pho_medium_endcap) phoSelBit |= pMedium;
-      //if (pho.medium)                 phoSelBit |= pMedium; 
       if (pho.tight)                  phoSelBit |= pTight;
       if (pho.highpt)                 phoSelBit |= pHighPt;
       if (pho.csafeVeto)              phoSelBit |= pCsafeVeto;
       if (pho.pixelVeto)              phoSelBit |= pPixelVeto;
       if (!pfChargedPhotonMatch(pho)) phoSelBit |= pTrkVeto;
-      if (pho_medium_barrel_NM1||pho_medium_endcap_NM1) phoSelBit |= pMediumNM1;
+      if (pho_medium_barrel_alter||pho_medium_endcap_alter) phoSelBit |= pMediumNM1;
+      if (pho.medium)                 phoSelBit |= pMediumPanda; 
       gt.loosePho1SelBit = phoSelBit;
       if (pho.medium && pho.csafeVeto && pho.pixelVeto) gt.loosePho1IsTight = 1;
       else                                              gt.loosePho1IsTight = 0;

@@ -568,6 +568,16 @@ class GeneralTree : public genericTree {
   float loosePho1sieie;
   int loosePho1SelBit;
   int looseGenPho1PdgId;
+  float alterPho1Pt;
+  float alterPho1Eta;
+  float alterPho1Phi;
+  float alterPho1r9;
+  float alterPho1chIso;
+  float alterPho1nhIso;
+  float alterPho1phIso;
+  float alterPho1hOverE;
+  float alterPho1sieie;
+  int alterPho1SelBit;
   int nLooseLep;
   int nLooseElectron;
   int nLooseMuon;

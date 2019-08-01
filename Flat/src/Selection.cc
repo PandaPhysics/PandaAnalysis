@@ -183,13 +183,19 @@ bool VHbbSelTrigger::do_accept() const
 
 bool VBFGamma::do_accept() const
 {
+
+  int jUp = jes2i(shiftjes::kJESTotalUp);
+  int jDown = jes2i(shiftjes::kJESTotalDown);
+  int nominal = jes2i(shiftjes::kNominal);
+
+  if (gt->nJot[jUp]<2 && gt->nJot[jDown]<2 && gt->nJot[nominal]<2)
+    return false;
   
-  if (gt->nLoosePhoton>=1)
-    if (gt->loosePho1Pt>=80)
-      return true;
+  if (gt->loosePho1Pt>80 || gt->alterPho1Pt>80)
+    return true;
 
   if (gt->nLooseMuon>=1)
-    if (gt->muonPt[0]>=80)
+    if (gt->muonPt[0]>80)
       return true;
 
   if (gt->nLooseElectron>=1)
