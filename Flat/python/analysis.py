@@ -119,6 +119,28 @@ monoh = lambda v=False : _analysis(
         name = 'monoh',
         verbose = v,
         monoh = True,
+        ak8 = True,
+        hbb = True,
+        recoil = True,
+        fatjet = True,
+        btagSFs = True,
+        btagWeights = True,
+        useCMVA = False,
+        useDeepCSV = True,
+        complicatedLeptons = True,
+        hfCounting = True,
+        recluster = True,
+        bjetRegTraining = True,
+        bjetBDTReg = False,
+        bjetDeepReg = True,
+        bjetDeepReg_withPFs_10 = False,
+        varyJESTotal = True,
+        rerunJES = True,
+        rerunJER = True,
+        jetFlavorPartons = False,
+        jetFlavorJets = True,
+        mcTriggers = True,
+    
     )
 
 gghbb = lambda v=False : _analysis(

@@ -517,10 +517,25 @@ void ComplicatedPhotonOp::do_execute()
     float chiso_barrel = 1.141;
     float sieie_barrel = 0.01015;
     float hovere_barrel = 0.02197;
-    bool pho_medium_barrel = (abs(pho.eta()) < 1.479 && pho.sieie < sieie_barrel && pho.hOverE < hovere_barrel && pho.chIso < chiso_barrel && pho.nhIso < nhiso_barrel && pho.phIso < phiso_barrel);
 
-    float nhiso_barrel_loose = 10.910+0.0148*pho.pt()+0.000017*pho.pt()*pho.pt();
-    float phiso_barrel_loose = 3.630+0.0047*pho.pt();
+    float nhiso_barrel_loose = 24.032 + 0.01512*pho.pt() + 2.259e-05*pho.pt()*pho.pt();
+    float phiso_barrel_loose = 2.876 + 0.004017*pho.pt();
+
+    if (analysis.year == 2016){
+
+      nhiso_barrel = 2.725+0.0148*pho.pt()+0.000017*pho.pt()*pho.pt();
+      phiso_barrel = 2.571+0.0047*pho.pt();
+      chiso_barrel = 0.441;
+      hovere_barrel = 0.0396;
+      sieie_barrel = 0.01022;
+
+      nhiso_barrel_loose = 10.910+0.0148*pho.pt()+0.000017*pho.pt()*pho.pt();
+      phiso_barrel_loose = 3.630+0.0047*pho.pt();
+
+    }
+    
+
+    bool pho_medium_barrel = (abs(pho.eta()) < 1.479 && pho.sieie < sieie_barrel && pho.hOverE < hovere_barrel && pho.chIso < chiso_barrel && pho.nhIso < nhiso_barrel && pho.phIso < phiso_barrel);
     bool pho_medium_barrel_alter = (abs(pho.eta()) < 1.479 && pho.hOverE < hovere_barrel && pho.chIso > chiso_barrel && pho.chIso < 11. && pho.nhIso < nhiso_barrel_loose && pho.phIso < phiso_barrel_loose);
 
     float nhiso_endcap = 2.718 + 0.0117*pho.pt() + 2.3e-5*pho.pt()*pho.pt();
@@ -528,9 +543,20 @@ void ComplicatedPhotonOp::do_execute()
     float chiso_endcap = 1.051;
     float sieie_endcap = 0.0272;
     float hovere_endcap = 0.0326;
-
-    float nhiso_endcap_loose = 5.931+0.0163*pho.pt()+0.000014*pho.pt()*pho.pt();
-    float phiso_endcap_loose = 6.641+0.0034*pho.pt();
+    
+    float nhiso_endcap_loose = 19.722 + 0.0117*pho.pt() + 2.3e-05*pho.pt()*pho.pt();
+    float phiso_endcap_loose = 4.162 + 0.0037*pho.pt();
+    
+    if (analysis.year == 2016){
+      nhiso_endcap = 1.715+0.0163*pho.pt()+0.000014*pho.pt()*pho.pt();
+      phiso_endcap = 3.863+0.0034*pho.pt();
+      chiso_endcap = 0.442;
+      hovere_endcap = 0.0219;
+      sieie_endcap = 0.03001;
+      
+      nhiso_endcap_loose = 5.931+0.0163*pho.pt()+0.000014*pho.pt()*pho.pt();
+      phiso_endcap_loose = 6.641+0.0034*pho.pt();
+    }
 
     bool pho_medium_endcap = (abs(pho.eta()) > 1.479 && pho.sieie < sieie_endcap && pho.hOverE < hovere_endcap && pho.chIso < chiso_endcap && pho.nhIso < nhiso_endcap && pho.phIso < phiso_endcap);
     bool pho_medium_endcap_alter = (abs(pho.eta()) > 1.479 && pho.hOverE < hovere_endcap && pho.chIso > chiso_endcap && pho.chIso < 11. && pho.nhIso < nhiso_endcap_loose && pho.phIso < phiso_endcap_loose);

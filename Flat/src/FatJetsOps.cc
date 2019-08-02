@@ -43,8 +43,8 @@ void FatJetOp::do_execute()
     float eta = fj.eta();
     float mass = fj.m();
     float ptcut = 200;
-    if (analysis.deep)
-      ptcut = 400;
+    if (analysis.deep || analysis.ak8)
+      ptcut = 350;
 
     float bestPt = pt;
     if (analysis.varyJES || analysis.varyJESTotal) {
