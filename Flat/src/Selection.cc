@@ -4,6 +4,7 @@
 using namespace pa; 
 
 static float best_recoil(const GeneralTree *gt, bool include_var) {
+  include_var = true;
   int maxshift = include_var ? jes2i(shiftjes::kJESTotalDown)+1 : 1;
   float max_puppi = -1, max_pf = -1;
   for (int shift = 0; shift != maxshift; ++ shift) {
@@ -90,9 +91,7 @@ bool MonohiggsSel::do_accept() const
 {
   bool base = RecoilSel::do_accept();
 
-  return (base && 
-          (gt->hbbpt[0] < 200 ||
-           (gt->nFatJet>=1 && gt->fjPt[0][0]>200)));
+  return (base && ((gt->hbbpt[0]>50) || (gt->nFatJet>=1 && gt->fjPt[0][0]>350 && gt->fjMSD[0][0]>30)));
 }
 
 

@@ -536,7 +536,7 @@ void ComplicatedPhotonOp::do_execute()
     
 
     bool pho_medium_barrel = (abs(pho.eta()) < 1.479 && pho.sieie < sieie_barrel && pho.hOverE < hovere_barrel && pho.chIso < chiso_barrel && pho.nhIso < nhiso_barrel && pho.phIso < phiso_barrel);
-    bool pho_medium_barrel_alter = (abs(pho.eta()) < 1.479 && pho.hOverE < hovere_barrel && pho.chIso > chiso_barrel && pho.chIso < 11. && pho.nhIso < nhiso_barrel_loose && pho.phIso < phiso_barrel_loose);
+    bool pho_medium_barrel_alter = (abs(pho.eta()) < 1.479 && pho.sieie < sieie_barrel && pho.hOverE < hovere_barrel && pho.chIso > chiso_barrel && pho.chIso < 11. && pho.nhIso < nhiso_barrel_loose && pho.phIso < phiso_barrel_loose);
 
     float nhiso_endcap = 2.718 + 0.0117*pho.pt() + 2.3e-5*pho.pt()*pho.pt();
     float phiso_endcap = 3.867 + 0.0037*pho.pt();
@@ -559,7 +559,7 @@ void ComplicatedPhotonOp::do_execute()
     }
 
     bool pho_medium_endcap = (abs(pho.eta()) > 1.479 && pho.sieie < sieie_endcap && pho.hOverE < hovere_endcap && pho.chIso < chiso_endcap && pho.nhIso < nhiso_endcap && pho.phIso < phiso_endcap);
-    bool pho_medium_endcap_alter = (abs(pho.eta()) > 1.479 && pho.hOverE < hovere_endcap && pho.chIso > chiso_endcap && pho.chIso < 11. && pho.nhIso < nhiso_endcap_loose && pho.phIso < phiso_endcap_loose);
+    bool pho_medium_endcap_alter = (abs(pho.eta()) > 1.479 && pho.sieie < sieie_endcap && pho.hOverE < hovere_endcap && pho.chIso > chiso_endcap && pho.chIso < 11. && pho.nhIso < nhiso_endcap_loose && pho.phIso < phiso_endcap_loose);
 
 
     if (!(pho_medium_barrel || pho_medium_endcap)){
@@ -616,9 +616,10 @@ void ComplicatedPhotonOp::do_execute()
       if (pho.medium && pho.csafeVeto && pho.pixelVeto) gt.loosePho1IsTight = 1;
       else                                              gt.loosePho1IsTight = 0;
     }
-    if ( pho.medium && pho.csafeVeto && pho.pixelVeto) { // apply eta cut offline
+    if ( (pho_medium_barrel || pho_medium_endcap) && pho.csafeVeto && pho.pixelVeto) { // apply eta cut offline
       gt.nTightPhoton++;
       tightPhos->push_back(&pho);
+      //matchPhos->push_back(&pho);
     }
   }
 

@@ -123,7 +123,7 @@ void ConfigOp::set_inputBranches()
 
   }
   if (!cfg.isData) {
-    bl += {"genParticles","genReweight","ak4GenJets","genMet"};
+    bl += {"genParticles","genReweight","ak4GenJets","genMet","partons"};
     if (analysis.hbb)
       bl.push_back("partons");
   }
@@ -168,7 +168,7 @@ void ConfigOp::set_outputBranches()
     gt.RemoveBranches({},{".*JESTotal.*"});
   if (analysis.hbb)
     gt.RemoveBranches(
-      {".*JES.*","looseGen.*","genLep.*","genElectron.*","genTau.*","gen.*Top.*","genMjj.*","genFat.*"},
+      {".*JES.*","looseGen.*","genLep.*","genElectron.*","genTau.*","gen.*Top.*","genMjj.*","genFat.*","barrel.*"},
       {"pfmet.*"} // keep total up/down MET variations, difficult to handle the variation offline
     );
 }

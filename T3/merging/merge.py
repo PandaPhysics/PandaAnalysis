@@ -202,8 +202,8 @@ for pd in args:
     unmergedSize = 0
     for unmergedFile in unmergedFiles:
         unmergedSize += path.getsize(unmergedFile)
-    if unmergedSize > 15106127360: # 15 GB
-        disk="scratch5"
+    if unmergedSize > 30106127360: # 15 GB
+        disk="data/t3home000"
     else:
         disk="tmp"
     split_dir = '/%s/%s/split/%s/'%(disk, user, submit_name)
