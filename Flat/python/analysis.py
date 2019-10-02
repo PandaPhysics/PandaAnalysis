@@ -77,6 +77,41 @@ vbfg = lambda v=False : _analysis(
         complicatedLeptons = True
     )
 
+
+vbfgpuppi = lambda v=False : _analysis(
+        name = 'vbfg',
+        verbose = v,
+        vbf = True,
+        fatjet = False,
+        btagSFs = False,
+        puppiJets = True,
+        darkg = True,
+        varyJES = True,
+        rerunJES = True,
+        rerunJER = True,
+        mcTriggers = True,
+        complicatedPhotons = True,
+        complicatedLeptons = True
+    )
+
+
+fakerates = lambda v=False : _analysis(
+        name = 'vbfg',
+        verbose = v,
+        vbf = True,
+        fatjet = False,
+        btagSFs = False,
+        puppiJets = False,
+        darkg = True,
+        varyJES = True,
+        rerunJES = True,
+        rerunJER = True,
+        mcTriggers = True,
+        complicatedPhotons = True,
+        complicatedLeptons = True
+    )
+
+
 vqqhbb = lambda v=False : _analysis(
         name = 'vbfhbb',
         verbose = v,

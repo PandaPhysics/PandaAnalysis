@@ -47,7 +47,7 @@ void JetCorrector::RunCorrection(bool isData, float rho, panda::MuonCollection *
  	  float old_pt_ini = j_in.pt();
  
  	  j_in.setPtEtaPhiM(new_pt_ini,j_in.eta(),j_in.phi(),j_in.m());
- 
+
           if(TMath::Abs(old_pt_ini - new_pt_ini) < 0.01) continue;
  
           if(j_in.cef + j_in.nef > 0.9) continue;

@@ -189,6 +189,13 @@ bool VBFGamma::do_accept() const
 
   if (gt->nJot[jUp]<2 && gt->nJot[jDown]<2 && gt->nJot[nominal]<2)
     return false;
+
+  if (gt->jot12Mass[jUp]<500 && gt->jot12Mass[jDown]<500 && gt->jot12Mass[nominal]<500)
+    return false;
+
+  if (gt->pfmet[jUp]<20 && gt->pfmet[jDown]<20 && gt->pfmet[nominal]<20 && gt->puppimet[jUp]<20 && gt->puppimet[jDown]<20 && gt->puppimet[nominal]<20){
+    return false;
+  }
   
   if (gt->loosePho1Pt>80 || gt->alterPho1Pt>80)
     return true;
@@ -247,3 +254,18 @@ bool VBFGamma::do_accept() const
   */
 }
 
+bool Fakerates::do_accept() const
+{
+  int nominal = jes2i(shiftjes::kNominal);
+
+  if (gt->nLooseElectron>0)
+    return false;
+
+  if (gt->nLooseMuon>0)
+    return false;
+
+  if (gt->pfmet[nominal]>100)
+    return false;
+      
+  return true;
+}

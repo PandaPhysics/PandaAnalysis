@@ -248,10 +248,10 @@ namespace pa {
           }
 	}
 	else if (analysis.year == 2018) {
-          jecV = "V8"; jecReco = "Autumn18";
+          jecV = "V19"; jecReco = "Autumn18";
           campaign = "Winter19";
-          jerV = "Autumn18_V1";
-          eraGroups = {"A","B","C","DE"};
+          jerV = "Autumn18_V7";
+          eraGroups = {"A","B","C","D"};
           spacer = "_";
           if (analysis.useDeepCSV) { 
             csvL = 0.1241; csvM = 0.4184; 
@@ -293,7 +293,10 @@ namespace pa {
       BaseJetOp("jet", event_, cfg_, utils_, gt_, level_),
       currentJet(std::make_shared<JetWrapper*>(nullptr)),
       currentJES(std::make_shared<JESHandler*>(nullptr)) {
-        ak4Jets = &(event.chsAK4Jets);
+	if (analysis.puppiJets)
+	  ak4Jets = &(event.puppiAK4Jets);
+	else
+	  ak4Jets = &(event.chsAK4Jets);
         recalcJER = analysis.rerunJER; 
 
         isojet = addSubOp<IsoJetOp>();
@@ -302,7 +305,10 @@ namespace pa {
         hbb = addSubOp<HbbSystemOp>();
 	adjet = addSubOp<AdJetOp>();
 
-        jetType = "AK4PFchs";
+	if (analysis.puppiJets)
+	  jetType = "AK4PFPuppi";
+	else
+	  jetType = "AK4PFchs";	  
     }
     virtual ~JetOp () { }
 

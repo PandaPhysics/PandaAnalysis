@@ -57,7 +57,7 @@ int TagAnalyzer::Init(TTree *t, TH1D *hweights)
 
   panda::utils::BranchList readlist({"runNumber", "lumiNumber", "eventNumber", 
                                      "isData", "npv", "npvTrue", "weight", "chsAK4Jets", 
-                                     "pfMet",  "puppiMet", 
+	                             "pfMet",  "puppiMet", "puppiAK4Jets",
                                      "recoil","metFilters",});
   readlist.setVerbosity(DEBUG);
 

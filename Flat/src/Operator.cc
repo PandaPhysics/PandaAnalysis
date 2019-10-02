@@ -91,7 +91,7 @@ void ConfigOp::set_inputBranches()
   } else {
     bl += {"runNumber", "lumiNumber", "eventNumber", "rho",
            "isData", "npv", "npvTrue", "weight", "chsAK4Jets",
-           "electrons", "muons", "taus", "photons",
+	   "electrons", "muons", "taus", "photons", "puppiAK4Jets",
            "pfMet", "caloMet", "puppiMet", "rawMet", "trkMet",
            "recoil","metFilters","trkMet"};
 

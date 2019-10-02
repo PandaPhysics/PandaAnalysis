@@ -215,6 +215,7 @@ namespace pa {
     kMuFakeTrig,
     kEleFakeTrig,
     kVBFPhoTrig,
+    kPhoFakeRate,
     kNTrig
   };
 

@@ -208,6 +208,13 @@ namespace pa {
     virtual bool do_accept() const;
   };
 
+  class Fakerates : public Selection {
+  public:
+  Fakerates(): Selection(Selection::sReco, "fakerates") { }
+  protected:
+    virtual bool do_accept() const;
+  };
+
   class MatchedSel : public HRSelection{
   public:
     MatchedSel(): HRSelection(HRSelection::sGen, "matched") { }

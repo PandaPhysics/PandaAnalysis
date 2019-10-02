@@ -342,6 +342,16 @@ void TriggerOp::do_init(Registry& registry)
     }
     triggerHandlers[kVBFPhoTrig].addTriggers(paths);
 
+
+    // PhoFakeRate
+    paths = {
+      "HLT_Photon75"
+    };
+    triggerHandlers[kPhoFakeRate].addTriggers(paths);
+
+
+
+
     for (auto &th : triggerHandlers) {
       unsigned N = th.paths.size();
       for (unsigned i = 0; i != N; i++) {

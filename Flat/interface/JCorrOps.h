@@ -18,7 +18,10 @@ namespace pa {
       jesShifts(std::v_make_shared<JESHandler>(jes2i(shiftjes::N))) {
         JESLOOP {
           (*jesShifts)[shift].shift_idx = shift;
-          jetType = "AK4PFchs";
+	  if (analysis.puppiJets)
+	    jetType = "AK4PFPuppi";
+	  else
+	    jetType = "AK4PFchs";
         }
       }
     virtual ~JetCorrOp () { }
