@@ -79,7 +79,7 @@ namespace pa {
     bool deepSVs = false;
     bool deepTracks = false;
     bool fatjet = true;
-    bool firstGen = true;
+    bool firstGen = false;
     bool genOnly = false;
     bool hbb = false;
     bool hfCounting = false;

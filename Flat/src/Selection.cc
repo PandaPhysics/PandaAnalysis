@@ -183,6 +183,13 @@ bool VHbbSelTrigger::do_accept() const
 bool VBFGamma::do_accept() const
 {
 
+  //bool passTrigger = (gt->trigger & (1<<kVBFPhoTrig)) != 0;
+  //if (!passTrigger)
+  //  return false;
+
+  if (gt->metFilter!=1)
+    return false;
+
   int jUp = jes2i(shiftjes::kJESTotalUp);
   int jDown = jes2i(shiftjes::kJESTotalDown);
   int nominal = jes2i(shiftjes::kNominal);
@@ -193,9 +200,8 @@ bool VBFGamma::do_accept() const
   if (gt->jot12Mass[jUp]<500 && gt->jot12Mass[jDown]<500 && gt->jot12Mass[nominal]<500)
     return false;
 
-  if (gt->pfmet[jUp]<20 && gt->pfmet[jDown]<20 && gt->pfmet[nominal]<20 && gt->puppimet[jUp]<20 && gt->puppimet[jDown]<20 && gt->puppimet[nominal]<20){
+  if (gt->pfmet[jUp]<20 && gt->pfmet[jDown]<20 && gt->pfmet[nominal]<20 && gt->puppimet[jUp]<20 && gt->puppimet[jDown]<20 && gt->puppimet[nominal]<20)
     return false;
-  }
   
   if (gt->loosePho1Pt>80 || gt->alterPho1Pt>80)
     return true;
@@ -210,48 +216,17 @@ bool VBFGamma::do_accept() const
     
   return false;
 
-  /*if (gt->nLoosePhoton<1 && (gt->nLooseMuon<1 && gt->nLooseElectron<1))
-    return false;
+}
 
-  
-  if (gt->nLoosePhoton>=1) {
-    if (gt->loosePho1Pt>=80)
-      return true;
-    //else
-      return false;
-  }
-  else {
-    if (gt->nLooseMuon>=1) {
-      if (gt->muonPt[0]>30)
-	return true;
-      else {
-	if (gt->nLooseElectron>=1)
-	  if (gt->electronPt[0]>30)
-	    return true;
-	  else
-	    return false;
-	else
-	  return false;
-      }
-    }
-    if (gt->nLooseElectron>=1) {
-      if (gt->electronPt[0]>30)
-	return true;
-      else {
-	if (gt->nLooseMuon>=1)
-	  if (gt->muonPt[0]>30)
-	    return true;
-	  else
-	    return false;
-	else
-	  return false;
-      }
-    }
-  }
 
-  
-  return true;
-  */
+bool VBFGen::do_accept() const
+{
+
+  if (gt->genJet2Pt>40 && gt->genMjj>400)
+    return true;
+
+  return false;
+
 }
 
 bool Fakerates::do_accept() const

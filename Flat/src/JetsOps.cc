@@ -626,6 +626,12 @@ void VBFSystemOp::do_execute()
     gt.jot12DPhi[shift] = v0.DeltaPhi(v1);
     gt.jot12DEta[shift] = fabs(v0.Eta() - v1.Eta());
   }
+  if (analysis.darkg){
+    auto& theVertex = event.vertices[0];
+    gt.vtxNTrk = theVertex.ntrk;
+    gt.vtxScore = theVertex.score;
+    gt.vtxChi2 = theVertex.chi2;
+  }
 }
 
 void HbbSystemOp::do_execute()

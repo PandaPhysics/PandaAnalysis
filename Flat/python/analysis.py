@@ -214,6 +214,16 @@ kfac = lambda v=False : _analysis(
         genOnly = True,
     )
 
+kfacvbf = lambda v=False : _analysis(
+        name = 'kfacvbf',
+        verbose = v,
+        vbf = True,
+        darkg = True,
+        varyJES = True,
+        rerunJES = True,
+        genOnly = True,
+    )
+
 breg = lambda v=False : _analysis(
         name = 'breg',
         verbose = v,

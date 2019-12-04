@@ -36,6 +36,8 @@ void correctMETXY(int npv, int runnb, RecoMet& met, int year, bool isData)
   double METxcorr(0.),METycorr(0.);
   if (year == 2018){
     if (isData){
+      /*
+	//Type 1 PFMET
       if(runnb >=315252 &&runnb<=316995) METxcorr = -(0.362865*npv -1.94505);
       if(runnb >=315252 &&runnb<=316995) METycorr = -(0.0709085*npv -0.307365);
       if(runnb >=316998 &&runnb<=319312) METxcorr = -(0.492083*npv -2.93552);
@@ -44,10 +46,26 @@ void correctMETXY(int npv, int runnb, RecoMet& met, int year, bool isData)
       if(runnb >=319313 &&runnb<=320393) METycorr = -(0.118956*npv -1.96434);
       if(runnb >=320394 &&runnb<=325273) METxcorr = -(0.531151*npv -1.37568);
       if(runnb >=320394 &&runnb<=325273) METycorr = -(0.0884639*npv -1.57089);
+      */
+      // Type 2
+      if(runnb >=315252 &&runnb<=316995) METxcorr = -(0.362642*npv +-1.55094);
+      if(runnb >=315252 &&runnb<=316995) METycorr = -(0.0737842*npv +-0.677209);
+      if(runnb >=316998 &&runnb<=319312) METxcorr = -(0.485614*npv +-2.45706);
+      if(runnb >=316998 &&runnb<=319312) METycorr = -(0.181619*npv +-1.00636);
+      if(runnb >=319313 &&runnb<=320393) METxcorr = -(0.503638*npv +-1.01281);
+      if(runnb >=319313 &&runnb<=320393) METycorr = -(0.147811*npv +-1.48941);
+      if(runnb >=320394 &&runnb<=325273) METxcorr = -(0.520265*npv +-1.20322);
+      if(runnb >=320394 &&runnb<=325273) METycorr = -(0.143919*npv +-0.979328);
     }
     else{
+      /*
+	//Type 1 PFMET
       METxcorr = -(0.296713*npv -0.141506);
       METycorr = -(0.115685*npv +0.0128193);
+      */
+      // Type 2
+      METxcorr = -(0.299448*npv +-0.13866);
+      METycorr = -(0.118785*npv +0.0889588);
     }
 
     std::pair<double,double> nominal = METXYCorr_Met_MetPhi(met.pt,met.phi,METxcorr,METycorr);
@@ -92,6 +110,7 @@ void shiftMET(const RecoMet& met, TLorentzVector& v, shiftjes shift)
 
 void JetCorrOp::do_execute()
 {
+
   gt.pfmetRaw = event.rawMet.pt;
   gt.calomet = event.caloMet.pt;
   gt.sumETRaw = event.pfMet.sumETRaw;
@@ -140,24 +159,33 @@ void JetCorrOp::do_execute()
 
   if (analysis.puppiJets){
     // Puppi Hack: taking photons out of puppimet
-    TLorentzVector puppimet;
+    TLorentzVector puppimet, puppimetUp, puppimetDown;
     puppimet.SetPtEtaPhiM(event.puppiMet.pt,0.0,event.puppiMet.phi,0.0);
+    puppimetUp.SetPtEtaPhiM(event.puppiMet.ptCorrUp,0.0,event.puppiMet.phiCorrUp,0.0);
+    puppimetDown.SetPtEtaPhiM(event.puppiMet.ptCorrDown,0.0,event.puppiMet.phiCorrDown,0.0);
+    /*
     for (auto& cand : event.pfCandidates) {
-      if (abs(cand.pdgId()) == 22 && cand.pt()>20){
-	//std::cout << "FOUND PHOTON WITH PT AND PUPPIW" << std::endl;
-	//std::cout << cand.pt() << " " << cand.puppiW() << std::endl;
+      if (abs(cand.pdgId()) == 22 && cand.pt()>80){
 	TLorentzVector pho;
 	pho.SetPtEtaPhiM((1-cand.puppiW())*cand.pt(),cand.eta(),cand.phi(),0);
 	puppimet -= pho;
+	puppimetUp -= pho;
+	puppimetDown -= pho;
       }
     }
+    */
     //std::cout << "Before photon corr" << std::endl;
     //std::cout << event.puppiMet.pt << std::endl;
 
     event.puppiMet.pt = puppimet.Pt();
     event.puppiMet.phi = puppimet.Phi();
+    event.puppiMet.ptCorrUp = puppimetUp.Pt();
+    event.puppiMet.phiCorrUp = puppimetUp.Phi();
+    event.puppiMet.ptCorrDown = puppimetDown.Pt();
+    event.puppiMet.phiCorrDown = puppimetDown.Phi();
     //std::cout << "After photon corr" << std::endl;
     //std::cout << event.puppiMet.pt << std::endl;
+
   }
 
   if (!analysis.puppiJets) // xy due to dead tracker regions. PFMET includes CH from all vertices. Not needed for PuppiMET.

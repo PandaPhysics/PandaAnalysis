@@ -91,7 +91,7 @@ void ConfigOp::set_inputBranches()
   } else {
     bl += {"runNumber", "lumiNumber", "eventNumber", "rho",
            "isData", "npv", "npvTrue", "weight", "chsAK4Jets",
-	   "electrons", "muons", "taus", "photons", "puppiAK4Jets",
+           "electrons", "muons", "taus", "photons", "puppiAK4Jets",
            "pfMet", "caloMet", "puppiMet", "rawMet", "trkMet",
            "recoil","metFilters","trkMet"};
 
@@ -110,7 +110,7 @@ void ConfigOp::set_inputBranches()
         analysis.complicatedPhotons || analysis.recalcECF) {
       bl.push_back("pfCandidates");
     }
-    if (analysis.deepTracks || breg || analysis.hbb) {
+    if (analysis.deepTracks || breg || analysis.hbb || analysis.darkg) {
       bl += {"tracks","vertices"};
     }
 
@@ -155,7 +155,7 @@ void ConfigOp::set_outputBranches()
   }
   if (analysis.complicatedLeptons) {
     std::vector<TString> keepable;
-    if (!analysis.hbb) {
+    if (!analysis.hbb && !analysis.darkg) {
       keepable.push_back("jetNBtags");
       keepable.push_back("jetNMBtags");
     }
@@ -171,6 +171,9 @@ void ConfigOp::set_outputBranches()
       {".*JES.*","looseGen.*","genLep.*","genElectron.*","genTau.*","gen.*Top.*","genMjj.*","genFat.*","barrel.*"},
       {"pfmet.*"} // keep total up/down MET variations, difficult to handle the variation offline
     );
+  if (analysis.darkg)
+    gt.RemoveBranches({".*barrel.*",".*isojet.*","jetNB.*","sf_sj.*","sf_btag.*"});
+
 }
 
 void ConfigOp::readData(TString dirPath)
@@ -199,17 +202,17 @@ void ConfigOp::readData(TString dirPath)
   if      (analysis.year == 2017) {
     utils.openCorr(cL1PhotonPreFiring,
                    dirPath+"trigger_eff/L1prefiring_photonpt_2017BtoF.root",
-		   "L1prefiring_photonpt_2017BtoF",
+       "L1prefiring_photonpt_2017BtoF",
                    2);
     utils.openCorr(cL1PreFiring,
                    dirPath+"trigger_eff/L1prefiring_jetpt_2017BtoF.root",
-		   "L1prefiring_jetpt_2017BtoF",
+       "L1prefiring_jetpt_2017BtoF",
                    2);
   } 
   else if (analysis.year == 2016) {
     utils.openCorr(cL1PhotonPreFiring,
                    dirPath+"trigger_eff/L1prefiring_photonpt_2016BtoH.root",
-		   "L1prefiring_photonpt_2016BtoH",
+       "L1prefiring_photonpt_2016BtoH",
                    2);
     utils.openCorr(cL1PreFiring,
                    dirPath+"trigger_eff/L1prefiring_jetpt_2016BtoH.root",
@@ -381,42 +384,42 @@ void ConfigOp::readData(TString dirPath)
                    dirPath+"moriond17/Tracking_12p9.root","htrack2",1);
   }
   // Differential Electroweak VH Corrections
-  utils.openCorr(cWmHEwkCorr	,
-  		 dirPath+"higgs/Wm_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_rebin"	 ,1);
+  utils.openCorr(cWmHEwkCorr  ,
+       dirPath+"higgs/Wm_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_rebin"   ,1);
   utils.openCorr(cWmHEwkCorrUp  ,
-  		 dirPath+"higgs/Wm_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_up_rebin"  ,1);
+       dirPath+"higgs/Wm_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_up_rebin"  ,1);
   utils.openCorr(cWmHEwkCorrDown,
-  		 dirPath+"higgs/Wm_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_down_rebin",1);
-  utils.openCorr(cWpHEwkCorr	,
-  		 dirPath+"higgs/Wp_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_rebin"	 ,1);
+       dirPath+"higgs/Wm_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_down_rebin",1);
+  utils.openCorr(cWpHEwkCorr  ,
+       dirPath+"higgs/Wp_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_rebin"   ,1);
   utils.openCorr(cWpHEwkCorrUp  ,
-  		 dirPath+"higgs/Wp_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_up_rebin"  ,1);
+       dirPath+"higgs/Wp_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_up_rebin"  ,1);
   utils.openCorr(cWpHEwkCorrDown,
-  		 dirPath+"higgs/Wp_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_down_rebin",1);
-  utils.openCorr(cZnnHEwkCorr	 ,
-  		 dirPath+"higgs/Znn_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_rebin"	 ,1);
+       dirPath+"higgs/Wp_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_down_rebin",1);
+  utils.openCorr(cZnnHEwkCorr   ,
+       dirPath+"higgs/Znn_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_rebin"   ,1);
   utils.openCorr(cZnnHEwkCorrUp  ,
-  		 dirPath+"higgs/Znn_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_up_rebin"  ,1);
+       dirPath+"higgs/Znn_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_up_rebin"  ,1);
   utils.openCorr(cZnnHEwkCorrDown,
-  		 dirPath+"higgs/Znn_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_down_rebin",1);
-  utils.openCorr(cZllHEwkCorr	 ,
-  		 dirPath+"higgs/Zll_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_rebin"	 ,1);
+       dirPath+"higgs/Znn_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_down_rebin",1);
+  utils.openCorr(cZllHEwkCorr   ,
+       dirPath+"higgs/Zll_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_rebin"   ,1);
   utils.openCorr(cZllHEwkCorrUp  ,
-  		 dirPath+"higgs/Zll_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_up_rebin"  ,1);
+       dirPath+"higgs/Zll_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_up_rebin"  ,1);
   utils.openCorr(cZllHEwkCorrDown,
-  		 dirPath+"higgs/Zll_nloEWK_weight_unnormalized.root",
-  		 "SignalWeight_nloEWK_down_rebin",1);
+       dirPath+"higgs/Zll_nloEWK_weight_unnormalized.root",
+       "SignalWeight_nloEWK_down_rebin",1);
 
   if (analysis.hbb) {
     utils.openCorr(cJetLoosePUID,
@@ -463,13 +466,13 @@ void ConfigOp::readData(TString dirPath)
   // Currently out of date for 2017
   if (analysis.year!=2018){
     utils.openCorr(cTrigMET,
-		   dirPath+"moriond17/metTriggerEfficiency_recoil_monojet_TH1F.root",
-		   "hden_monojet_recoil_clone_passed",1);
+       dirPath+"moriond17/metTriggerEfficiency_recoil_monojet_TH1F.root",
+       "hden_monojet_recoil_clone_passed",1);
   }
   else
     utils.openCorr(cTrigMET,
-		   dirPath+"trigger_eff/met_trigger_effs_2018.root",
-		   "eff",1);
+       dirPath+"trigger_eff/met_trigger_effs_2018.root",
+       "eff",1);
   utils.openCorr(cTrigEle,
                  dirPath+"moriond17/eleTrig.root","hEffEtaPt",2);
   utils.openCorr(cTrigPho,

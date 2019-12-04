@@ -34,6 +34,8 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
     ADDOP(DeepGenOp<UnpackedGenParticle>);
   else
     ADDOP(DeepGenOp<GenParticle>);
+
+
   ADDOP(JetCorrOp);
   ADDOP(TriggerOp);
   if (analysis.darkg){
@@ -57,25 +59,32 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
 
   postselop = new ContainerOp("post-sel", event, cfg, utils, gt);
   ops_all.emplace_back(postselop);
-  ADDOP(GenPOp);
-  ADDOP(JetFlavorOp); 
-  ADDOP(HbbMiscOp);
-  ADDOP(GenVHOp); 
-  ADDOP(KinFitOp);
-  ADDOP(InclusiveLeptonOp);
-  ADDOP(SoftActivityOp);
-  ADDOP(FatJetMatchingOp);
-  ADDOP(BTagSFOp);
-  ADDOP(BTagWeightOp);
-  ADDOP(TriggerEffOp);
-  ADDOP(GenStudyEWKOp);
-  ADDOP(GenStudyPhoOp);
-  ADDOP(QCDUncOp);
-  ADDOP(GenLepOp);
-  ADDOP(GenJetNuOp);
-  ADDOP(HFCountingOp);
-  ADDOP(KFactorOp);
-  ADDOP(ZvvHClassOp);
+
+  if (!analysis.genOnly){
+    ADDOP(GenPOp);
+    ADDOP(JetFlavorOp); 
+    ADDOP(HbbMiscOp);
+    ADDOP(GenVHOp); 
+    ADDOP(KinFitOp);
+    ADDOP(InclusiveLeptonOp);
+    ADDOP(SoftActivityOp);
+    ADDOP(FatJetMatchingOp);
+    ADDOP(BTagSFOp);
+    ADDOP(BTagWeightOp);
+    ADDOP(TriggerEffOp);
+    ADDOP(GenStudyEWKOp);
+    ADDOP(GenStudyPhoOp);
+    ADDOP(QCDUncOp);
+    ADDOP(GenLepOp);
+    ADDOP(GenJetNuOp);
+    ADDOP(HFCountingOp);
+    ADDOP(KFactorOp);
+    ADDOP(ZvvHClassOp);
+  }
+  else{
+    ADDOP(GenPOp);
+    ADDOP(KFactorOp);
+  }
 
   for (auto& op : ops_all)
     op->print();
@@ -126,6 +135,7 @@ PandaAnalyzer::PandaAnalyzer(Analysis* a, int debug_/*=0*/) :
   gt.is_hbb            = analysis.hbb;
   gt.is_vh             = analysis.vqqhbb; 
   gt.is_vbf            = analysis.vbf;
+  gt.is_darkg          = analysis.darkg;
   gt.is_fatjet         = (analysis.fatjet || analysis.deepGen);
   gt.is_leptonic       = analysis.complicatedLeptons;
   gt.is_photonic       = analysis.complicatedPhotons;
@@ -255,8 +265,12 @@ void PandaAnalyzer::Run()
   unsigned nZero, nEvents, iE=0;
   setupRun(nZero, nEvents); 
 
-  for (auto& op : ops_all)
+  for (auto& op : ops_all){
+    cout << "Printing" << endl;
+    op->print();
     op->initialize(registry);
+  }
+  cout << "Done printing" << endl;
 
   ProgressReporter pr("PandaAnalyzer::Run",&iE,&nEvents,100);
   TimeReporter& tr = cfgop.cfg.tr;

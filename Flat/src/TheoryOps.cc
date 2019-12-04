@@ -790,16 +790,21 @@ void GenStudyPhoOp::do_execute()
   if (analysis.isData) return;
 
   int nGen = genP->size();
+  float maxphopt = 0;
+  float maxphoeta = -99.;
+  float maxphophi = -99.;
   for (int iG=0; iG!=nGen; ++iG) {
     auto& part = pToGRef(genP->at(iG));
     int pdgid = part.pdgid;
     unsigned int abspdgid = abs(pdgid);
-         
-    if (abspdgid == 22 && part.finalState && (part.testFlag(GenParticle::kIsPrompt) || part.statusFlags == GenParticle::kIsPrompt)){
-      gt.genPho1Pt = part.pt();
-      gt.genPho1Eta = part.eta();
-      gt.genPho1Phi = part.phi();
-      break;
+    if (abspdgid == 22 && part.pt() > maxphopt){
+      maxphopt = part.pt();
+      maxphoeta = part.eta();
+      maxphophi = part.phi();
     }
   }
+  
+  gt.genPho1Pt = maxphopt;
+  gt.genPho1Eta = maxphoeta;
+  gt.genPho1Phi = maxphophi;
 }
