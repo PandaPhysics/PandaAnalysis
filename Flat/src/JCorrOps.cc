@@ -36,7 +36,7 @@ void correctMETXY(int npv, int runnb, RecoMet& met, int year, bool isData)
   double METxcorr(0.),METycorr(0.);
   if (year == 2018){
     if (isData){
-      /*
+      
 	//Type 1 PFMET
       if(runnb >=315252 &&runnb<=316995) METxcorr = -(0.362865*npv -1.94505);
       if(runnb >=315252 &&runnb<=316995) METycorr = -(0.0709085*npv -0.307365);
@@ -46,8 +46,9 @@ void correctMETXY(int npv, int runnb, RecoMet& met, int year, bool isData)
       if(runnb >=319313 &&runnb<=320393) METycorr = -(0.118956*npv -1.96434);
       if(runnb >=320394 &&runnb<=325273) METxcorr = -(0.531151*npv -1.37568);
       if(runnb >=320394 &&runnb<=325273) METycorr = -(0.0884639*npv -1.57089);
-      */
+      
       // Type 2
+      /*
       if(runnb >=315252 &&runnb<=316995) METxcorr = -(0.362642*npv +-1.55094);
       if(runnb >=315252 &&runnb<=316995) METycorr = -(0.0737842*npv +-0.677209);
       if(runnb >=316998 &&runnb<=319312) METxcorr = -(0.485614*npv +-2.45706);
@@ -56,16 +57,17 @@ void correctMETXY(int npv, int runnb, RecoMet& met, int year, bool isData)
       if(runnb >=319313 &&runnb<=320393) METycorr = -(0.147811*npv +-1.48941);
       if(runnb >=320394 &&runnb<=325273) METxcorr = -(0.520265*npv +-1.20322);
       if(runnb >=320394 &&runnb<=325273) METycorr = -(0.143919*npv +-0.979328);
+      */
     }
     else{
-      /*
-	//Type 1 PFMET
+      
+      //Type 1 PFMET
       METxcorr = -(0.296713*npv -0.141506);
       METycorr = -(0.115685*npv +0.0128193);
-      */
+      
       // Type 2
-      METxcorr = -(0.299448*npv +-0.13866);
-      METycorr = -(0.118785*npv +0.0889588);
+      //METxcorr = -(0.299448*npv +-0.13866);
+      //METycorr = -(0.118785*npv +0.0889588);
     }
 
     std::pair<double,double> nominal = METXYCorr_Met_MetPhi(met.pt,met.phi,METxcorr,METycorr);
