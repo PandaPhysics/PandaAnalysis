@@ -59,7 +59,7 @@ for d in [split_dir, merged_dir]:
 inbase = environ['SUBMIT_OUTDIR']
 outbase = environ['PANDA_FLATDIR']
 
-hadd_cmd = 'hadd -k -f '
+hadd_cmd = 'hadd -k -n 300 -f6 '
 
 if VERBOSE:
     suffix = ''

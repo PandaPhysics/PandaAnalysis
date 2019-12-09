@@ -583,7 +583,7 @@ void KFactorOp::do_vpt()
         analysis.processType != kW &&
         analysis.processType != kWEWK && 
         analysis.processType != kA && 
-        analysis.processType != kVV)
+        analysis.processType != kVV && !analysis.darkg)
       return;
 
     // calculate the mjj 
@@ -596,7 +596,7 @@ void KFactorOp::do_vpt()
         if (!gp.finalState)
           continue;
         unsigned id = abs(gp.pdgid);
-        if ((id == 11 || id == 13) &&
+        if ((id == 11 || id == 13 || id == 22 || id == 53) &&
             (gp.pt() > 20 && fabs(gp.eta()) < 4.7))
           genLeptons.push_back(&gp);
       }
@@ -614,8 +614,8 @@ void KFactorOp::do_vpt()
           continue;
 
         v.SetPtEtaPhiM(gj.pt(), gj.eta(), gj.phi(), gj.m());
-        if (nGenJet == 0) { gt.genJet1Pt = gj.pt(); gt.genJet1Eta = gj.eta(); }
-        else if (nGenJet == 1) { gt.genJet2Pt = gj.pt(); gt.genJet2Eta = gj.eta(); }
+        if (nGenJet == 0) { gt.genJet1Pt = gj.pt(); gt.genJet1Eta = gj.eta(); gt.genJet1Phi = gj.phi(); }
+        else if (nGenJet == 1) { gt.genJet2Pt = gj.pt(); gt.genJet2Eta = gj.eta(); gt.genJet2Phi = gj.phi(); }
 
         vGenJet += v;
         nGenJet++;

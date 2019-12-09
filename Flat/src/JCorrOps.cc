@@ -143,8 +143,15 @@ void JetCorrOp::do_execute()
   if (analysis.rerunJES){
     JetCorrector *jc = new JetCorrector();
     jc->SetYear(analysis.year);
-    if (analysis.puppiJets){
+    if (analysis.puppiJets && analysis.puppiMet){
       jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.puppiAK4Jets,&event.rawMet,&event.puppiMet,event.runNumber, scale);
+      out_jets = jc->GetCorrectedJets();
+      out_met = jc->GetCorrectedMet();
+      event.puppiMet.pt = out_met->pt;
+      event.puppiMet.phi = out_met->phi;
+    }
+    else if (!analysis.puppiJets && analysis.puppiMet){
+      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.puppiMet,event.runNumber, scale);
       out_jets = jc->GetCorrectedJets();
       out_met = jc->GetCorrectedMet();
       event.puppiMet.pt = out_met->pt;
@@ -159,7 +166,7 @@ void JetCorrOp::do_execute()
     }
   }
 
-  if (analysis.puppiJets){
+  if (analysis.puppiMet){
     // Puppi Hack: taking photons out of puppimet
     TLorentzVector puppimet, puppimetUp, puppimetDown;
     puppimet.SetPtEtaPhiM(event.puppiMet.pt,0.0,event.puppiMet.phi,0.0);
@@ -190,12 +197,12 @@ void JetCorrOp::do_execute()
 
   }
 
-  if (!analysis.puppiJets) // xy due to dead tracker regions. PFMET includes CH from all vertices. Not needed for PuppiMET.
+  if (!analysis.puppiMet) // xy due to dead tracker regions. PFMET includes CH from all vertices. Not needed for PuppiMET.
     correctMETXY(event.npv,event.runNumber,event.pfMet,analysis.year,analysis.isData);
 
   METLOOP {
     auto& jets = (*jesShifts)[shift];
-    if (!analysis.puppiJets){
+    if (!analysis.puppiMet){
     // PF
       shiftMET(event.pfMet, jets.vpfMET, i2jes(shift));
       gt.pfmet[shift] = jets.vpfMET.Pt();

@@ -85,6 +85,24 @@ vbfgpuppi = lambda v=False : _analysis(
         fatjet = False,
         btagSFs = False,
         puppiJets = True,
+        puppiMet = True,
+        darkg = True,
+        varyJES = True,
+        rerunJES = True,
+        rerunJER = True,
+        mcTriggers = True,
+        complicatedPhotons = True,
+        complicatedLeptons = True
+    )
+
+vbfgpuppimet = lambda v=False : _analysis(
+        name = 'vbfg',
+        verbose = v,
+        vbf = True,
+        fatjet = False,
+        btagSFs = False,
+        puppiJets = False,
+        puppiMet = True,
         darkg = True,
         varyJES = True,
         rerunJES = True,

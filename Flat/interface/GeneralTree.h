@@ -374,6 +374,8 @@ class GeneralTree : public genericTree {
   float genJet2Pt;
   float genJet1Eta;
   float genJet2Eta;
+  float genJet1Phi;
+  float genJet2Phi;
   float genMuonPt;
   float genMuonEta;
   float genElectronPt;

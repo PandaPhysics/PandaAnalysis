@@ -88,6 +88,7 @@ namespace pa {
     bool mcTriggers = false;
     bool monoh = false;
     bool puppiJets = true;
+    bool puppiMet = false;
     bool recalcECF = false; 
     bool recluster = false;
     bool reclusterFJ = false;

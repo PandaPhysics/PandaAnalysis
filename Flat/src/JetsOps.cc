@@ -189,7 +189,52 @@ void JetOp::do_execute()
       }
       if (jw.nominal->isLep || jw.nominal->isPho || jw.nominal->isPileupJet)
         continue;
-      if ((analysis.vbf || analysis.hbb) && ((!jet.loose && analysis.year == 2016) || (!jet.tight && (analysis.year == 2017 || analysis.year == 2018))))
+
+      bool is_tight = false;
+      float CEMF = jet.cef;
+      float CHF = jet.chf;
+      float NEMF = jet.nef;
+      float NHF = jet.nhf;
+
+      float puppiMultiplicity = 0;
+      float neutralPuppiMultiplicity = 0;
+    
+      if (analysis.puppiJets){
+	for (const auto& pf : jet.constituents) {
+	  if (!pf.isValid())
+	    continue;
+	  auto weight = pf->puppiW();
+	  puppiMultiplicity += weight;
+	  // This logic is taken from RecoJets/JetProducers/src/JetSpecific.cc
+	  switch (std::abs(pf->pdgId())) {
+	  case 130:  //PFCandidate::h0 :    // neutral hadron
+	    neutralPuppiMultiplicity += weight;
+	    break;
+	  case 22:  //PFCandidate::gamma:   // photon
+	    neutralPuppiMultiplicity += weight;
+	    break;
+	  case 1:  // PFCandidate::h_HF :    // hadron in HF
+	    neutralPuppiMultiplicity += weight;
+	    break;
+	  case 2:  //PFCandidate::egamma_HF :    // electromagnetic in HF
+	    neutralPuppiMultiplicity += weight;
+	    break;
+	  }
+	}
+      }
+
+      if (analysis.year == 2018){
+	if (analysis.puppiJets){
+	  is_tight = ( aeta>3.0 && NEMF<0.90 && NHF>0.02 && neutralPuppiMultiplicity>2 && neutralPuppiMultiplicity<15 ) ||  ( aeta>2.7 && aeta<=3.0 && NHF<0.99 ) || ( aeta>2.6 && aeta<=2.7 && CEMF<0.8 && NEMF<0.99 && NHF < 0.9 ) || ( aeta<=2.6 && CEMF<0.8 && CHF>0 && puppiMultiplicity>1 && NEMF<0.9 && NHF < 0.9 );
+	}
+	else
+	  is_tight = (aeta>2.7  && jet.tight) || ( aeta>2.6 && aeta<=2.7 && CEMF<0.8 && NEMF<0.99 && NHF < 0.9 ) ||  (aeta<=2.6 && CEMF<0.8 && CHF>0 && jet.constituents.size()>1 && NEMF<0.9 && NHF < 0.9 );
+      }
+      else
+	is_tight = jet.tight;
+
+
+      if ((analysis.vbf || analysis.hbb) && ((!jet.loose && analysis.year == 2016) || (!is_tight && (analysis.year == 2017 || analysis.year == 2018))))
         continue;
 
       float csv = centralOnly( (analysis.useDeepCSV? jet.deepCSVb + jet.deepCSVbb : jet.csv), aeta);
