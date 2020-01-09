@@ -22,7 +22,12 @@ JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
   if (smear) {
     if (recalcJER) {
       double smearFac=1, smearFacUp=1, smearFacDown=1;
-      jer->getStochasticSmear(pt,jet.eta(),event.rho,smearFac,smearFacUp,smearFacDown);
+      if (jet.matchedGenJet.isValid()){
+	jer->getStochasticSmear(pt,jet.eta(),event.rho,smearFac,smearFacUp,smearFacDown,1,jet.matchedGenJet->pt(), analysis.year);
+      }
+      else {
+	jer->getStochasticSmear(pt,jet.eta(),event.rho,smearFac,smearFacUp,smearFacDown,0,-99, analysis.year);
+      }
       pt *= smearFac;
     } else {
       pt = jet.ptSmear;
@@ -51,7 +56,7 @@ void BaseJetOp::do_readData(TString dirPath)
 
   if (recalcJER) {
     jer.reset(new JERReader(dirPath+"/jec/"+jerV+"/"+jerV+"_MC_SF_"+jetType+".txt",
-                            dirPath+"/jec/"+jerV+"/"+jerV+"_MC_PtResolution_"+jetType+".txt"));
+                            dirPath+"/jec/"+jerV+"/"+jerV+"_MC_PtResolution_"+jetType+".txt", analysis.year));
   }
 
   if (!analysis.rerunJES)
@@ -129,9 +134,20 @@ void JetOp::varyJES()
   JESLOOP {
     auto& jets = (*jesShifts)[shift];
     jets.reserve(ak4Jets->size());
+    
+    std::vector<JetWrapper> all_presorted;
+    all_presorted.reserve(ak4Jets->size());
     for (auto &j : *ak4Jets) {
-      jets.all.push_back(shiftJet(j, i2jes(shift), (analysis.hbb || analysis.darkg) && !analysis.isData));
+      all_presorted.push_back(shiftJet(j, i2jes(shift), (analysis.hbb || analysis.darkg) && !analysis.isData));
     }
+    std::sort(all_presorted.begin(), all_presorted.end(),
+	      [](const JetWrapper x, const JetWrapper y) { return x.pt > y.pt; });
+    jets.all = all_presorted;
+    
+    //for (auto &j : *ak4Jets) {
+    //  jets.all.push_back(shiftJet(j, i2jes(shift), (analysis.hbb || analysis.darkg) && !analysis.isData));
+    //}
+    
   }
   for (size_t iJ = 0; iJ != (*jesShifts)[0].all.size(); ++iJ) {
     auto* nominal = &((*jesShifts)[0].all[iJ]);
@@ -152,7 +168,7 @@ void JetOp::do_execute()
 
   varyJES();
 
-  float maxJetEta = analysis.vbf ? 4.7 : 4.5;
+  float maxJetEta = analysis.vbf ? 4.7 : 4.7;
   int nJetDPhi = analysis.vbf ? 4 : 5;
   float minMinJetPt = min(cfg.minJetPt, cfg.minBJetPt);
 
@@ -229,6 +245,13 @@ void JetOp::do_execute()
 	}
 	else
 	  is_tight = (aeta>2.7  && jet.tight) || ( aeta>2.6 && aeta<=2.7 && CEMF<0.8 && NEMF<0.99 && NHF < 0.9 ) ||  (aeta<=2.6 && CEMF<0.8 && CHF>0 && jet.constituents.size()>1 && NEMF<0.9 && NHF < 0.9 );
+      }
+      else if (analysis.year == 2017){
+	if (analysis.puppiJets){
+	  is_tight = ( aeta>3.0 && NEMF<0.90 && NHF>0.02 && neutralPuppiMultiplicity>2 && neutralPuppiMultiplicity<15 ) ||  ( aeta>2.7 && aeta<=3.0 && NHF<0.99 ) || ( aeta>2.6 && aeta<=2.7 && CEMF<0.8 && NEMF<0.99 && NHF < 0.9 ) || ( aeta<=2.6 && CEMF<0.8 && CHF>0 && puppiMultiplicity>1 && NEMF<0.9 && NHF < 0.9 );
+	}
+	else
+	  is_tight = jet.tight;
       }
       else
 	is_tight = jet.tight;
@@ -370,6 +393,22 @@ void JetOp::do_execute()
     //if (isNominal)
     //  adjet->execute();
 
+    /*
+    gt.avgDPhi[shift] = 0;
+    std::vector<TLorentzVector> allVecs;
+    TLorentzVector vJet(0,0,0,0); 
+    for (int m = 0; m<gt.nJot[shift]; m++){
+      TLorentzVector tmpJet(0,0,0,0); 
+      tmpJet.SetPtEtaPhiM(gt.jotPt[shift][m], gt.jotEta[m], gt.jotPhi[m], gt.jotM[m]);
+      vJet +=  tmpJet;
+      allVecs.push_back(tmpJet);
+      for (int n = m+1; n<gt.nJot[shift]; n++){
+	gt.avgDPhi[shift] += 1./gt.nJot[shift]*SignedDeltaPhi(gt.jotPhi[m],gt.jotPhi[n]);
+      }
+    }
+    gt.jotTotM[shift] = vJet.M();
+    gt.sphericity[shift] = sphericity(2.,allVecs);
+    */
   } // shift loop
   gt.barrelHTMiss = vBarrelJets.Pt();
 
