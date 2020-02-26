@@ -23,7 +23,7 @@ namespace pa {
 		JetCorrector();
 		~JetCorrector();
 
-		void RunCorrection(bool isData, float rho, panda::MuonCollection *muons_, panda::JetCollection *injets_, panda::Met *rawmet_=0, panda::Met *pfmet_=0,int runNumber = 0, FactorizedJetCorrector *corrector = 0);
+		void RunCorrection(bool isData, float rho, panda::MuonCollection *muons_, panda::JetCollection *injets_, panda::Met *rawmet_=0, panda::Met *pfmet_=0,int runNumber = 0, FactorizedJetCorrector *corrector = 0, int year = 0);
 		panda::JetCollection *GetCorrectedJets();
 		panda::Met *GetCorrectedMet();
 

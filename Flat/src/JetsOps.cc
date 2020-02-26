@@ -6,6 +6,7 @@
 using namespace pa;
 using namespace std;
 using namespace panda;
+
 namespace fj = fastjet;
 using JECParams = JetCorrectorParameters;
 
@@ -144,10 +145,6 @@ void JetOp::varyJES()
 	      [](const JetWrapper x, const JetWrapper y) { return x.pt > y.pt; });
     jets.all = all_presorted;
     
-    //for (auto &j : *ak4Jets) {
-    //  jets.all.push_back(shiftJet(j, i2jes(shift), (analysis.hbb || analysis.darkg) && !analysis.isData));
-    //}
-    
   }
   for (size_t iJ = 0; iJ != (*jesShifts)[0].all.size(); ++iJ) {
     auto* nominal = &((*jesShifts)[0].all[iJ]);
@@ -168,22 +165,27 @@ void JetOp::do_execute()
 
   varyJES();
 
-  float maxJetEta = analysis.vbf ? 4.7 : 4.7;
+  float maxJetEta = analysis.vbf ? 5.2 : 5.2;
   int nJetDPhi = analysis.vbf ? 4 : 5;
   float minMinJetPt = min(cfg.minJetPt, cfg.minBJetPt);
 
   TLorentzVector vBarrelJets;
+
+  int nj_ht = 0, nj_mht = 0;
+  double onlineht = 0., onlinemhx = 0., onlinemhy = 0.;
 
   JESLOOP {
     bool isNominal = (shift == jes2i(shiftjes::kNominal));
     bool metShift = (i2jes(shift) <= shiftjes::kJESTotalDown);
     JESHandler& jets = (*jesShifts)[shift];
     (*currentJES) = &jets;
+
     for (auto& jw : jets.all) {
       (*currentJet) = &jw;
       auto& jet = jw.get_base();
       float aeta = abs(jet.eta());
       float pt = jw.pt;
+
 
       if (analysis.year == 2016 || analysis.year == 2017) {
         if (isNominal && !isMatched(matchVeryLoosePhos.get(),0.16,jet.eta(),jet.phi())) {
@@ -283,6 +285,32 @@ void JetOp::do_execute()
 
         jets.cleaned.push_back(&jw);
 
+	// Compute equivalent to online MHTNoMu
+	// https://github.com/cms-sw/cmssw/blob/master/HLTrigger/JetMET/src/HLTHtMhtProducer.cc
+
+        if (isNominal){
+
+	  TLorentzVector vj; vj.SetPtEtaPhiM(pt, jet.eta(), jet.phi(), jet.m());
+	  
+	  double vjpt = vj.Et(); 
+	  double vjeta = vj.Eta();
+	  double vjphi = vj.Phi();
+	  double vjpx = vj.Et() * TMath::Cos(vjphi);
+	  double vjpy = vj.Et() * TMath::Sin(vjphi);
+	  
+	  if (vjpt > 20 && std::abs(vjeta) < 5.2) {
+	    onlineht += vjpt;
+	    ++nj_ht;
+	  }
+	  
+	  if (vjpt > 20 && std::abs(vjeta) < 5.2) {
+	    onlinemhx -= vjpx;
+	    onlinemhy -= vjpy;
+	    ++nj_mht;
+	  }
+	}
+
+
         if (jets.cleaned.size() < 3) {
           if (utils.getCorr(cBadECALJets, jet.eta(), jet.phi()) > 0)
             gt.badECALFilter = 0;
@@ -357,6 +385,20 @@ void JetOp::do_execute()
           }
         }
       }
+    } // Jet loop
+
+
+    // Second part of MHTNoMu calculation
+    if (isNominal){
+      for (auto& cand : event.pfCandidates) {
+	if (std::abs(cand.pdgId()) == 13) {
+	  onlinemhx += cand.px();
+	  onlinemhy += cand.py();
+	}
+      }
+      TLorentzVector tmp;
+      tmp.SetPxPyPzE(onlinemhx,onlinemhy,0,sqrt(onlinemhx * onlinemhx + onlinemhy * onlinemhy));
+      gt.pfmhtnomu = tmp.Pt();
     }
 
     gt.nJotMax = max(gt.nJot[shift], gt.nJotMax);
@@ -389,6 +431,10 @@ void JetOp::do_execute()
       vbf->execute();
     }
     hbb->execute();
+
+
+    
+
 
     //if (isNominal)
     //  adjet->execute();

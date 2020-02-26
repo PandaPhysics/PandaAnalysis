@@ -324,6 +324,7 @@ class GeneralTree : public genericTree {
   float pfmetnomu[3];
   float puppimet[3];
   float puppimetphi[3];
+  float pfmhtnomu;
   float calomet;
   float calometphi;
   float pfcalobalance;

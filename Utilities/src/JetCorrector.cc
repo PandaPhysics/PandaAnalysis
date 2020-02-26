@@ -17,10 +17,13 @@ void JetCorrector::SetYear(int year){
   era = new EraHandler(year);
 }
 
-void JetCorrector::RunCorrection(bool isData, float rho, panda::MuonCollection *muons_, panda::JetCollection *injets_, panda::Met *rawmet_, panda::Met *pfmet_, int runNumber, FactorizedJetCorrector *corrector)
+void JetCorrector::RunCorrection(bool isData, float rho, panda::MuonCollection *muons_, panda::JetCollection *injets_, panda::Met *rawmet_, panda::Met *pfmet_, int runNumber, FactorizedJetCorrector *corrector, int year)
 {
         TVector2 new_met {pfmet_->v()};
         TVector2 met_correction {};
+
+	TLorentzVector vBadJets;
+	vBadJets.SetPtEtaPhiM(0,0,0,0);
 
 	//TLorentzVector v_outmet;
 	//v_outmet.SetPtEtaPhiM(rawmet_->pt,0,rawmet_->phi,0);
@@ -82,9 +85,27 @@ void JetCorrector::RunCorrection(bool isData, float rho, panda::MuonCollection *
 	  met_correction.SetMagPhi(old_pt - new_pt, j_in.phi());
 
 	  new_met += met_correction;
+
+	  // 2017 EE fix  
+	  if (year == 2017){
+	    if(abs(j_in.eta()) > 2.650 && abs(j_in.eta()) < 3.139 && j_in.rawPt < 50 && j_in.pt() > 15 && (j_in.cef + j_in.nef) <= 0.9){
+	      TLorentzVector vj;
+	      vj.SetPtEtaPhiM(j_in.pt(),j_in.eta(),j_in.phi(),j_in.m());
+	      vBadJets = vBadJets + vj;
+	    }
+	  }
 	}
 	
-	outmet->setXY(new_met.X(), new_met.Y());
+	if (year == 2017){
+	  TVector2 BADJETS;
+	  BADJETS.SetMagPhi(vBadJets.Pt(), vBadJets.Phi());
+	  TVector2 NEWMET;
+	  NEWMET = BADJETS+new_met;	
+	  outmet->setXY(NEWMET.X(), NEWMET.Y());
+	}
+	else
+	  outmet->setXY(new_met.X(), new_met.Y());
+
 
 	// reorder jets by pT
 	//outjets->sort(panda::Particle::PtGreater);

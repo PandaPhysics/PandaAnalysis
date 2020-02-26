@@ -144,21 +144,21 @@ void JetCorrOp::do_execute()
     JetCorrector *jc = new JetCorrector();
     jc->SetYear(analysis.year);
     if (analysis.puppiJets && analysis.puppiMet){
-      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.puppiAK4Jets,&event.rawMet,&event.puppiMet,event.runNumber, scale);
+      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.puppiAK4Jets,&event.rawMet,&event.puppiMet,event.runNumber,scale,analysis.year);
       out_jets = jc->GetCorrectedJets();
       out_met = jc->GetCorrectedMet();
       event.puppiMet.pt = out_met->pt;
       event.puppiMet.phi = out_met->phi;
     }
     else if (!analysis.puppiJets && analysis.puppiMet){
-      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.puppiMet,event.runNumber, scale);
+      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.puppiMet,event.runNumber,scale,analysis.year);
       out_jets = jc->GetCorrectedJets();
       out_met = jc->GetCorrectedMet();
       event.puppiMet.pt = out_met->pt;
       event.puppiMet.phi = out_met->phi;
     }
     else{
-      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.pfMet,event.runNumber, scale);
+      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.pfMet,event.runNumber,scale,analysis.year);
       out_jets = jc->GetCorrectedJets();
       out_met = jc->GetCorrectedMet();
       event.pfMet.pt = out_met->pt;
@@ -167,24 +167,10 @@ void JetCorrOp::do_execute()
   }
 
   if (analysis.puppiMet){
-    // Puppi Hack: taking photons out of puppimet
     TLorentzVector puppimet, puppimetUp, puppimetDown;
     puppimet.SetPtEtaPhiM(event.puppiMet.pt,0.0,event.puppiMet.phi,0.0);
     puppimetUp.SetPtEtaPhiM(event.puppiMet.ptCorrUp,0.0,event.puppiMet.phiCorrUp,0.0);
     puppimetDown.SetPtEtaPhiM(event.puppiMet.ptCorrDown,0.0,event.puppiMet.phiCorrDown,0.0);
-    /*
-    for (auto& cand : event.pfCandidates) {
-      if (abs(cand.pdgId()) == 22 && cand.pt()>80){
-	TLorentzVector pho;
-	pho.SetPtEtaPhiM((1-cand.puppiW())*cand.pt(),cand.eta(),cand.phi(),0);
-	puppimet -= pho;
-	puppimetUp -= pho;
-	puppimetDown -= pho;
-      }
-    }
-    */
-    //std::cout << "Before photon corr" << std::endl;
-    //std::cout << event.puppiMet.pt << std::endl;
 
     event.puppiMet.pt = puppimet.Pt();
     event.puppiMet.phi = puppimet.Phi();
@@ -192,8 +178,6 @@ void JetCorrOp::do_execute()
     event.puppiMet.phiCorrUp = puppimetUp.Phi();
     event.puppiMet.ptCorrDown = puppimetDown.Pt();
     event.puppiMet.phiCorrDown = puppimetDown.Phi();
-    //std::cout << "After photon corr" << std::endl;
-    //std::cout << event.puppiMet.pt << std::endl;
 
   }
 

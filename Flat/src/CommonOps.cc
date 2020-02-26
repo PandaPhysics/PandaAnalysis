@@ -56,7 +56,7 @@ void TriggerOp::do_init(Registry& registry)
           "HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60",
           "HLT_PFMETNoMu120_PFMHTNoMu120_IDTight",
           "HLT_PFMETNoMu130_PFMHTNoMu130_IDTight",
-          "HLT_PFMETNoMu140_PFMHTNoMu140_IDTight",
+	  "HLT_PFMETNoMu140_PFMHTNoMu140_IDTight",
         };
     } else if (analysis.year == 2018) { 
         paths = {
@@ -139,20 +139,17 @@ void TriggerOp::do_init(Registry& registry)
     triggerHandlers[kSingleEleTrig].addTriggers(paths);
     
     // single pho
-    paths = {
-          "HLT_Photon175",
-          "HLT_Photon200",
-          "HLT_Photon165_HE10",
-          "HLT_Photon36_R9Id90_HE10_IsoM",
-          "HLT_Photon50_R9Id90_HE10_IsoM",
-          "HLT_Photon75_R9Id90_HE10_IsoM",
-          "HLT_Photon90_R9Id90_HE10_IsoM",
-          "HLT_Photon120_R9Id90_HE10_IsoM",
-          "HLT_Photon165_R9Id90_HE10_IsoM",
-          "HLT_Photon300_NoHE",
-          "HLT_ECALHT800",
-          "HLT_CaloJet500_NoJetID"
-    };
+    if (analysis.year == 2016) {
+      paths = {
+	"HLT_Photon175"
+      };
+    }
+    else{
+      paths = {
+	"HLT_Photon200"
+      };
+    }
+
     triggerHandlers[kSinglePhoTrig].addTriggers(paths);
 
     // Single muon
@@ -168,17 +165,11 @@ void TriggerOp::do_init(Registry& registry)
         };
       } else if (analysis.year == 2017) {
         paths = {
-          "HLT_IsoMu24",      
-          "HLT_IsoMu27",
-          "HLT_IsoMu30"
-          "HLT_Mu50"
+          "HLT_IsoMu27"
         };
       } else if (analysis.year == 2018) {
         paths = {
-          "HLT_IsoMu24",      
-          "HLT_IsoMu27",
-          "HLT_IsoMu30"
-          "HLT_Mu50"
+          "HLT_IsoMu27"
         };
       }
     } else {

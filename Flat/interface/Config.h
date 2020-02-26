@@ -37,7 +37,7 @@ namespace pa {
     const Analysis& analysis;
     TimeReporter tr;
 
-    float minJetPt{30};
+    float minJetPt{20};
     float minBJetPt{30};
     int maxshiftJES{1};
     float minGenBosonPt{100};
