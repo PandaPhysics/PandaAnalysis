@@ -200,7 +200,10 @@ bool VBFGamma::do_accept() const
   if (gt->jot12Mass[jUp]<500 && gt->jot12Mass[jDown]<500 && gt->jot12Mass[nominal]<500)
     return false;
 
-  if (gt->pfmet[jUp]<20 && gt->pfmet[jDown]<20 && gt->pfmet[nominal]<20 && gt->puppimet[jUp]<20 && gt->puppimet[jDown]<20 && gt->puppimet[nominal]<20)
+  if (gt->jot12DEta[jUp]<2.5 && gt->jot12DEta[jDown]<2.5 && gt->jot12DEta[nominal]<2.5)
+    return false;
+
+  if (gt->pfmet[jUp]<30 && gt->pfmet[jDown]<30 && gt->pfmet[nominal]<30 && gt->puppimet[jUp]<30 && gt->puppimet[jDown]<30 && gt->puppimet[nominal]<30)
     return false;
   
   if (gt->loosePho1Pt>80 || gt->alterPho1Pt>80)

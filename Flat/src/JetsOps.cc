@@ -174,18 +174,45 @@ void JetOp::do_execute()
   int nj_ht = 0, nj_mht = 0;
   double onlineht = 0., onlinemhx = 0., onlinemhy = 0.;
 
+  TLorentzVector nominalJets;
+  nominalJets.SetPtEtaPhiM(0,0,0,0);
+
   JESLOOP {
     bool isNominal = (shift == jes2i(shiftjes::kNominal));
     bool metShift = (i2jes(shift) <= shiftjes::kJESTotalDown);
     JESHandler& jets = (*jesShifts)[shift];
     (*currentJES) = &jets;
 
+    TLorentzVector currentJESp4;
+    currentJESp4.SetPtEtaPhiM(0,0,0,0);
+
+    for (auto& jw : jets.all) {
+      (*currentJet) = &jw;
+      auto& jet = jw.get_base();
+
+      if (isNominal){
+	nominalJets += jet.p4();
+      }
+      else
+	currentJESp4 += jet.p4();
+    }
+
+    if (!isNominal && metShift){  
+      jets.vpfMET = jets.vpfMET+nominalJets-currentJESp4;
+      jets.vpfUA = jets.vpfUA+nominalJets-currentJESp4;
+      jets.vpfUZ = jets.vpfUZ+nominalJets-currentJESp4;
+      jets.vpfUW = jets.vpfUW+nominalJets-currentJESp4;
+      jets.vpuppiMET = jets.vpuppiMET+nominalJets-currentJESp4;
+      jets.vpuppiUA = jets.vpuppiUA+nominalJets-currentJESp4;
+      jets.vpuppiUZ = jets.vpuppiUZ+nominalJets-currentJESp4;
+      jets.vpuppiUW = jets.vpuppiUW+nominalJets-currentJESp4;
+    }
+
     for (auto& jw : jets.all) {
       (*currentJet) = &jw;
       auto& jet = jw.get_base();
       float aeta = abs(jet.eta());
       float pt = jw.pt;
-
 
       if (analysis.year == 2016 || analysis.year == 2017) {
         if (isNominal && !isMatched(matchVeryLoosePhos.get(),0.16,jet.eta(),jet.phi())) {
@@ -280,8 +307,12 @@ void JetOp::do_execute()
       if (jw.nominal->maxpt > cfg.minJetPt) {
         // for H->bb, don't consider any jet past NJETSAVED, 
         // for other analyses, consider them, just don't save them
-        if ((analysis.hbb || analysis.monoh) && (int)jets.cleaned.size() >= cfg.NJETSAVED)
+        //if (isNominal)
+	// std::cout << "NJETSAVED: " << cfg.NJETSAVED << std::endl;
+        if ((analysis.hbb || analysis.monoh) && (int)jets.cleaned.size() >= cfg.NJETSAVED){
+	  //std::cout << "Continuing" << std::endl;
           continue;
+	}
 
         jets.cleaned.push_back(&jw);
 
@@ -350,6 +381,8 @@ void JetOp::do_execute()
 
         int njet = jets.cleaned.size() - 1;
         if (njet < 2 || ((analysis.hbb || analysis.monoh) && njet < cfg.NJETSAVED)) {
+	  if (isNominal)
+	    //std::cout << "Cleaned jets size: " << jets.cleaned.size() - 1 << std::endl;
           jw.cleaned_idx = njet; 
           gt.jotPt[shift][njet] = pt;
           if (isNominal) {
@@ -434,27 +467,25 @@ void JetOp::do_execute()
 
 
     
-
-
-    //if (isNominal)
-    //  adjet->execute();
-
-    /*
-    gt.avgDPhi[shift] = 0;
-    std::vector<TLorentzVector> allVecs;
-    TLorentzVector vJet(0,0,0,0); 
-    for (int m = 0; m<gt.nJot[shift]; m++){
-      TLorentzVector tmpJet(0,0,0,0); 
-      tmpJet.SetPtEtaPhiM(gt.jotPt[shift][m], gt.jotEta[m], gt.jotPhi[m], gt.jotM[m]);
-      vJet +=  tmpJet;
-      allVecs.push_back(tmpJet);
-      for (int n = m+1; n<gt.nJot[shift]; n++){
-	gt.avgDPhi[shift] += 1./gt.nJot[shift]*SignedDeltaPhi(gt.jotPhi[m],gt.jotPhi[n]);
-      }
+    if (!isNominal && metShift) {      
+      gt.pfmet[shift] = jets.vpfMET.Pt();
+      gt.pfmetphi[shift] = jets.vpfMET.Phi();
+      gt.pfUAmag[shift] = jets.vpfUA.Pt();
+      gt.pfUAphi[shift] = jets.vpfUA.Phi();
+      gt.pfUZmag[shift] = jets.vpfUZ.Pt();
+      gt.pfUZphi[shift] = jets.vpfUZ.Phi();
+      gt.pfUWmag[shift] = jets.vpfUW.Pt();
+      gt.pfUWphi[shift] = jets.vpfUW.Phi();
+      gt.puppimet[shift] = jets.vpuppiMET.Pt();
+      gt.puppimetphi[shift] = jets.vpuppiMET.Phi();
+      gt.puppiUAmag[shift] = jets.vpuppiUA.Pt();
+      gt.puppiUAphi[shift] = jets.vpuppiUA.Phi();
+      gt.puppiUZmag[shift] = jets.vpuppiUZ.Pt();
+      gt.puppiUZphi[shift] = jets.vpuppiUZ.Phi();
+      gt.puppiUWmag[shift] = jets.vpuppiUW.Pt();
+      gt.puppiUWphi[shift] = jets.vpuppiUW.Phi();
     }
-    gt.jotTotM[shift] = vJet.M();
-    gt.sphericity[shift] = sphericity(2.,allVecs);
-    */
+
   } // shift loop
   gt.barrelHTMiss = vBarrelJets.Pt();
 

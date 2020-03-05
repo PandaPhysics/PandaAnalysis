@@ -49,7 +49,7 @@ namespace pa {
 
     int NPFPROPS{9}, NSVPROPS{13}, NMAXPF{100}, NMAXSV{10}, NGENPROPS{8};
     float FATJETMATCHDR2{2.25};
-    int NJETSAVED{2};
+    int NJETSAVED{10};
 
 
     // configuration read from output tree

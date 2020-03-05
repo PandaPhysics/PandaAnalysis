@@ -144,21 +144,21 @@ void JetCorrOp::do_execute()
     JetCorrector *jc = new JetCorrector();
     jc->SetYear(analysis.year);
     if (analysis.puppiJets && analysis.puppiMet){
-      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.puppiAK4Jets,&event.rawMet,&event.puppiMet,event.runNumber,scale,analysis.year);
+      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.puppiAK4Jets,&event.rawMet,&event.puppiMet,event.runNumber,scale,analysis.year,&event.pfCandidates);
       out_jets = jc->GetCorrectedJets();
       out_met = jc->GetCorrectedMet();
       event.puppiMet.pt = out_met->pt;
       event.puppiMet.phi = out_met->phi;
     }
     else if (!analysis.puppiJets && analysis.puppiMet){
-      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.puppiMet,event.runNumber,scale,analysis.year);
+      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.puppiMet,event.runNumber,scale,analysis.year,&event.pfCandidates);
       out_jets = jc->GetCorrectedJets();
       out_met = jc->GetCorrectedMet();
       event.puppiMet.pt = out_met->pt;
       event.puppiMet.phi = out_met->phi;
     }
     else{
-      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.pfMet,event.runNumber,scale,analysis.year);
+      jc->RunCorrection(analysis.isData,event.rho,&event.muons,&event.chsAK4Jets,&event.rawMet,&event.pfMet,event.runNumber,scale,analysis.year,&event.pfCandidates);
       out_jets = jc->GetCorrectedJets();
       out_met = jc->GetCorrectedMet();
       event.pfMet.pt = out_met->pt;
