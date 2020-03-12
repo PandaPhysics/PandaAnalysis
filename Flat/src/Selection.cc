@@ -197,13 +197,16 @@ bool VBFGamma::do_accept() const
   if (gt->nJot[jUp]<2 && gt->nJot[jDown]<2 && gt->nJot[nominal]<2)
     return false;
 
+  if (gt->jotPt[jUp][0]<50 && gt->jotPt[jUp][1]<50 && gt->jotPt[jDown][0]<50 && gt->jotPt[jDown][1]<50 && gt->jotPt[nominal][0]<50 && gt->jotPt[nominal][1]<50)
+    return false;
+
   if (gt->jot12Mass[jUp]<500 && gt->jot12Mass[jDown]<500 && gt->jot12Mass[nominal]<500)
     return false;
 
-  if (gt->jot12DEta[jUp]<2.5 && gt->jot12DEta[jDown]<2.5 && gt->jot12DEta[nominal]<2.5)
+  if (gt->jot12DEta[jUp]<2.7 && gt->jot12DEta[jDown]<2.7 && gt->jot12DEta[nominal]<2.7)
     return false;
 
-  if (gt->pfmet[jUp]<30 && gt->pfmet[jDown]<30 && gt->pfmet[nominal]<30 && gt->puppimet[jUp]<30 && gt->puppimet[jDown]<30 && gt->puppimet[nominal]<30)
+  if (gt->pfmet[jUp]<40 && gt->pfmet[jDown]<40 && gt->pfmet[nominal]<40 && gt->pfUWmag[jUp]<40 && gt->pfUWmag[jDown]<40 && gt->pfUWmag[nominal]<40)
     return false;
   
   if (gt->loosePho1Pt>80 || gt->alterPho1Pt>80)

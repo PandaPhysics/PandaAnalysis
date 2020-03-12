@@ -334,6 +334,7 @@ namespace pa {
 
   struct JESHandler {
     std::vector<JetWrapper> all; // all jets 
+    std::vector<JetWrapper> all_presmear; // all jets 
     std::vector<JetWrapper*> cleaned;
     std::vector<JetWrapper*> cleaned_sorted; // pt-sorted
     std::vector<JetWrapper*> iso;   // cleaned that do not overlap with fj
@@ -353,7 +354,7 @@ namespace pa {
                 [](const JetWrapper* x, const JetWrapper* y) { return x->pt > y->pt; });
     }
     void clear() { 
-        all.clear(); cleaned.clear(); iso.clear();
+        all.clear(); all_presmear.clear(); cleaned.clear(); iso.clear();
         cleaned_sorted.clear();
         central.clear(); bcand.clear(); 
         vpfMETNoMu.SetMagPhi(0,0);
@@ -362,7 +363,7 @@ namespace pa {
                      &vpuppiUW, &vpuppiUZ, &vpuppiUA})
           v_->SetPtEtaPhiM(0,0,0,0);
       }
-    void reserve(int N) { all.reserve(N); cleaned.reserve(N); iso.reserve(N);
+    void reserve(int N) { all.reserve(N); all_presmear.reserve(N); cleaned.reserve(N); iso.reserve(N);
               cleaned_sorted.reserve(N);
               central.reserve(N); bcand.reserve(N); }
   };

@@ -492,6 +492,11 @@ class GeneralTree : public genericTree {
   float jot12Mass[3];
   float jot12DEta[3];
   float jot12DPhi[3];
+  float allJotPt[3];
+  float allJotEta[3];
+  float allJotPhi[3];
+  float allJotE[3];
+  float allJotHT[3];
   int jetNBtags[43];
   int jetNMBtags[43];
   int isojetNBtags[43];

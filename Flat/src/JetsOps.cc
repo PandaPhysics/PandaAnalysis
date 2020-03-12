@@ -24,6 +24,7 @@ JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
     if (recalcJER) {
       double smearFac=1, smearFacUp=1, smearFacDown=1;
       if (jet.matchedGenJet.isValid()){
+	//jer->getStochasticSmear(pt,jet.eta(),event.rho,smearFac,smearFacUp,smearFacDown,0,-99, analysis.year);
 	jer->getStochasticSmear(pt,jet.eta(),event.rho,smearFac,smearFacUp,smearFacDown,1,jet.matchedGenJet->pt(), analysis.year);
       }
       else {
@@ -33,6 +34,7 @@ JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
     } else {
       pt = jet.ptSmear;
     }
+    // Propagation to MET? ...
   }
   if (shift != shiftjes::kNominal) {
     int ishift = jes2i(shift);
@@ -44,6 +46,7 @@ JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
       if (!isUp)
         relShift = -relShift; 
       pt *= (1 + relShift);
+      // Propagation to MET? ...
     } else {
       pt = (isUp ? jet.ptCorrUp :  jet.ptCorrDown) * pt / jet.pt();
     }
@@ -138,12 +141,18 @@ void JetOp::varyJES()
     
     std::vector<JetWrapper> all_presorted;
     all_presorted.reserve(ak4Jets->size());
+    std::vector<JetWrapper> all_presorted_presmear;
+    all_presorted_presmear.reserve(ak4Jets->size());
     for (auto &j : *ak4Jets) {
       all_presorted.push_back(shiftJet(j, i2jes(shift), (analysis.hbb || analysis.darkg) && !analysis.isData));
+      all_presorted_presmear.push_back(shiftJet(j, i2jes(shift), (analysis.hbb || analysis.darkg) && false));
     }
     std::sort(all_presorted.begin(), all_presorted.end(),
 	      [](const JetWrapper x, const JetWrapper y) { return x.pt > y.pt; });
+    std::sort(all_presorted_presmear.begin(), all_presorted_presmear.end(),
+	      [](const JetWrapper x, const JetWrapper y) { return x.pt > y.pt; });
     jets.all = all_presorted;
+    jets.all_presmear = all_presorted_presmear;
     
   }
   for (size_t iJ = 0; iJ != (*jesShifts)[0].all.size(); ++iJ) {
@@ -176,6 +185,8 @@ void JetOp::do_execute()
 
   TLorentzVector nominalJets;
   nominalJets.SetPtEtaPhiM(0,0,0,0);
+  TLorentzVector nominalJets_presmear;
+  nominalJets_presmear.SetPtEtaPhiM(0,0,0,0);
 
   JESLOOP {
     bool isNominal = (shift == jes2i(shiftjes::kNominal));
@@ -185,17 +196,76 @@ void JetOp::do_execute()
 
     TLorentzVector currentJESp4;
     currentJESp4.SetPtEtaPhiM(0,0,0,0);
+    TLorentzVector currentJESp4_presmear;
+    currentJESp4_presmear.SetPtEtaPhiM(0,0,0,0);
+
+    TLorentzVector allJots;
+    allJots.SetPtEtaPhiM(0,0,0,0);
+    float allJotsHT(0.);
 
     for (auto& jw : jets.all) {
       (*currentJet) = &jw;
       auto& jet = jw.get_base();
 
+      TLorentzVector tmp;
+      tmp.SetPtEtaPhiM(jw.pt,0,jet.p4().Phi(),0);
+
+      if (!jet.matchedGenJet.isValid())
+	continue;
+
       if (isNominal){
-	nominalJets += jet.p4();
+	nominalJets += tmp;
       }
       else
-	currentJESp4 += jet.p4();
+	currentJESp4 += tmp;
     }
+
+    // Begin smearing propagation
+    for (auto& jw : jets.all_presmear) {
+      (*currentJet) = &jw;
+      auto& jet = jw.get_base();
+
+      TLorentzVector tmp;
+      tmp.SetPtEtaPhiM(jw.pt,0,jet.p4().Phi(),0);
+
+      if (!jet.matchedGenJet.isValid())
+	continue;
+
+      if (isNominal){
+	nominalJets_presmear += tmp;
+      }
+      else
+	currentJESp4_presmear += tmp;
+    }
+
+    /*
+
+    if (metShift && isNominal){
+      //std::cout << (nominalJets-nominalJets_presmear).Pt() << endl;
+      jets.vpfMET = jets.vpfMET+nominalJets-nominalJets_presmear;
+      jets.vpfUA = jets.vpfUA+nominalJets-nominalJets_presmear;
+      jets.vpfUZ = jets.vpfUZ+nominalJets-nominalJets_presmear;
+      jets.vpfUW = jets.vpfUW+nominalJets-nominalJets_presmear;
+      jets.vpuppiMET = jets.vpuppiMET+nominalJets-nominalJets_presmear;
+      jets.vpuppiUA = jets.vpuppiUA+nominalJets-nominalJets_presmear;
+      jets.vpuppiUZ = jets.vpuppiUZ+nominalJets-nominalJets_presmear;
+      jets.vpuppiUW = jets.vpuppiUW+nominalJets-nominalJets_presmear;
+      gt.pfmet[shift] = jets.vpfMET.Pt();
+      gt.pfmetphi[shift] = jets.vpfMET.Phi();
+    }
+    if (metShift && !isNominal){
+      jets.vpfMET = jets.vpfMET+currentJESp4-currentJESp4_presmear;
+      jets.vpfUA = jets.vpfUA+currentJESp4-currentJESp4_presmear;
+      jets.vpfUZ = jets.vpfUZ+currentJESp4-currentJESp4_presmear;
+      jets.vpfUW = jets.vpfUW+currentJESp4-currentJESp4_presmear;
+      jets.vpuppiMET = jets.vpuppiMET+currentJESp4-currentJESp4_presmear;
+      jets.vpuppiUA = jets.vpuppiUA+currentJESp4-currentJESp4_presmear;
+      jets.vpuppiUZ = jets.vpuppiUZ+currentJESp4-currentJESp4_presmear;
+      jets.vpuppiUW = jets.vpuppiUW+currentJESp4-currentJESp4_presmear;
+    }
+    // End smearing propagation
+
+    */
 
     if (!isNominal && metShift){  
       jets.vpfMET = jets.vpfMET+nominalJets-currentJESp4;
@@ -207,6 +277,7 @@ void JetOp::do_execute()
       jets.vpuppiUZ = jets.vpuppiUZ+nominalJets-currentJESp4;
       jets.vpuppiUW = jets.vpuppiUW+nominalJets-currentJESp4;
     }
+
 
     for (auto& jw : jets.all) {
       (*currentJet) = &jw;
@@ -307,14 +378,12 @@ void JetOp::do_execute()
       if (jw.nominal->maxpt > cfg.minJetPt) {
         // for H->bb, don't consider any jet past NJETSAVED, 
         // for other analyses, consider them, just don't save them
-        //if (isNominal)
-	// std::cout << "NJETSAVED: " << cfg.NJETSAVED << std::endl;
         if ((analysis.hbb || analysis.monoh) && (int)jets.cleaned.size() >= cfg.NJETSAVED){
-	  //std::cout << "Continuing" << std::endl;
           continue;
 	}
 
         jets.cleaned.push_back(&jw);
+	
 
 	// Compute equivalent to online MHTNoMu
 	// https://github.com/cms-sw/cmssw/blob/master/HLTrigger/JetMET/src/HLTHtMhtProducer.cc
@@ -340,7 +409,6 @@ void JetOp::do_execute()
 	    ++nj_mht;
 	  }
 	}
-
 
         if (jets.cleaned.size() < 3) {
           if (utils.getCorr(cBadECALJets, jet.eta(), jet.phi()) > 0)
@@ -401,8 +469,14 @@ void JetOp::do_execute()
             bjetreg->execute();
           }
         }
-        if (pt > cfg.minJetPt)
+        if (pt > cfg.minJetPt){
+	// Special Guillelmo variables:
+	  TLorentzVector tmpp4; tmpp4.SetPtEtaPhiM(pt, jet.eta(), jet.phi(), jet.m());
+	  allJots += tmpp4;
+	  allJotsHT += pt;
           gt.nJot[shift]++;
+	}
+
 
         TLorentzVector vJet; vJet.SetPtEtaPhiM(pt, jet.eta(), jet.phi(), jet.m());
         if (metShift && njet < nJetDPhi && pt > cfg.minJetPt) { // only do this for fully-correlated shifts
@@ -420,6 +494,11 @@ void JetOp::do_execute()
       }
     } // Jet loop
 
+    gt.allJotPt[shift] = allJots.Pt();
+    gt.allJotEta[shift] = allJots.Eta();
+    gt.allJotPhi[shift] = allJots.Phi();
+    gt.allJotE[shift] = allJots.E();
+    gt.allJotHT[shift] = allJotsHT;
 
     // Second part of MHTNoMu calculation
     if (isNominal){
