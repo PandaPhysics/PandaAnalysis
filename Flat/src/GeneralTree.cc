@@ -367,12 +367,12 @@ void GeneralTree::Reset() {
     hbbconstid[iA] = 0;
   }
   for (int iA=0; iA!=20; ++iA) {
+    jotM[iA] = -99;
     jotEta[iA] = -99;
     jotPhi[iA] = -99;
     jotCSV[iA] = -99;
     jotVBFID[iA] = 0;
     jotSmear[iA] = -99;
-    jotM[iA] = -99;
     jotCMVA[iA] = -99;
     jotIso[iA] = 0;
     jotEMF[iA] = -99;
@@ -995,6 +995,7 @@ void GeneralTree::WriteTree(TTree *t) {
   Book("jotPt_JESSinglePionHCALDown",jotPt[40],"jotPt_JESSinglePionHCALDown["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
   Book("jotPt_JESTimePtEtaUp",jotPt[41],"jotPt_JESTimePtEtaUp["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
   Book("jotPt_JESTimePtEtaDown",jotPt[42],"jotPt_JESTimePtEtaDown["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
+  Book("jotM",jotM,"jotM["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
   Book("jotEta",jotEta,"jotEta["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
   Book("jotPhi",jotPhi,"jotPhi["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
   Book("jotCSV",jotCSV,"jotCSV["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
@@ -1749,7 +1750,6 @@ void GeneralTree::WriteTree(TTree *t) {
     Book("adjetCMVA",&adjetCMVA,"adjetCMVA/F");
     Book("zvvhClass",&zvvhClass,"zvvhClass/F");
     Book("jotSmear",jotSmear,"jotSmear["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
-    Book("jotM",jotM,"jotM["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
     Book("jotCMVA",jotCMVA,"jotCMVA["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");
     Book("jotIso",jotIso,"jotIso["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/I");
     Book("jotEMF",jotEMF,"jotEMF["+TString((is_monohiggs||is_hbb)?"nJotMax":"2")+"]/F");

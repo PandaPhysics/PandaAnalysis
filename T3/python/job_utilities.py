@@ -124,7 +124,7 @@ def request_data(xrd_path, first_attempt):
     if 'scratch' in xrd_path:
         local_path = xrd_path.replace('root://t3serv006.mit.edu/', '/mnt/hadoop')
     else:
-        local_path = xrd_path.replace('root://xrootd.cmsaf.mit.edu/', '/mnt/hadoop/cccccms')
+        local_path = xrd_path.replace('root://xrootd.cmsaf.mit.edu/', '/mnt/hadoop/cms')
 
     # if we're on the T3, only attempt to access the local data once, otherwise go for T2
     if first_attempt or not _is_t3:

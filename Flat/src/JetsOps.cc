@@ -170,6 +170,9 @@ void JetOp::varyJES()
 
 void JetOp::do_execute()
 {
+  //if (gt.eventNumber == 16403128)
+  //std::cout << "--------------- new event --------------" << std::endl;
+
   setupJES();
 
   varyJES();
@@ -201,7 +204,8 @@ void JetOp::do_execute()
 
     TLorentzVector allJots;
     allJots.SetPtEtaPhiM(0,0,0,0);
-    float allJotsHT(0.);
+    //float allJotsHT(0.);
+    float allJotsHT = 0.;
 
     for (auto& jw : jets.all) {
       (*currentJet) = &jw;
@@ -449,10 +453,13 @@ void JetOp::do_execute()
 
         int njet = jets.cleaned.size() - 1;
         if (njet < 2 || ((analysis.hbb || analysis.monoh) && njet < cfg.NJETSAVED)) {
-	  if (isNominal)
+
+
+	  //if (isNominal)
 	    //std::cout << "Cleaned jets size: " << jets.cleaned.size() - 1 << std::endl;
-          jw.cleaned_idx = njet; 
+	  jw.cleaned_idx = njet;
           gt.jotPt[shift][njet] = pt;
+
           if (isNominal) {
             if (jet.matchedGenJet.isValid())
               gt.jotGenPt[njet] = jet.matchedGenJet->pt(); 
@@ -469,12 +476,22 @@ void JetOp::do_execute()
             bjetreg->execute();
           }
         }
+
         if (pt > cfg.minJetPt){
 	// Special Guillelmo variables:
+	  
 	  TLorentzVector tmpp4; tmpp4.SetPtEtaPhiM(pt, jet.eta(), jet.phi(), jet.m());
 	  allJots += tmpp4;
 	  allJotsHT += pt;
+	  //gt.allJotHT[shift] += pt;
           gt.nJot[shift]++;
+
+	  /*if (gt.eventNumber == 16403128){	    
+	    std::cout << "nJot: " << gt.nJot[shift] << std::endl;
+	    std::cout << "alljotsHT: " << allJotsHT << std::endl;
+	    std::cout << "allJots.Pt(): " << allJots.Pt() << std::endl;
+	    std::cout << "pt/eta/phi/m: " << pt << "/" <<jet.eta() << "/" << jet.phi() <<"/" << jet.m() <<std::endl;
+	    }*/
 	}
 
 
@@ -494,11 +511,22 @@ void JetOp::do_execute()
       }
     } // Jet loop
 
+    //if (gt.eventNumber == 16403128)
+    //std::cout << "shift: " << shift << std::endl;
+
     gt.allJotPt[shift] = allJots.Pt();
     gt.allJotEta[shift] = allJots.Eta();
     gt.allJotPhi[shift] = allJots.Phi();
     gt.allJotE[shift] = allJots.E();
     gt.allJotHT[shift] = allJotsHT;
+
+    /*if (gt.eventNumber == 16403128){
+      std::cout << "shift: " << shift << std::endl;
+      std::cout << "filled allJotPt: " << gt.allJotPt[shift] << std::endl;
+      std::cout << "filled allJotHT: " << gt.allJotHT[shift] << std::endl;
+      
+      }*/
+      
 
     // Second part of MHTNoMu calculation
     if (isNominal){
@@ -566,6 +594,14 @@ void JetOp::do_execute()
     }
 
   } // shift loop
+
+
+  /*if (gt.eventNumber == 16403128){
+    std::cout << "outside JESLOOP filled allJotPt: " << gt.allJotPt[0] << std::endl;
+    std::cout << "outside JESLOOP filled allJotHT: " << gt.allJotHT[0] << std::endl;
+    std::cout << "eventNumber: " << gt.eventNumber << std::endl;
+    }*/
+
   gt.barrelHTMiss = vBarrelJets.Pt();
 
 }
@@ -862,6 +898,10 @@ void VBFSystemOp::do_execute()
   if (jets.cleaned.size() > idx1) {
     TLorentzVector v0 = jets.cleaned_sorted[idx0]->p4();
     TLorentzVector v1 = jets.cleaned_sorted[idx1]->p4();
+    /*if (gt.eventNumber == 16403128){
+      std::cout << "??????????????????????? VBF System 1st jet: " << v0.Pt() << std::endl;
+      std::cout << "??????????????????????? VBF System 2nd jet: " << v1.Pt() << std::endl;
+      }*/
     gt.jot12Mass[shift] = (v0 + v1).M();
     gt.jot12DPhi[shift] = v0.DeltaPhi(v1);
     gt.jot12DEta[shift] = fabs(v0.Eta() - v1.Eta());

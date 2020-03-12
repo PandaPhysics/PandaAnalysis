@@ -266,11 +266,11 @@ void PandaAnalyzer::Run()
   setupRun(nZero, nEvents); 
 
   for (auto& op : ops_all){
-    cout << "Printing" << endl;
+    //cout << "Printing" << endl;
     op->print();
     op->initialize(registry);
   }
-  cout << "Done printing" << endl;
+  //cout << "Done printing" << endl;
 
   ProgressReporter pr("PandaAnalyzer::Run",&iE,&nEvents,100);
   TimeReporter& tr = cfgop.cfg.tr;
@@ -299,6 +299,10 @@ void PandaAnalyzer::Run()
 
     if (!PassPresel(Selection::sGen)) // only check gen presel here
       continue;
+
+
+    //if (gt.eventNumber == 16403128)
+    //std::cout << "FINAL FILL: " << gt.allJotHT[0] << std::endl;
 
     gt.Fill();
 

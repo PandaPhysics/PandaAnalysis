@@ -414,12 +414,12 @@ class GeneralTree : public genericTree {
   float adjetCMVA;
   float zvvhClass;
   float jotPt[43][20];
+  float jotM[20];
   float jotEta[20];
   float jotPhi[20];
   float jotCSV[20];
   int jotVBFID[20];
   float jotSmear[20];
-  float jotM[20];
   float jotCMVA[20];
   int jotIso[20];
   float jotEMF[20];
