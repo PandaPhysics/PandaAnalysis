@@ -189,7 +189,7 @@ namespace pa {
             } // matches
           } // genP loop
         } // if final state
-        if (!foundDup) {
+        if (!foundDup || foundDup) {
           genP->push_back(&g);
         }
       }

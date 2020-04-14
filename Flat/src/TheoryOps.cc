@@ -1,5 +1,4 @@
 #include "../interface/TheoryOps.h"
-
 using namespace panda;
 using namespace std;
 using namespace pa;
@@ -793,6 +792,9 @@ void GenStudyPhoOp::do_execute()
   float maxphopt = 0;
   float maxphoeta = -99.;
   float maxphophi = -99.;
+  
+
+  /*
   for (int iG=0; iG!=nGen; ++iG) {
     auto& part = pToGRef(genP->at(iG));
     int pdgid = part.pdgid;
@@ -801,6 +803,46 @@ void GenStudyPhoOp::do_execute()
       maxphopt = part.pt();
       maxphoeta = part.eta();
       maxphophi = part.phi();
+    }
+  }  
+
+  */
+  // Collect all matrix-element level quarks and their daughters with the same ID
+
+  std::vector<panda::GenParticle> hards; 
+  std::vector<int> ids;
+
+  for (int iG=0; iG!=nGen; ++iG) {
+    auto& part = pToGRef(genP->at(iG));
+    int pdgid = part.pdgid;
+    unsigned int abspdgid = abs(pdgid);
+    if (abspdgid != 1 && abspdgid != 2 && abspdgid != 3 && abspdgid != 4 && abspdgid == 5)
+      continue;
+
+    if (part.testFlag(GenParticle::kIsHardProcess) || part.testFlag(GenParticle::kFromHardProcess)){
+      hards.push_back(*(dynamic_cast<panda::GenParticle*>(genP->at(iG))));
+      ids.push_back(iG);
+    }
+  }
+
+  for (int iG=0; iG!=nGen; ++iG) {
+    auto& part = pToGRef(genP->at(iG));
+    int pdgid = part.pdgid;
+    unsigned int abspdgid = abs(pdgid);
+    if (abspdgid != 22)
+      continue;
+    if (!part.parent.isValid())
+      continue;
+    int parentpdg = abs(pToGRef(genP->at(part.parent.idx())).pdgid);    
+    if (parentpdg == 22)
+      continue;
+    std::vector<int>::iterator it = std::find(ids.begin(), ids.end(), part.parent.idx());
+    if (it != ids.end()){
+      if (part.pt() > maxphopt){     
+	maxphopt = part.pt();
+	maxphoeta = part.eta();
+	maxphophi = part.phi();
+      }    
     }
   }
   
