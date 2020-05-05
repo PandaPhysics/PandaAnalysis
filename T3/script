@@ -1,0 +1,15 @@
+ 1007  hbbsubmit -i submit_singlemu.sh 
+ 1008  condor_q bmaier
+ 1009  ll
+ 1010  ll logs/
+ 1011  condor_q bmaier
+ 1012  condor_q 
+ 1013  ls -lhrt logs/*err
+ 1014  less logs/3377_0.err
+ 1015  condor_q 
+ 1016  simplesubmit -i submit_singlemu.sh 
+ 1017  condor_q
+ 1018  less /tmp/tmpjob_679976.sh
+ 1019  less /tmp/wangzqe/tmpjob_679976.sh
+
+for i in *.root; do echo cp $PWD/$i .\; th_skim_x -cuts '"nLooseMuon==2 && nTightMuon>=1"' -input $i -output skim_$i \; cp skim_$i /scratch5/wangzqe/2017/2muskim/ ; done >& submit_skim_sm.sh

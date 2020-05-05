@@ -1,0 +1,41 @@
+#include "../interface/CommonOps.h"
+
+using namespace pa;
+using namespace std;
+using namespace panda;
+
+
+void GlobalOp::do_execute()
+{
+  if (cfg.DEBUG > 5) {
+    logger.debug("PandaAnalyzer::Run::Dump","");
+    event.print(std::cout, 2);
+    std::cout << std::endl;
+    logger.debug("PandaAnalyzer::Run::Dump","");
+    event.Photon.print(std::cout, 2);
+    std::cout << std::endl;
+    logger.debug("PandaAnalyzer::Run::Dump","");
+    event.Muon.print(std::cout, 2);
+    std::cout << std::endl;
+    logger.debug("PandaAnalyzer::Run::Dump","");
+    event.Electron.print(std::cout, 2);
+    std::cout << std::endl;
+    logger.debug("PandaAnalyzer::Run::Dump","");
+    event.Jet.print(std::cout, 2);
+    std::cout << std::endl;
+    logger.debug("PandaAnalyzer::Run::Dump","");
+    event.MET.print(std::cout, 2);
+    std::cout << std::endl;
+  }
+  
+  // event info
+  gt.mcWeight = event.genWeight;//.at(0);
+  gt.runNumber = event.run;
+  gt.lumiNumber = event.luminosityBlock;
+  gt.eventNumber = event.event;
+  gt.isData = analysis.isData ?  1 : 0; 
+  gt.npv = event.PV.npvs;
+  gt.rho = event.fixedGridRhoFastjetAll;
+
+}
+
