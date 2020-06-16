@@ -3,13 +3,13 @@
 export PATH=${PATH}:${CMSSW_BASE}/src/PandaCore/bin/
 
 export PANDA="${CMSSW_BASE}/src/PandaAnalysis"
-export PANDA_CFG="http://t3serv001.mit.edu/~wangzqe/condor/2017_MC_all.cfg" 
-export PANDA_FLATDIR="/scratch5/wangzqe/2017/CRs_v7/"
+export PANDA_CFG="http://t3serv001.mit.edu/~wangzqe/condor/2018_MC.cfg" 
+export PANDA_FLATDIR="/scratch5/wangzqe/2018/CR_v2/"
 mkdir -p $PANDA_FLATDIR
 
 export SUBMIT_USER=$USER
-export SUBMIT_TMPL="skim.py"
-export SUBMIT_NAME="2017_MC_all_b30"
+export SUBMIT_TMPL="skim_2018.py"
+export SUBMIT_NAME="2018_mc_all_1"
 export SUBMIT_WORKDIR="/data/t3home000/wangzqe/condor/"${SUBMIT_NAME}"/work/"
 export  SUBMIT_LOGDIR="/data/t3home000/wangzqe/condor/"${SUBMIT_NAME}"/logs/"
 export SUBMIT_LOCKDIR="/data/t3home000/wangzqe/condor/"${SUBMIT_NAME}"/locks/"

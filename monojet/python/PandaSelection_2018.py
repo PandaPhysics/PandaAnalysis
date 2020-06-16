@@ -23,11 +23,12 @@ UAcut = 'pfUAmag>250 && fabs(pfmet-calomet)/pfUAmag<0.5 && Alt$(DeltaPhi(pfUAphi
 UZcut = 'pfUZmag>250 && fabs(calomet-pfmet)/pfUZmag<0.5 && Alt$(DeltaPhi(pfUZphi,jetPhi[0]),99)>0.5 && Alt$(DeltaPhi(pfUZphi,jetPhi[1]),99)>0.5 && Alt$(DeltaPhi(pfUZphi,jetPhi[2]),99)>0.5 && Alt$(DeltaPhi(pfUZphi,jetPhi[3]),99)>0.5'
 UWcut = 'pfUWmag>250 && fabs(calomet-pfmet)/pfUWmag<0.5 && Alt$(DeltaPhi(pfUWphi,jetPhi[0]),99)>0.5 && Alt$(DeltaPhi(pfUWphi,jetPhi[1]),99)>0.5 && Alt$(DeltaPhi(pfUWphi,jetPhi[2]),99)>0.5 && Alt$(DeltaPhi(pfUWphi,jetPhi[3]),99)>0.5'
 Ucut = 'pfmet>250  && fabs(calomet-pfmet)/pfmet<0.5 && Alt$(DeltaPhi(pfmetphi,jetPhi[0]),99)>0.5 && Alt$(DeltaPhi(pfmetphi,jetPhi[1]),99)>0.5 && Alt$(DeltaPhi(pfmetphi,jetPhi[2]),99)>0.5 && Alt$(DeltaPhi(pfmetphi,jetPhi[3]),99)>0.5'
-presel = 'nTau==0 && jetNMBtags==0 && GoodLeadJet>2 && LeadJetPt > 100'
+presel = 'nTau==0 && jetNMBtags==0 && GoodLeadJet>2 && LeadJetPt > 100 &&  hemveto==0'
 #presel = 'jetNMBtags==0 && GoodLeadJet>2 && LeadJetPt > 100'
 
 cuts = {
-    'signal'             : tAND(metFilter,tAND(presel,tAND(Ucut,'nLooseMuon==0 && nLooseElectron==0 && nLoosePhoton==0'))), 
+#    'signal'             : tAND(metFilter,tAND(presel,tAND(Ucut,'nLooseMuon==0 && nLooseElectron==0 && nLoosePhoton==0 && (pfmet>470 || (pfmet<=470 && (pfmetphi>-0.67||pfmetphi<-1.57)))'))), 
+    'signal'             : tAND(metFilter,tAND(presel,tAND(Ucut,'nLooseMuon==0 && nLooseElectron==0 && nLoosePhoton==0 '))),
     'singlemuon'         : tAND(metFilter,tAND(presel,tAND(UWcut,'nLoosePhoton==0 && nLooseElectron==0 && nLooseMuon==1 && nTightMuon==1 && MT(muonPt[0],muonPhi[0],pfmet,pfmetphi)<160'))),
     'singleelectron'     : tAND(metFilter,tAND(presel,tAND(UWcut,'nLoosePhoton==0 && nLooseElectron==1 && nTightElectron==1 && nLooseMuon==0 && MT(electronPt[0],electronPhi[0],pfmet,pfmetphi)<160 && pfmet > 50'))),
     'dimuon'             : tAND(metFilter,tAND(presel,tAND(UZcut,'nLooseElectron==0 && nLoosePhoton==0 && nLooseMuon==2 && nTightMuon>0 && muonPdgId[0]+muonPdgId[1]==0 &&60<Mxx(muonPt[0],muonEta[0],muonPhi[0],0.106,muonPt[1],muonEta[1],muonPhi[1],0.106) && Mxx(muonPt[0],muonEta[0],muonPhi[0],0.106,muonPt[1],muonEta[1],muonPhi[1],0.106)<120'))),
@@ -39,12 +40,12 @@ cuts = {
 
 #metsf vs metsf2018
 weights = {
-  'signal'         : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*metsf(pfmet)',     #0.2 for unblinding
-  'singlemuon'              : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*metsf(pfUWmag)*Alt$(muonSfTight[0],1)',
+  'signal'         : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*metsf2018(pfmet)',     #0.2 for unblinding
+  'singlemuon'              : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*metsf2018(pfUWmag)*Alt$(muonSfTight[0],1)',
   'singleelectron'              :'%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*sf_eleTrig*Alt$(electronSfTight[0],1)*Alt$(electronSfReco[0],1)',
-  'dimuon'            : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*metsf(pfUZmag)*tightIDsf(Alt$(muonSelBit[0],1),Alt$(muonSfTight[0],1),Alt$(muonSfLoose[0],1))*tightIDsf(Alt$(muonSelBit[1],1),Alt$(muonSfTight[1],1),Alt$(muonSfLoose[1],1))',
+  'dimuon'            : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*metsf2018(pfUZmag)*tightIDsf(Alt$(muonSelBit[0],1),Alt$(muonSfTight[0],1),Alt$(muonSfLoose[0],1))*tightIDsf(Alt$(muonSelBit[1],1),Alt$(muonSfTight[1],1),Alt$(muonSfLoose[1],1))',
   'dielectron'      : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*sf_eleTrig*tightIDsf(Alt$(electronSelBit[0],1),Alt$(electronSfTight[0],1),Alt$(electronSfLoose[0],1))*tightIDsf(Alt$(electronSelBit[1],1),Alt$(electronSfTight[1],1),Alt$(electronSfLoose[1],1))*Alt$(electronSfReco[0],1)*Alt$(electronSfReco[1],1)',
-  'pho'          : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*sfpho(loosePho1Eta)*photrigsf(loosePho1Pt)',
+  'pho'          : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*sfpho2018(loosePho1Eta)',
   'fkp'       :  '%f/41500.*fr_pho(FakePho1Pt)*(nTau==0)',
   'gjk'      : 'sfgjets(genPhotonPt)',
   'wjk_2mu'      : 'sfwjets(genBosonPt)',

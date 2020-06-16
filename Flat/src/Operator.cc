@@ -515,8 +515,6 @@ void ConfigOp::readData(TString dirPath)
     utils.openCorr(cTrigMET,
        dirPath+"trigger_eff/met_trigger_effs_2018.root",
        "eff",1);
-  utils.openCorr(cTrigEle,
-                 dirPath+"moriond17/eleTrig.root","hEffEtaPt",2);
   utils.openCorr(cTrigPho,
                  dirPath+"moriond17/photonTriggerEfficiency_photon_TH1F.root",
                  "hden_photonpt_clone_passed",1);

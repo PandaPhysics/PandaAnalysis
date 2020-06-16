@@ -74,7 +74,7 @@ vbfg = lambda v=False : _analysis(
         darkg = False,
         varyJES = False,
         METJER = True,
-        LowPtJet = False,
+        LowPtJet = True,
         varyJESTotal = True,
         rerunJES = True,
         rerunJER = True,
@@ -125,18 +125,24 @@ vbfgpuppi = lambda v=False : _analysis(
 vbfgpuppimet = lambda v=False : _analysis(
         name = 'vbfg',
         verbose = v,
-        vbf = True,
+        vbf = False,
         fatjet = False,
-        btagSFs = False,
+        btagSFs = True,
+        btagWeights = True,
         puppiJets = False,
-        puppiMet = True,
-        darkg = True,
-        varyJES = True,
+        useDeepCSV = True,
+        useDeepJet = False,
+        darkg = False,
+        varyJES = False,
+        METJER = True,
+        LowPtJet = True,
+        varyJESTotal = True,
         rerunJES = True,
         rerunJER = True,
         mcTriggers = True,
-        complicatedPhotons = True,
-        complicatedLeptons = True
+        complicatedPhotons = False,
+        complicatedLeptons = True,
+        puppiMet = True
     )
 
 

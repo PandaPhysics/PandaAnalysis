@@ -611,6 +611,13 @@ class GeneralTree : public genericTree {
   float scale[6];
   float lheHT;
   int lheNjets;
+  float hempt;
+  float hemchf;
+  float hemnhf;
+  float hemcef;
+  float hemnef;
+  float hemphi;
+  int hemlead;
   int isGS;
 };
 #endif

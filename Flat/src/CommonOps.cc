@@ -400,11 +400,18 @@ void TriggerOp::checkEle32()
 void TriggerOp::do_execute()
 {
 
-  if(event.HLT.Ele35_WPTight_Gsf || event.HLT.Ele115_CaloIdVT_GsfTrkIdT) gt.trigger+=1;
+  if(analysis.year==2018){ if(event.HLT.Ele32_WPTight_Gsf || event.HLT.Ele115_CaloIdVT_GsfTrkIdT) gt.trigger+=1;}
+  else { if(event.HLT.Ele35_WPTight_Gsf || event.HLT.Ele115_CaloIdVT_GsfTrkIdT) gt.trigger+=1;}
   if(event.HLT.IsoMu27) gt.trigger+=2;
   if(event.HLT.PFMETNoMu120_PFMHTNoMu120_IDTight || event.HLT.PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60) gt.trigger+=4;
   if(event.HLT.Photon200) gt.trigger+=8;  
   if(event.HLT.PFHT1050) gt.trigger+=16;
+  if(event.HLT.PFHT180) gt.trigger+=32;
+  if(event.HLT.PFHT430) gt.trigger+=64;
+  if(event.HLT.PFHT590) gt.trigger+=128;
+  if(event.HLT.PFHT780) gt.trigger+=256;
+  if(event.HLT.PFHT250) gt.trigger+=512;
+  if(event.HLT.PFHT350) gt.trigger+=1024;  
 }
 
 void GlobalOp::do_execute()

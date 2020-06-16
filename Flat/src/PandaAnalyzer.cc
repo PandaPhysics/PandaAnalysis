@@ -244,6 +244,7 @@ void PandaAnalyzer::Run()
       if(gt.mcWeight>=0) summcweight++;
       else {summcweight--;}
 
+//    cout << "run:lumi:event=" << gt.runNumber << ":"<< gt.lumiNumber <<":"<<gt.eventNumber << endl;
     if (analysis.isData && !PassGoodLumis(gt.runNumber,gt.lumiNumber))
         continue;
     preselop->execute();

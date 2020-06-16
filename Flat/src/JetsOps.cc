@@ -266,8 +266,20 @@ void JetOp::do_execute()
   float maxJetEta = analysis.vbf ? 4.7 : 4.7;
   int nJetDPhi = analysis.vbf ? 4 : 5;
   float minMinJetPt = min(cfg.minJetPt, cfg.minBJetPt);
-  TLorentzVector vBarrelJets;
+  TLorentzVector antihemJets, antihemchf, antihemnhf,antihemcef, antihemnef;
 
+  
+  if(analysis.LowPtJet && analysis.year == 2018 ){
+    for(auto &ljet: event.CorrT1METJet){
+      if(ljet.eta>-3.0 && ljet.eta<-1.3 && ljet.phi<1.57&&ljet.phi>0.87){
+          TLorentzVector temP4;
+          temP4.SetPtEtaPhiM(ljet.pt,ljet.eta,ljet.phi,ljet.mass);
+          antihemJets += temP4;
+      }
+    }
+  }
+
+  int temmmm=0;
   JESLOOP {
     bool isNominal = (shift == jes2i(shiftjes::kNominal));
     bool metShift = (i2jes(shift) <= shiftjes::kJESTotalDown);
@@ -290,11 +302,35 @@ void JetOp::do_execute()
 
      if (isNominal) {
         if(pt>30 && jet.eta>-3.0 && jet.eta<-1.3 && jet.phi>-1.57 && jet.phi<-0.87) gt.hemveto++;
-        if(event.event==7333342||event.event==614801||event.event==1176187||event.event==9494050||event.event==6991206||event.event==4999504||event.event==4240285){
-        cout << "jet pt="<< pt << " eta="<< jet.eta << " phi=" << jet.phi << endl;
-        if(pt>30 && jet.eta>-3.0 && jet.eta<-1.3 && jet.phi>-1.57 && jet.phi<-0.87) cout <<"hemjet" << endl;
-        }
      }
+
+// only for 2018 anti-hem region
+
+      float CEMF = jet.chEmEF;
+      float CHF = jet.chHEF;
+      float NEMF = jet.neEmEF;
+      float NHF = jet.neHEF;
+
+    if(isNominal && analysis.year == 2018){
+      if(pt>100&&aeta<2.4&&NHF<0.8&&CHF>0.1&& ((jet.jetId>>1)%2==1) && !(jet.eta>-1.3&&jet.eta<-3.0&&jet.phi<1.57&&jet.phi>0.87)) gt.hemlead=1;
+      if(jet.eta>-3.0 && jet.eta<-1.3 && jet.phi<1.57&&jet.phi>0.87){
+          TLorentzVector temP4;
+          temP4.SetPtEtaPhiM(jet.pt,jet.eta,jet.phi,jet.mass);
+          antihemJets += temP4;
+          TLorentzVector temP4chf;
+          temP4chf.SetPtEtaPhiM(jet.pt*CHF,jet.eta,jet.phi,jet.mass);
+          antihemchf += temP4chf;
+          TLorentzVector temP4nhf;
+          temP4nhf.SetPtEtaPhiM(jet.pt*NHF,jet.eta,jet.phi,jet.mass);
+          antihemnhf += temP4nhf;
+          TLorentzVector temP4cef;
+          temP4cef.SetPtEtaPhiM(jet.pt*CEMF,jet.eta,jet.phi,jet.mass);
+          antihemcef += temP4cef;
+          TLorentzVector temP4nef;
+          temP4nef.SetPtEtaPhiM(jet.pt*NEMF,jet.eta,jet.phi,jet.mass);
+          antihemnef += temP4nef;
+      }
+    }
 
       if (aeta > maxJetEta || jw.nominal->maxpt < minMinJetPt)
         continue;
@@ -316,10 +352,6 @@ void JetOp::do_execute()
         continue;
      
       bool is_tight = false;
-      float CEMF = jet.chEmEF;
-      float CHF = jet.chHEF;
-      float NEMF = jet.neEmEF;
-      float NHF = jet.neHEF;
 
      
       if(isNominal && pt>100 && aeta<2.4) gt.GoodLeadJet=1;
@@ -366,7 +398,8 @@ void JetOp::do_execute()
          leadjet=false;
          max_pt=pt;
          if(pt>30&&aeta<2.4&&NHF<0.8&&CHF>0.1) {leadjet=true;}
-      }
+      }      
+      
 
       if (jw.nominal->maxpt > cfg.minJetPt) {
         // for H->bb, don't consider any jet past NJETSAVED, 
@@ -409,12 +442,6 @@ void JetOp::do_execute()
 
        }
         if(gt.nJetMax<gt.nJet[shift]) gt.nJetMax=gt.nJet[shift];
-        if (isNominal && aeta < 3.0) {
-//          gt.barrelHT += jet.pt;
-          TLorentzVector temP4;
-          temP4.SetPtEtaPhiM(jet.pt,jet.eta,jet.phi,jet.mass); 
-          vBarrelJets += temP4;
-        }
 
         int njet = jets.cleaned.size() - 1;
 /*
@@ -519,7 +546,12 @@ void JetOp::do_execute()
     gt.sphericity[shift] = sphericity(2.,allVecs);
     */
   } // shift loop
-//  gt.barrelHTMiss = vBarrelJets.Pt();
+  gt.hempt = antihemJets.Pt();
+  gt.hemphi= antihemJets.Phi();
+  gt.hemchf = antihemchf.Pt()*cos(antihemchf.Phi()-antihemJets.Phi());
+  gt.hemnhf = antihemnhf.Pt()*cos(antihemnhf.Phi()-antihemJets.Phi());
+  gt.hemcef = antihemcef.Pt()*cos(antihemcef.Phi()-antihemJets.Phi());
+  gt.hemnef = antihemnef.Pt()*cos(antihemnef.Phi()-antihemJets.Phi());
 
   METLOOP {
     auto& jets = (*jesShifts)[shift];

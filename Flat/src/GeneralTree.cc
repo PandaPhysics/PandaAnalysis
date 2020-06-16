@@ -325,47 +325,14 @@ void GeneralTree::Reset() {
   pdfDown = 1;
   lheHT = -99;
   lheNjets = 0;
+  hempt = -99;
+  hemchf = -99;
+  hemnhf = -99;
+  hemcef = -99;
+  hemnef = -99;
+  hemphi = -99;
+  hemlead = 0;
   isGS = 0;
-  for (int iA=0; iA!=4; ++iA) {
-    muonPt[iA] = -99;
-    muonEta[iA] = -99;
-    muonPhi[iA] = -99;
-    muonSelBit[iA] = 0;
-    muonPdgId[iA] = 0;
-    muonD0[iA] = -99;
-    muonDZ[iA] = -99;
-    muonIsSoftMuon[iA] = 0;
-    muonCombIso[iA] = -99;
-    muonSfLoose[iA] = -99;
-    muonSfMedium[iA] = -99;
-    muonSfTight[iA] = -99;
-    muonSfUnc[iA] = -99;
-    muonSfReco[iA] = -99;
-    muTrigMatch[iA] = 0;
-    electronPt[iA] = -99;
-    electronEta[iA] = -99;
-    electronPhi[iA] = -99;
-    electronSelBit[iA] = 0;
-    electronPdgId[iA] = 0;
-    electronPhoMatch[iA] = 0;
-    electronLPhoMatch[iA] = 0;
-    electronSfLoose[iA] = -99;
-    electronSfMedium[iA] = -99;
-    electronSfTight[iA] = -99;
-    electronSfUnc[iA] = -99;
-    electronSfReco[iA] = -99;
-    electronSfMvaWP90[iA] = -99;
-    electronSfMvaWP80[iA] = -99;
-    electronD0[iA] = -99;
-    electronDZ[iA] = -99;
-    electronNMissingHits[iA] = 0;
-    electronTripleCharge[iA] = 0;
-    electronCombIso[iA] = -99;
-    eleTrigMatch[iA] = 0;
-    tauPt[iA] = -99;
-    tauEta[iA] = -99;
-    tauPhi[iA] = -99;
-  }
   for (int iA=0; iA!=200; ++iA) {
     hbbconstpt[iA] = 0;
     hbbconsteta[iA] = 0;
@@ -416,12 +383,6 @@ void GeneralTree::Reset() {
     fjPartonEta[iA] = -99;
     fjGenNumB[iA] = 0;
   }
-  for (int iA=0; iA!=6; ++iA) {
-    scale[iA] = 1;
-  }
-  for (int iA=0; iA!=9; ++iA) {
-    qcd[iA] = -99;
-  }
   for (int iA=0; iA!=20; ++iA) {
     jerPt[iA] = -99;
     jesPt[iA] = -99;
@@ -453,6 +414,52 @@ void GeneralTree::Reset() {
     GenJetPt[iA] = -99;
     GenJetEta[iA] = -99;
     GenJetPhi[iA] = -99;
+  }
+  for (int iA=0; iA!=6; ++iA) {
+    scale[iA] = 1;
+  }
+  for (int iA=0; iA!=9; ++iA) {
+    qcd[iA] = -99;
+  }
+  for (int iA=0; iA!=4; ++iA) {
+    muonPt[iA] = -99;
+    muonEta[iA] = -99;
+    muonPhi[iA] = -99;
+    muonSelBit[iA] = 0;
+    muonPdgId[iA] = 0;
+    muonD0[iA] = -99;
+    muonDZ[iA] = -99;
+    muonIsSoftMuon[iA] = 0;
+    muonCombIso[iA] = -99;
+    muonSfLoose[iA] = -99;
+    muonSfMedium[iA] = -99;
+    muonSfTight[iA] = -99;
+    muonSfUnc[iA] = -99;
+    muonSfReco[iA] = -99;
+    muTrigMatch[iA] = 0;
+    electronPt[iA] = -99;
+    electronEta[iA] = -99;
+    electronPhi[iA] = -99;
+    electronSelBit[iA] = 0;
+    electronPdgId[iA] = 0;
+    electronPhoMatch[iA] = 0;
+    electronLPhoMatch[iA] = 0;
+    electronSfLoose[iA] = -99;
+    electronSfMedium[iA] = -99;
+    electronSfTight[iA] = -99;
+    electronSfUnc[iA] = -99;
+    electronSfReco[iA] = -99;
+    electronSfMvaWP90[iA] = -99;
+    electronSfMvaWP80[iA] = -99;
+    electronD0[iA] = -99;
+    electronDZ[iA] = -99;
+    electronNMissingHits[iA] = 0;
+    electronTripleCharge[iA] = 0;
+    electronCombIso[iA] = -99;
+    eleTrigMatch[iA] = 0;
+    tauPt[iA] = -99;
+    tauEta[iA] = -99;
+    tauPhi[iA] = -99;
   }
   for (int iS=0; iS!=43; ++iS) {
     nJet[iS] = 0;
@@ -1185,7 +1192,21 @@ void GeneralTree::WriteTree(TTree *t) {
   Book("scale",scale,"scale["+TString("6")+"]/F");
   Book("lheHT",&lheHT,"lheHT/F");
   Book("lheNjets",&lheNjets,"lheNjets/I");
+  Book("hempt",&hempt,"hempt/F");
+  Book("hemchf",&hemchf,"hemchf/F");
+  Book("hemnhf",&hemnhf,"hemnhf/F");
+  Book("hemcef",&hemcef,"hemcef/F");
+  Book("hemnef",&hemnef,"hemnef/F");
+  Book("hemphi",&hemphi,"hemphi/F");
+  Book("hemlead",&hemlead,"hemlead/I");
   Book("isGS",&isGS,"isGS/I");
+  if (is_adv) {
+    Book("hbbconstpt",hbbconstpt,"hbbconstpt["+TString("200")+"]/F");
+    Book("hbbconsteta",hbbconsteta,"hbbconsteta["+TString("200")+"]/F");
+    Book("hbbconstphi",hbbconstphi,"hbbconstphi["+TString("200")+"]/F");
+    Book("hbbconste",hbbconste,"hbbconste["+TString("200")+"]/F");
+    Book("hbbconstid",hbbconstid,"hbbconstid["+TString("200")+"]/I");
+  }
   if (is_fatjet) {
     Book("nFatJet",&nFatJet,"nFatJet/I");
     Book("nFatJetTrunc",&nFatJetTrunc,"nFatJetTrunc/I");
@@ -1402,22 +1423,6 @@ void GeneralTree::WriteTree(TTree *t) {
     Book("fjPartonEta",fjPartonEta,"fjPartonEta["+TString("nFatJetTrunc")+"]/F");
     Book("fjGenNumB",fjGenNumB,"fjGenNumB["+TString("nFatJetTrunc")+"]/I");
   }
-  if (is_vbf) {
-    Book("genMuonPt",&genMuonPt,"genMuonPt/F");
-    Book("genMuonEta",&genMuonEta,"genMuonEta/F");
-    Book("genElectronPt",&genElectronPt,"genElectronPt/F");
-    Book("genElectronEta",&genElectronEta,"genElectronEta/F");
-    Book("genTauPt",&genTauPt,"genTauPt/F");
-    Book("genTauEta",&genTauEta,"genTauEta/F");
-    Book("genMjj",&genMjj,"genMjj/F");
-  }
-  if (is_adv) {
-    Book("hbbconstpt",hbbconstpt,"hbbconstpt["+TString("200")+"]/F");
-    Book("hbbconsteta",hbbconsteta,"hbbconsteta["+TString("200")+"]/F");
-    Book("hbbconstphi",hbbconstphi,"hbbconstphi["+TString("200")+"]/F");
-    Book("hbbconste",hbbconste,"hbbconste["+TString("200")+"]/F");
-    Book("hbbconstid",hbbconstid,"hbbconstid["+TString("200")+"]/I");
-  }
   if (is_darkg) {
     Book("genPho1Pt",&genPho1Pt,"genPho1Pt/F");
     Book("genPho1Eta",&genPho1Eta,"genPho1Eta/F");
@@ -1426,11 +1431,14 @@ void GeneralTree::WriteTree(TTree *t) {
     Book("vtxScore",&vtxScore,"vtxScore/F");
     Book("vtxChi2",&vtxChi2,"vtxChi2/F");
   }
-  if (is_fatjet) {
-    if (is_monohiggs||is_hbb) {
-      Book("fjHiggsIdx",&fjHiggsIdx,"fjHiggsIdx/I");
-      Book("fjVIdx",&fjVIdx,"fjVIdx/I");
-    }
+  if (is_vbf) {
+    Book("genMuonPt",&genMuonPt,"genMuonPt/F");
+    Book("genMuonEta",&genMuonEta,"genMuonEta/F");
+    Book("genElectronPt",&genElectronPt,"genElectronPt/F");
+    Book("genElectronEta",&genElectronEta,"genElectronEta/F");
+    Book("genTauPt",&genTauPt,"genTauPt/F");
+    Book("genTauEta",&genTauEta,"genTauEta/F");
+    Book("genMjj",&genMjj,"genMjj/F");
   }
   if (is_monohiggs||is_hbb) {
     Book("pfmetsig",&pfmetsig,"pfmetsig/F");
@@ -2019,6 +2027,12 @@ void GeneralTree::WriteTree(TTree *t) {
   if (is_fatjet) {
     if (is_vh) {
       Book("fjQ",fjQ,"fjQ["+TString("nFatJetTrunc")+"]/F");
+    }
+  }
+  if (is_fatjet) {
+    if (is_monohiggs||is_hbb) {
+      Book("fjHiggsIdx",&fjHiggsIdx,"fjHiggsIdx/I");
+      Book("fjVIdx",&fjVIdx,"fjVIdx/I");
     }
   }
 }

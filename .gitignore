@@ -1,0 +1,11 @@
+*.pyc
+*.swp
+*.pcm
+*.bkp
+test*root
+*.txt
+*.jdl
+*.npz
+*.npy
+*.root
+data/
