@@ -27,8 +27,8 @@ presel = 'nTau==0 && jetNMBtags==0 && GoodLeadJet>2 && LeadJetPt > 100 &&  hemve
 #presel = 'jetNMBtags==0 && GoodLeadJet>2 && LeadJetPt > 100'
 
 cuts = {
-#    'signal'             : tAND(metFilter,tAND(presel,tAND(Ucut,'nLooseMuon==0 && nLooseElectron==0 && nLoosePhoton==0 && (pfmet>470 || (pfmet<=470 && (pfmetphi>-0.67||pfmetphi<-1.57)))'))), 
-    'signal'             : tAND(metFilter,tAND(presel,tAND(Ucut,'nLooseMuon==0 && nLooseElectron==0 && nLoosePhoton==0 '))),
+    'signal'             : tAND(metFilter,tAND(presel,tAND(Ucut,'nLooseMuon==0 && nLooseElectron==0 && nLoosePhoton==0 && (pfmet>470 || (pfmet<=470 && (pfmetphi>-0.62||pfmetphi<-1.62)))'))), 
+#    'signal'             : tAND(metFilter,tAND(presel,tAND(Ucut,'nLooseMuon==0 && nLooseElectron==0 && nLoosePhoton==0 '))),
     'singlemuon'         : tAND(metFilter,tAND(presel,tAND(UWcut,'nLoosePhoton==0 && nLooseElectron==0 && nLooseMuon==1 && nTightMuon==1 && MT(muonPt[0],muonPhi[0],pfmet,pfmetphi)<160'))),
     'singleelectron'     : tAND(metFilter,tAND(presel,tAND(UWcut,'nLoosePhoton==0 && nLooseElectron==1 && nTightElectron==1 && nLooseMuon==0 && MT(electronPt[0],electronPhi[0],pfmet,pfmetphi)<160 && pfmet > 50'))),
     'dimuon'             : tAND(metFilter,tAND(presel,tAND(UZcut,'nLooseElectron==0 && nLoosePhoton==0 && nLooseMuon==2 && nTightMuon>0 && muonPdgId[0]+muonPdgId[1]==0 &&60<Mxx(muonPt[0],muonEta[0],muonPhi[0],0.106,muonPt[1],muonEta[1],muonPhi[1],0.106) && Mxx(muonPt[0],muonEta[0],muonPhi[0],0.106,muonPt[1],muonEta[1],muonPhi[1],0.106)<120'))),
@@ -58,7 +58,7 @@ weights = {
   'zjk_1e'      : 'sfzjets(genBosonPt)',
   'wjk_p'     : 'sfwjets(genBosonPt)',
   'wjk_sig'   : 'sfwjets(genBosonPt)',
-  'zjk_sig' : 'sfzjets(genBosonPt)',
+  'zjk_sig' : 'sfzvv(genBosonPt)',
   'wjk_sig_taucen': 'Alt$(1-tauSF(tauPt[0],0),1)*Alt$(1-tauSF(tauPt[1],0),1)',
   'wjk_sig_tauup': 'Alt$(1-tauSF(tauPt[0],1),1)*Alt$(1-tauSF(tauPt[1],1),1)',
   'wjk_sig_taudow': 'Alt$(1-tauSF(tauPt[0],2),1)*Alt$(1-tauSF(tauPt[1],2),1)',

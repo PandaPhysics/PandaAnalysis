@@ -44,7 +44,7 @@ weights = {
   'singleelectron'              :'%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*sf_eleTrig*Alt$(electronSfTight[0],1)*Alt$(electronSfReco[0],1)',
   'dimuon'            : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*metsf(pfUZmag)*tightIDsf(Alt$(muonSelBit[0],1),Alt$(muonSfTight[0],1),Alt$(muonSfLoose[0],1))*tightIDsf(Alt$(muonSelBit[1],1),Alt$(muonSfTight[1],1),Alt$(muonSfLoose[1],1))',
   'dielectron'      : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*sf_eleTrig*tightIDsf(Alt$(electronSelBit[0],1),Alt$(electronSfTight[0],1),Alt$(electronSfLoose[0],1))*tightIDsf(Alt$(electronSelBit[1],1),Alt$(electronSfTight[1],1),Alt$(electronSfLoose[1],1))*Alt$(electronSfReco[0],1)*Alt$(electronSfReco[1],1)',
-  'pho'          : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*sfpho(loosePho1Eta)*photrigsf(loosePho1Pt)',
+  'pho'          : '%f*sf_pu*normalizedWeight*1/fabs(mcWeight)*sfphonew(loosePho1Eta)*photrigsf(loosePho1Pt)',
   'fkp'       :  '%f/41500.*fr_pho(FakePho1Pt)*(nTau==0)',
   'gjk'      : 'sfgjets(genPhotonPt)',
   'wjk_2mu'      : 'sfwjets(genBosonPt)',

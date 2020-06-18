@@ -44,57 +44,36 @@ void JetCorrector::RunCorrection(bool isData, float rho, panda::MuonCollection *
  	    corrector->setJetE  (v_j_in.E());
 	    corrector->setRho(rho);
 	    corrector->setJetA(j_in.area);
-	    corrector->setJetEMF(j_in.chEmEF + j_in.neEmEF);
+            corrector->setJetEMF(j_in.chEmEF + j_in.neEmEF);
 	    jecFactor = corrector->getCorrection();
+
+            corrector->setJetEta(v_j_in.Eta());
+            corrector->setJetPt (v_j_in.Pt());
+            corrector->setJetPhi(v_j_in.Phi());
+            corrector->setJetE  (v_j_in.E());
+            corrector->setRho(rho);
+            corrector->setJetA(j_in.area);
+            corrector->setJetEMF(j_in.chEmEF + j_in.neEmEF);
+
+            j_in.l1fac=corrector->getSubCorrections()[0]/jecFactor;
+
 	  }
+
 	  auto new_pt_ini = jecFactor * j_in.pt*(1-j_in.rawFactor);
 //          auto new_pt_ini = jecFactor * j_in.pt*(1-j_in.rawFactor)*(1-j_in.muonSubtrFactor) + mu_pt;
  	  float old_pt_ini = j_in.pt;
  
-// 	  j_in.setPtEtaPhiM(new_pt_ini,j_in.eta,j_in.phi,j_in.mass);
-//          cout <<"debug" << endl;
-//          cout << "og jet pt=" << j_in.pt << " JES jet pt=" << new_pt_ini << " raw jet pt=" << j_in.pt*(1-j_in.rawFactor) << " eta=" << j_in.eta << endl;
-//          cout << "EMF=" << j_in.chEmEF + j_in.neEmEF << " jec=" << jecFactor << endl;
           j_in.pt=new_pt_ini;         // where to assign the JES 
 
           if(TMath::Abs(old_pt_ini - new_pt_ini) < 0.01) continue;
  
           if(j_in.chEmEF + j_in.neEmEF > 0.9) continue;
 
-/*
-          bool isMuonOverlap = false;
-          for (auto& mu : *muons_) {
-            if (mu.pt>0 && (mu.isGlobal) &&
-               DeltaR2(mu.eta,mu.phi,v_j_in.Eta(),v_j_in.Phi()) < 0.16) {
-               TLorentzVector muV; muV.SetPtEtaPhiM(mu.pt,mu.eta,mu.phi,mu.mass);
- 	      v_j_in -= muV;
- 	      v_j_in_corr -= muV;
- 	      isMuonOverlap = true;
-//              cout << "overlap mu pt=" << mu.pt << endl;
- 	    }
-          }
-
- 	  if (fabs(v_j_in.Eta())<5.191 && isMuonOverlap == true) {
- 	    corrector->setJetPt (v_j_in.Pt());
- 	    corrector->setJetEta(v_j_in.Eta());
- 	    corrector->setJetPhi(v_j_in.Phi());
- 	    corrector->setJetE  (v_j_in.E());
- 	    corrector->setRho(rho);
- 	    corrector->setJetA(j_in.area);
- 	    corrector->setJetEMF(j_in.chEmEF + j_in.neEmEF);
- 	    jecFactor = corrector->getCorrection();
- 	  }
- 	  else if (isMuonOverlap == true) jecFactor = 1;
-
-          
- 	  auto new_pt = jecFactor * v_j_in.Pt();
- 	  float old_pt = v_j_in_corr.Pt();
-*/
   //        cout << "factor=" << jecFactor << " jet in pt=" << v_j_in.Pt() << " muon frac=" << j_in.muonSubtrFactor << endl;
  //         cout << "new pt=" << new_pt << " old_pt=" << old_pt << endl;
 
-          if(new_pt_ini<=15) continue; 
-//          if(new_pt <= 15) continue;
+//          if(new_pt_ini<=15) continue; 
+          if(new_pt_ini*(1-j_in.muonSubtrFactor) <= 15) continue;
 
           float old_pt = old_pt_ini*(1-j_in.muonSubtrFactor);
           float new_pt = new_pt_ini*(1-j_in.muonSubtrFactor);

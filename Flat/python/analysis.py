@@ -74,7 +74,7 @@ vbfg = lambda v=False : _analysis(
         darkg = False,
         varyJES = False,
         METJER = True,
-        LowPtJet = True,
+        LowPtJet = False,
         varyJESTotal = True,
         rerunJES = True,
         rerunJER = True,

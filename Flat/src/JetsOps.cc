@@ -106,10 +106,12 @@ JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
         
       } 
       if(shift == shiftjes::kNominal && jet.pt>15 && fabs(jet.eta)<5.191 && jet.chEmEF + jet.neEmEF < 0.9){
-        TLorentzVector temp3,temp5;
+        TLorentzVector temp3,temp5,temp6,temp8;
         temp3.SetPtEtaPhiM(pt,0, jet.phi,0);
         temp5.SetPtEtaPhiM(pt/smearFac,0,jet.phi,0);
-        met_jer_corr=met_jer_corr+temp5-temp3;     
+        temp6.SetPtEtaPhiM(pt*jet.l1fac,0, jet.phi,0);
+        temp8.SetPtEtaPhiM(pt*jet.l1fac/smearFac,0,jet.phi,0);
+        met_jer_corr=met_jer_corr+temp5-temp3+temp6-temp8;     
         
 //        cout << "jetmet=" << (temp5-temp3).Pt() << " phi=" << (temp5-temp3).Phi() << " jetpt=" << pt << endl;
 //        cout << "met_jer_corr=" << met_jer_corr.Pt() << " phi=" << met_jer_corr.Phi() << endl;
