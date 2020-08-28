@@ -22,7 +22,6 @@ namespace pa {
   protected:
     void do_init(Registry& registry) {
       looseLeps = registry.accessConst<std::vector<panda::Lepton*>>("looseLeps");
-      cout <<"Recoil init" << endl;
       loosePhos = registry.accessConst<std::vector<panda::Photon*>>("loosePhos");
       lepPdgId = registry.accessConst<std::array<int,4>>("lepPdgId");
       jesShifts = registry.access<std::vector<JESHandler>>("jesShifts");

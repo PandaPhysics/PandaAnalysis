@@ -467,6 +467,8 @@ void SimplePhotonOp::do_execute()
     }
   }
  }
+  
+ scaleFactors();
 }
 
 void SimplePhotonOp::scaleFactors()

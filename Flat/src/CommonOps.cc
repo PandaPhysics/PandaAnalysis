@@ -411,7 +411,15 @@ void TriggerOp::do_execute()
   if(event.HLT.PFHT590) gt.trigger+=128;
   if(event.HLT.PFHT780) gt.trigger+=256;
   if(event.HLT.PFHT250) gt.trigger+=512;
-  if(event.HLT.PFHT350) gt.trigger+=1024;  
+  if(event.HLT.PFHT350) gt.trigger+=1024;
+  if(analysis.year==2018){ 
+     if(event.HLT.Ele32_WPTight_Gsf) gt.trigger+=2048;
+     if(event.HLT.Ele115_CaloIdVT_GsfTrkIdT) gt.trigger+=4096;
+  }
+  else{
+     if(event.HLT.Ele35_WPTight_Gsf) gt.trigger+=2048;
+     if(event.HLT.Ele115_CaloIdVT_GsfTrkIdT) gt.trigger+=4096;
+  }
 }
 
 void GlobalOp::do_execute()
