@@ -13,7 +13,7 @@
 #include <map>
 
 // ENDCUSTOM
-#define NJET 20
+#define NJET 30
 #define NSUBJET 2
 enum class shiftjes { 
   kNominal,
@@ -62,15 +62,6 @@ enum class shiftjes {
   N
 }; 
 TString jesName(shiftjes);
-enum class shiftpfs { 
-  k0,
-  k1,
-  k2,
-  k3,
-  k4,
-  N
-}; 
-TString pfsName(shiftpfs);
 enum class shiftjetrings { 
   k0,
   k1,
@@ -80,6 +71,15 @@ enum class shiftjetrings {
   N
 }; 
 TString jetringsName(shiftjetrings);
+enum class shiftpfs { 
+  k0,
+  k1,
+  k2,
+  k3,
+  k4,
+  N
+}; 
+TString pfsName(shiftpfs);
 #define NLEP 4
 class GeneralTree : public genericTree {
   public:
@@ -344,17 +344,8 @@ class GeneralTree : public genericTree {
   float trkmetphi;
   float trkmetDZ;
   float trkmetDZphi;
-  float pfmetsig;
-  float puppimetsig;
   float genmet;
   float genmetphi;
-  float genMuonPt;
-  float genMuonEta;
-  float genElectronPt;
-  float genElectronEta;
-  float genTauPt;
-  float genTauEta;
-  float genMjj;
   int whichRecoil;
   float puppiUWmag[3];
   float puppiUZmag[3];
@@ -394,51 +385,46 @@ class GeneralTree : public genericTree {
   float genJet1Phi;
   float genJet2Phi;
   int nJer;
-  float jerPt[20];
-  float jesPt[20];
-  float jerEta[20];
-  float jerPhi[20];
-  float jercef[20];
-  float jernef[20];
+  float jerPt[30];
+  float jesPt[30];
+  float jerEta[30];
+  float jerPhi[30];
+  float jercef[30];
+  float jernef[30];
   int nJet[43];
   int nJetMax;
-  int nJot[43];
-  int nJotMax;
   int nIsoJet[43];
-  int GoodLeadJet;
   float LeadJetPt;
-  float jetPt[43][20];
-  float jetEta[20];
-  float jetPhi[20];
-  float jetGenPt[20];
-  float jetCSV[20];
-  int jetFlav[20];
-  int jetIsTight[20];
-  int jetIsIso[20];
-  float jeesPt[20];
-  float jeerPt[20];
+  float jetPt[43][30];
+  float jetEta[30];
+  float jetPhi[30];
+  float jetGenPt[30];
+  float jetCSV[30];
+  int jetFlav[30];
+  int jetIsTight[30];
+  int jetIsIso[30];
+  float jeesPt[30];
+  float jeerPt[30];
   int jetNMBcand;
   float leadbtag;
   int jetNBtags[43];
   int jetNMBtags[43];
   int isojetNBtags[43];
   int isojetNMBtags[43];
-  float sf_mb[20];
-  float sf_mb_up[20];
-  float sf_mb_dow[20];
-  float sf_eff[20];
-  float jetMBpt[20];
-  float jetMBeta[20];
-  float jetMBphi[20];
-  int jetMBflv[20];
-  float jetMBcandpt[20];
-  float jetMBcandeta[20];
-  float jetMBcandphi[20];
-  int jetMBcandflv[20];
+  float sf_mb[30];
+  float sf_mb_up[30];
+  float sf_mb_dow[30];
+  float sf_eff[30];
+  float jetMBpt[30];
+  float jetMBeta[30];
+  float jetMBphi[30];
+  int jetMBflv[30];
+  float jetMBcandpt[30];
+  float jetMBcandeta[30];
+  float jetMBcandphi[30];
+  int jetMBcandflv[30];
   int nFatJet;
   int nFatJetTrunc;
-  int fjHiggsIdx;
-  int fjVIdx;
   float fjTau32[2];
   float fjTau21[2];
   float fjTau32SD[2];
@@ -491,9 +477,9 @@ class GeneralTree : public genericTree {
   float genFatJetPt;
   int genFatJetNProngs;
   int nGenJet;
-  float GenJetPt[20];
-  float GenJetEta[20];
-  float GenJetPhi[20];
+  float GenJetPt[30];
+  float GenJetEta[30];
+  float GenJetPhi[30];
   int nLoosePhoton;
   int nTightPhoton;
   int loosePho1IsTight;
@@ -563,36 +549,6 @@ class GeneralTree : public genericTree {
   float tauPt[4];
   float tauEta[4];
   float tauPhi[4];
-  int hbbjtidx[43][2];
-  float hbbpt[43];
-  float hbbeta[43];
-  float hbbphi[43];
-  float hbbm[43];
-  float hbbm_fit;
-  float hbbm_reg[43];
-  float hbbpt_reg[43];
-  float hbbm_dreg[43];
-  float hbbpt_dreg[43];
-  float hbbm_qreg[43];
-  float hbbpt_qreg[43];
-  float sumEtSoft1;
-  int nSoft2;
-  int nSoft5;
-  int nSoft10;
-  float hbbCosThetaJJ[43];
-  float hbbCosThetaCSJ1[43];
-  float topMassLep1Met[3];
-  float topWBosonCosThetaCS[3];
-  float topWBosonPt;
-  float topWBosonEta;
-  float topWBosonPhi;
-  float ZBosonPt;
-  float ZBosonEta;
-  float ZBosonPhi;
-  float ZBosonM;
-  float ZBosonLep1CosThetaCS;
-  float ZBosonLep1CosThetaStar;
-  float ZBosonLep1CosThetaStarFJ;
   float hbbconstpt[200];
   float hbbconsteta[200];
   float hbbconstphi[200];
@@ -611,13 +567,6 @@ class GeneralTree : public genericTree {
   float scale[6];
   float lheHT;
   int lheNjets;
-  float hempt;
-  float hemchf;
-  float hemnhf;
-  float hemcef;
-  float hemnef;
-  float hemphi;
-  int hemlead;
   int isGS;
 };
 #endif
