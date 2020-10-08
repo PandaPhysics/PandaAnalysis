@@ -314,13 +314,11 @@ void JetOp::do_execute()
 	    jw.cleaned_idx = njet; 
 	    gt.jetEta[nj] = jet.eta;
 	    gt.jetPhi[nj] = jet.phi;
-	    gt.jetCSV[nj] = csv;
+	    gt.jetM[shift][nj] = jet.mass;
           }
 	  gt.nJet[shift]++;         
        }
         if(gt.nJetMax<gt.nJet[shift]) gt.nJetMax=gt.nJet[shift];
-
-        int njet = jets.cleaned.size() - 1;
 
         TLorentzVector vJet; vJet.SetPtEtaPhiM(pt, jet.eta, jet.phi, jet.mass);
         if (metShift && njet < nJetDPhi && pt > cfg.minJetPt) { // only do this for fully-correlated shifts

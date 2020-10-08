@@ -108,7 +108,7 @@ void JetCorrOp::do_execute()
   gt.sumETRaw = event.RawMET.sumEt;
   gt.trkmet = event.TkMET.pt;
   gt.trkmetphi = event.TkMET.phi;
-  gt.pfmetsig = event.MET.significance;
+  //gt.pfmetsig = event.MET.significance;
 //  gt.puppimetsig = event.PuppiMET.significance;
 //  cout << "met1=" << event.MET.pt << endl;
   if (analysis.isData) {

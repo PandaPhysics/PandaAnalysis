@@ -73,6 +73,12 @@ namespace pa {
   protected:
     virtual bool do_accept() const;
   };
+  class SUEPSel : public Selection {
+  public:
+  SUEPSel(): Selection(Selection::sReco, "suepsel") { }
+  protected:
+    virtual bool do_accept() const;
+  };
 }
 
 #endif

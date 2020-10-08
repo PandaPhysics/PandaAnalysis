@@ -348,6 +348,12 @@ void GeneralTree::Reset() {
     fjPartonEta[iA] = -99;
     fjGenNumB[iA] = 0;
   }
+  for (int iA=0; iA!=6; ++iA) {
+    scale[iA] = 1;
+  }
+  for (int iA=0; iA!=9; ++iA) {
+    qcd[iA] = -99;
+  }
   for (int iA=0; iA!=30; ++iA) {
     jerPt[iA] = -99;
     jesPt[iA] = -99;
@@ -379,12 +385,6 @@ void GeneralTree::Reset() {
     GenJetPt[iA] = -99;
     GenJetEta[iA] = -99;
     GenJetPhi[iA] = -99;
-  }
-  for (int iA=0; iA!=6; ++iA) {
-    scale[iA] = 1;
-  }
-  for (int iA=0; iA!=9; ++iA) {
-    qcd[iA] = -99;
   }
   for (int iA=0; iA!=4; ++iA) {
     muonPt[iA] = -99;
@@ -426,6 +426,14 @@ void GeneralTree::Reset() {
     tauEta[iA] = -99;
     tauPhi[iA] = -99;
   }
+  for (int iS=0; iS!=43; ++iS) {
+    nJet[iS] = 0;
+    nIsoJet[iS] = 0;
+    jetNBtags[iS] = 0;
+    jetNMBtags[iS] = 0;
+    isojetNBtags[iS] = 0;
+    isojetNMBtags[iS] = 0;
+  }
   for (int iS=0; iS!=3; ++iS) {
     pfmet[iS] = -99;
     pfmetphi[iS] = -99;
@@ -461,14 +469,6 @@ void GeneralTree::Reset() {
     mT[iS] = -99;
   }
   for (int iS=0; iS!=43; ++iS) {
-    nJet[iS] = 0;
-    nIsoJet[iS] = 0;
-    jetNBtags[iS] = 0;
-    jetNMBtags[iS] = 0;
-    isojetNBtags[iS] = 0;
-    isojetNMBtags[iS] = 0;
-  }
-  for (int iS=0; iS!=43; ++iS) {
     for (int iA=0; iA!=2; ++iA) {
       fjMSD[iS][iA] = -99;
       fjMSD_corr[iS][iA] = -99;
@@ -479,6 +479,7 @@ void GeneralTree::Reset() {
   for (int iS=0; iS!=43; ++iS) {
     for (int iA=0; iA!=30; ++iA) {
       jetPt[iS][iA] = -99;
+      jetM[iS][iA] = -99;
     }
   }
 }
@@ -813,6 +814,49 @@ void GeneralTree::WriteTree(TTree *t) {
   Book("jetPt_JESSinglePionHCALDown",jetPt[40],"jetPt_JESSinglePionHCALDown["+TString("nJetMax")+"]/F");
   Book("jetPt_JESTimePtEtaUp",jetPt[41],"jetPt_JESTimePtEtaUp["+TString("nJetMax")+"]/F");
   Book("jetPt_JESTimePtEtaDown",jetPt[42],"jetPt_JESTimePtEtaDown["+TString("nJetMax")+"]/F");
+  Book("jetM",jetM[0],"jetM["+TString("nJetMax")+"]/F");
+  Book("jetM_JESTotalUp",jetM[1],"jetM_JESTotalUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESTotalDown",jetM[2],"jetM_JESTotalDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESAbsoluteMPFBiasUp",jetM[3],"jetM_JESAbsoluteMPFBiasUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESAbsoluteMPFBiasDown",jetM[4],"jetM_JESAbsoluteMPFBiasDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESAbsoluteScaleUp",jetM[5],"jetM_JESAbsoluteScaleUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESAbsoluteScaleDown",jetM[6],"jetM_JESAbsoluteScaleDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESAbsoluteStatUp",jetM[7],"jetM_JESAbsoluteStatUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESAbsoluteStatDown",jetM[8],"jetM_JESAbsoluteStatDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESFlavorQCDUp",jetM[9],"jetM_JESFlavorQCDUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESFlavorQCDDown",jetM[10],"jetM_JESFlavorQCDDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESFragmentationUp",jetM[11],"jetM_JESFragmentationUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESFragmentationDown",jetM[12],"jetM_JESFragmentationDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESPileUpDataMCUp",jetM[13],"jetM_JESPileUpDataMCUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESPileUpDataMCDown",jetM[14],"jetM_JESPileUpDataMCDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESPileUpPtBBUp",jetM[15],"jetM_JESPileUpPtBBUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESPileUpPtBBDown",jetM[16],"jetM_JESPileUpPtBBDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESPileUpPtEC1Up",jetM[17],"jetM_JESPileUpPtEC1Up["+TString("nJetMax")+"]/F");
+  Book("jetM_JESPileUpPtEC1Down",jetM[18],"jetM_JESPileUpPtEC1Down["+TString("nJetMax")+"]/F");
+  Book("jetM_JESPileUpPtEC2Up",jetM[19],"jetM_JESPileUpPtEC2Up["+TString("nJetMax")+"]/F");
+  Book("jetM_JESPileUpPtEC2Down",jetM[20],"jetM_JESPileUpPtEC2Down["+TString("nJetMax")+"]/F");
+  Book("jetM_JESPileUpPtRefUp",jetM[21],"jetM_JESPileUpPtRefUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESPileUpPtRefDown",jetM[22],"jetM_JESPileUpPtRefDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativeFSRUp",jetM[23],"jetM_JESRelativeFSRUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativeFSRDown",jetM[24],"jetM_JESRelativeFSRDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativeJEREC1Up",jetM[25],"jetM_JESRelativeJEREC1Up["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativeJEREC1Down",jetM[26],"jetM_JESRelativeJEREC1Down["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativePtBBUp",jetM[27],"jetM_JESRelativePtBBUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativePtBBDown",jetM[28],"jetM_JESRelativePtBBDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativePtEC1Up",jetM[29],"jetM_JESRelativePtEC1Up["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativePtEC1Down",jetM[30],"jetM_JESRelativePtEC1Down["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativePtEC2Up",jetM[31],"jetM_JESRelativePtEC2Up["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativePtEC2Down",jetM[32],"jetM_JESRelativePtEC2Down["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativeStatECUp",jetM[33],"jetM_JESRelativeStatECUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativeStatECDown",jetM[34],"jetM_JESRelativeStatECDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativeStatFSRUp",jetM[35],"jetM_JESRelativeStatFSRUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESRelativeStatFSRDown",jetM[36],"jetM_JESRelativeStatFSRDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESSinglePionECALUp",jetM[37],"jetM_JESSinglePionECALUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESSinglePionECALDown",jetM[38],"jetM_JESSinglePionECALDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESSinglePionHCALUp",jetM[39],"jetM_JESSinglePionHCALUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESSinglePionHCALDown",jetM[40],"jetM_JESSinglePionHCALDown["+TString("nJetMax")+"]/F");
+  Book("jetM_JESTimePtEtaUp",jetM[41],"jetM_JESTimePtEtaUp["+TString("nJetMax")+"]/F");
+  Book("jetM_JESTimePtEtaDown",jetM[42],"jetM_JESTimePtEtaDown["+TString("nJetMax")+"]/F");
   Book("jetEta",jetEta,"jetEta["+TString("nJetMax")+"]/F");
   Book("jetPhi",jetPhi,"jetPhi["+TString("nJetMax")+"]/F");
   Book("jetGenPt",jetGenPt,"jetGenPt["+TString("nJetMax")+"]/F");
@@ -1097,12 +1141,13 @@ void GeneralTree::WriteTree(TTree *t) {
   Book("lheHT",&lheHT,"lheHT/F");
   Book("lheNjets",&lheNjets,"lheNjets/I");
   Book("isGS",&isGS,"isGS/I");
-  if (is_adv) {
-    Book("hbbconstpt",hbbconstpt,"hbbconstpt["+TString("200")+"]/F");
-    Book("hbbconsteta",hbbconsteta,"hbbconsteta["+TString("200")+"]/F");
-    Book("hbbconstphi",hbbconstphi,"hbbconstphi["+TString("200")+"]/F");
-    Book("hbbconste",hbbconste,"hbbconste["+TString("200")+"]/F");
-    Book("hbbconstid",hbbconstid,"hbbconstid["+TString("200")+"]/I");
+  if (is_darkg) {
+    Book("genPho1Pt",&genPho1Pt,"genPho1Pt/F");
+    Book("genPho1Eta",&genPho1Eta,"genPho1Eta/F");
+    Book("genPho1Phi",&genPho1Phi,"genPho1Phi/F");
+    Book("vtxNTrk",&vtxNTrk,"vtxNTrk/I");
+    Book("vtxScore",&vtxScore,"vtxScore/F");
+    Book("vtxChi2",&vtxChi2,"vtxChi2/F");
   }
   if (is_fatjet) {
     Book("nFatJet",&nFatJet,"nFatJet/I");
@@ -1320,13 +1365,12 @@ void GeneralTree::WriteTree(TTree *t) {
     Book("fjPartonEta",fjPartonEta,"fjPartonEta["+TString("nFatJetTrunc")+"]/F");
     Book("fjGenNumB",fjGenNumB,"fjGenNumB["+TString("nFatJetTrunc")+"]/I");
   }
-  if (is_darkg) {
-    Book("genPho1Pt",&genPho1Pt,"genPho1Pt/F");
-    Book("genPho1Eta",&genPho1Eta,"genPho1Eta/F");
-    Book("genPho1Phi",&genPho1Phi,"genPho1Phi/F");
-    Book("vtxNTrk",&vtxNTrk,"vtxNTrk/I");
-    Book("vtxScore",&vtxScore,"vtxScore/F");
-    Book("vtxChi2",&vtxChi2,"vtxChi2/F");
+  if (is_adv) {
+    Book("hbbconstpt",hbbconstpt,"hbbconstpt["+TString("200")+"]/F");
+    Book("hbbconsteta",hbbconsteta,"hbbconsteta["+TString("200")+"]/F");
+    Book("hbbconstphi",hbbconstphi,"hbbconstphi["+TString("200")+"]/F");
+    Book("hbbconste",hbbconste,"hbbconste["+TString("200")+"]/F");
+    Book("hbbconstid",hbbconstid,"hbbconstid["+TString("200")+"]/I");
   }
   if (is_fatjet) {
     if (is_vh) {

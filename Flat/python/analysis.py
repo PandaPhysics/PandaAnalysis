@@ -434,3 +434,25 @@ vv2016 = lambda v=False : _analysis(
         mcTriggers = True,
         vbf = True,
     )
+
+suep = lambda v=False : _analysis(
+        name = 'suep',
+        verbose = v,
+        vbf = False,
+        fatjet = False,
+        btagSFs = True,
+        btagWeights = True,
+        puppiJets = False,
+        useDeepCSV = True,
+        useDeepJet = False,
+        darkg = False,
+        varyJES = False,
+        METJER = False,
+        LowPtJet = False,
+        varyJESTotal = True,
+        rerunJES = True,
+        rerunJER = False,
+        mcTriggers = True,
+        complicatedPhotons = False,
+        complicatedLeptons = True
+    )

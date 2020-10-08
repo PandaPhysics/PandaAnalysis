@@ -175,7 +175,7 @@ void FatJetOp::do_execute()
       gt.fjDeepB[iFJ] = fj.btagDeepB; 
       if (gt.fjDoubleCSV[iFJ] > best_doubleB) {
         best_doubleB = gt.fjDoubleCSV[iFJ]; 
-        gt.fjHiggsIdx = iFJ; 
+        //gt.fjHiggsIdx = iFJ; 
       }
 
 /*      if (analysis.monoh && iFJ == 0) {
@@ -209,17 +209,7 @@ void FatJetOp::do_execute()
       }
     }*/
   }
-  gt.fjVIdx = 1 - gt.fjHiggsIdx; 
-  
-/*
-  if (analysis.hbb) {
-    if (gt.nFatJet > 0 && gt.nLooseLep > 1) {
-      TLorentzVector HP4;
-      HP4.SetPtEtaPhiM(gt.fjPt[0][0], gt.fjEta[0], gt.fjPhi[0], gt.fjMSD_corr[0][0]);
-      TLorentzVector ZHP4 = (*dilep) + HP4;
-      gt.ZBosonLep1CosThetaStarFJ = CosThetaStar((*looseLeps)[0]->p4(), (*looseLeps)[1]->p4(), ZHP4);
-    }
-  }*/
+  //gt.fjVIdx = 1 - gt.fjHiggsIdx; 
 }
 
 /*

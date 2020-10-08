@@ -673,7 +673,7 @@ void TauOp::do_execute()
   }
 } 
 
-void GenLepOp::do_execute()
+/*void GenLepOp::do_execute()
 {
   gt.genTauPt = -1;
   gt.genElectronPt = -1;
@@ -724,3 +724,4 @@ void GenLepOp::do_execute()
     }
   }
 }
+*/

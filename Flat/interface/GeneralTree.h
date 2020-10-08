@@ -396,6 +396,7 @@ class GeneralTree : public genericTree {
   int nIsoJet[43];
   float LeadJetPt;
   float jetPt[43][30];
+  float jetM[43][30];
   float jetEta[30];
   float jetPhi[30];
   float jetGenPt[30];

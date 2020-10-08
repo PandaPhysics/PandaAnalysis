@@ -18,3 +18,9 @@ bool VBFGamma::do_accept() const
 
 }
 
+
+bool SUEPSel::do_accept() const
+{
+  return true;
+}
+

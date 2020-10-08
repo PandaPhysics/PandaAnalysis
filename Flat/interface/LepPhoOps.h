@@ -161,6 +161,7 @@ namespace pa {
     std::shared_ptr<const std::vector<panda::Particle*>> matchLeps{nullptr};
 };
 
+  /*
   class GenLepOp : public AnalysisOp {
   public:
     GenLepOp(panda::Event& event_,
@@ -181,6 +182,7 @@ namespace pa {
   private:
     std::shared_ptr<const std::vector<panda::Particle*>> genP{nullptr};
 };
+  */
 
 }
 
