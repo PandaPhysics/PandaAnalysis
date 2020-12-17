@@ -84,16 +84,9 @@ void FatJetOp::do_execute()
     }
   }
 
-  //std::cout << "starting clustering" << std::endl;
   fastjet::JetDefinition *jetDef = new fastjet::JetDefinition(fastjet::antikt_algorithm,1.5);
-
-  //for (int z=0; z<(int)finalTracks.size();z++)
-  //  std::cout << std::isinf(sorted_by_pt(finalTracks)[z].perp()) << std::endl;
-  
-  fastjet::ClusterSequence seqq(sorted_by_pt(finalTracks), *jetDef);
-  //std::cout << "doing clustering" << std::endl;
-  vector<fastjet::PseudoJet> allJets(sorted_by_pt(seqq.inclusive_jets(200)));
-  //std::cout << "done clustering" << std::endl;
+  fastjet::ClusterSequence seq(sorted_by_pt(finalTracks), *jetDef);
+  vector<fastjet::PseudoJet> allJets(sorted_by_pt(seq.inclusive_jets(200)));
 
   gt.nFatJet=0;
   gt.nFatJetTrunc = 0;
@@ -101,14 +94,8 @@ void FatJetOp::do_execute()
   int max_mult = 0;
   int idx_mult = 0;
 
-  int counter_pt = 0;
-
   for (auto& trackJet : allJets) {
     gt.nFatJet++;
-
-    if (trackJet.perp() < 200){
-      continue;
-    }
 
     if ((int)trackJet.constituents().size()>max_mult){
       max_mult = trackJet.constituents().size();
@@ -121,19 +108,15 @@ void FatJetOp::do_execute()
     else
       continue;
 
-    if(counter_pt == 0){
-      gt.fjEta[gt.nFatJetTrunc-1] = trackJet.eta();
-      gt.fjPhi[gt.nFatJetTrunc-1] = trackJet.phi();
-      gt.fjNconst[gt.nFatJetTrunc-1] = trackJet.constituents().size();
+    gt.fjEta[gt.nFatJetTrunc-1] = trackJet.eta();
+    gt.fjPhi[gt.nFatJetTrunc-1] = trackJet.phi();
+    gt.fjNconst[gt.nFatJetTrunc-1] = trackJet.constituents().size();
     
-      JESLOOP {
-	gt.fjPt[shift][gt.nFatJetTrunc-1] = trackJet.perp();
-	gt.fjM[shift][gt.nFatJetTrunc-1] = trackJet.m();
-      }
+    JESLOOP {
+      gt.fjPt[shift][gt.nFatJetTrunc-1] = trackJet.perp();
+      gt.fjM[shift][gt.nFatJetTrunc-1] = trackJet.m();
     }
-    counter_pt += 1;
-  }
-  
+  }  
 
   // Three algos for three different SUEP candidates
   // SUEP candidates
@@ -143,8 +126,8 @@ void FatJetOp::do_execute()
   // highest multiplicity
 
     JESLOOP {
-      gt.SUEP_mult_pt[shift] = 0;//allJets[idx_mult].perp();
-      gt.SUEP_mult_m[shift] = 0;//allJets[idx_mult].m();
+      gt.SUEP_mult_pt[shift] = allJets[idx_mult].perp();
+      gt.SUEP_mult_m[shift] = allJets[idx_mult].m();
     }
     
     gt.SUEP_mult_eta = allJets[idx_mult].eta();
