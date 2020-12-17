@@ -439,8 +439,8 @@ suep = lambda v=False : _analysis(
         name = 'suep',
         verbose = v,
         vbf = False,
-        fatjet = False,
-        btagSFs = True,
+        fatjet = True,
+        btagSFs = False,
         btagWeights = True,
         puppiJets = False,
         useDeepCSV = True,
@@ -454,5 +454,5 @@ suep = lambda v=False : _analysis(
         rerunJER = False,
         mcTriggers = True,
         complicatedPhotons = False,
-        complicatedLeptons = True
+        complicatedLeptons = False
     )

@@ -102,7 +102,7 @@ namespace pa {
               GeneralTree& gt_,
               int level_=0) :
       BaseJetOp("fatjet", event_, cfg_, utils_, gt_, level_),
-      nMaxFJ(analysis.vqqhbb ? 2 : 1)
+      nMaxFJ(analysis.vqqhbb ? 2 : 2)
 /*      substructure(analysis.recalcECF ? 
                    new SubRunner(analysis.ak, analysis.ak8, true, analysis.puppiJets, utils) : 
                    nullptr)*/ {

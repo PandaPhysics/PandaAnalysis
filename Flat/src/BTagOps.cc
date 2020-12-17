@@ -50,11 +50,12 @@ void BTagSFOp::do_execute()
 
     
     if(iJ>=NJET) break;  
-    gt.sf_mb[iJ]=sf;
-    gt.sf_mb_up[iJ]=sfUp;
-    gt.sf_mb_dow[iJ]=sfDown;
-    gt.sf_eff[iJ]=eff;
+    //gt.sf_mb[iJ]=sf;
+    //gt.sf_mb_up[iJ]=sfUp;
+    //gt.sf_mb_dow[iJ]=sfDown;
+    //gt.sf_eff[iJ]=eff;
   } // loop over jets
+
 /*
   utils.btag->evalSF(btagcands,sf_cent,GeneralTree::bCent,GeneralTree::bJet);
   utils.btag->evalSF(btagcands,sf_bUp,GeneralTree::bBUp,GeneralTree::bJet);

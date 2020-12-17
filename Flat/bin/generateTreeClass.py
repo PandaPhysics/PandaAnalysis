@@ -14,6 +14,7 @@ args = parser.parse_args()
 suffixes = { 'float':'F', 
              'int':'I',
              'ULong64_t':'l',
+             'bool':'O',
            }
 
 

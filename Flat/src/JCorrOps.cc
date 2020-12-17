@@ -148,9 +148,6 @@ void JetCorrOp::do_execute()
       out_met = jc->GetCorrectedMet();
         event.METFixEE2017.pt = out_met->pt;
         event.METFixEE2017.phi = out_met->phi;
-        gt.pfmet_jes = out_met->pt;
-        gt.pfmetjesphi = out_met->phi;
-
        
       if(analysis.LowPtJet){
         JetCorrector *jc2 = new JetCorrector();
@@ -162,10 +159,8 @@ void JetCorrOp::do_execute()
       out_jets = jc->GetCorrectedJets();
       out_met = jc->GetCorrectedMet();
 
-        event.MET.pt = out_met->pt;
-        event.MET.phi = out_met->phi;
-        gt.pfmet_jes = out_met->pt;
-        gt.pfmetjesphi = out_met->phi;
+      event.MET.pt = out_met->pt;
+      event.MET.phi = out_met->phi;
       if(analysis.LowPtJet){
         JetCorrector *jc2 = new JetCorrector();
         jc2->RunCorrectionLow(analysis.isData,event.fixedGridRhoFastjetAll,&event.Muon,&event.CorrT1METJet,&event.MET,event.run, scale);

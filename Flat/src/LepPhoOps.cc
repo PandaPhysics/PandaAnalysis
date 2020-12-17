@@ -447,28 +447,8 @@ void SimplePhotonOp::do_execute()
   }
    scaleFactors();  
 //  if(!mask) cout << "broken even=" << event.event << " lumi=" << event.luminosityBlock << endl; 
-//
-  gt.lheminr=10;
-  gt.lhedr=0;
-  float maxlhepho=-1;
-  for (auto& lheP : event.LHEPart) {
-    if(lheP.pdgId!=22) continue;
-     if(lheP.pt>maxlhepho){
-        gt.lhephopt=lheP.pt;
-        gt.lhephoeta=lheP.eta;
-        gt.lhephophi=lheP.phi;
-        maxlhepho=lheP.pt;
-     }
-     for (auto& genP : event.LHEPart) {
-      if(abs(genP.pdgId)<7 || abs(genP.pdgId)==9||abs(genP.pdgId)==21){
-        if(DeltaR2(genP.eta, genP.phi, lheP.eta, lheP.phi) < 0.16){ gt.lhedr=1;
-      }
-        if(sqrt(DeltaR2(genP.eta, genP.phi, lheP.eta, lheP.phi)) < gt.lheminr) gt.lheminr = sqrt(DeltaR2(genP.eta, genP.phi, lheP.eta, lheP.phi));
-    }
-  }
- }
-  
- scaleFactors();
+//  
+  scaleFactors();
 }
 
 void SimplePhotonOp::scaleFactors()

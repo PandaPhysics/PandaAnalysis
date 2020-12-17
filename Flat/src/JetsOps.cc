@@ -9,6 +9,18 @@ using namespace panda;
 namespace fj = fastjet;
 using JECParams = JetCorrectorParameters;
 
+template <class Compare>
+void sort (Compare comparator);
+
+struct TrackComparator
+{
+  // Compare 2 Player objects using name
+  bool operator ()(const panda::PFCands & cand1, const panda::PFCands & cand2)
+  {
+    return cand1.trkPt < cand2.trkPt;
+  }
+};
+
 inline float centralOnly(float x, float aeta, float def = -1)
 {
   return  aeta < 2.4 ? x : -1;
@@ -90,18 +102,6 @@ JetWrapper BaseJetOp::shiftJet(const Jet& jet, shiftjes shift, bool smear)
       else {
 	jer->getStochasticSmear(pt,jet.eta,event.fixedGridRhoFastjetAll,smearFac,smearFacUp,smearFacDown,0,-99, analysis.year);
       }
-      pt *= smearFac;
-      int njer=gt.nJer;
-      if(shift == shiftjes::kNominal && jet.pt>15 && njer<NJET){
-         gt.jesPt[njer]=jet.pt;
-         gt.jerPt[njer]=pt;
-         gt.jerEta[njer]=jet.eta;
-         gt.jerPhi[njer]=jet.phi;
-         gt.jercef[njer]=jet.chEmEF;
-         gt.jernef[njer]=jet.neEmEF;
-         gt.nJer++;
-        
-      } 
       if(shift == shiftjes::kNominal && jet.pt>15 && fabs(jet.eta)<5.191 && jet.chEmEF + jet.neEmEF < 0.9){
         TLorentzVector temp3,temp5,temp6,temp8;
         temp3.SetPtEtaPhiM(pt,0, jet.phi,0);
@@ -263,13 +263,16 @@ void JetOp::do_execute()
     bool metShift = (i2jes(shift) <= shiftjes::kJESTotalDown);
     JESHandler& jets = (*jesShifts)[shift];
 
+    gt.jetht[shift] = 0.;
+
     float max_pt=0;
     (*currentJES) = &jets;
     for (auto& jw : jets.all) {
       (*currentJet) = &jw;
-      auto& jet = jw.get_base();
+      auto& jet = jw.get_base();      
       float aeta = abs(jet.eta);
       float pt = jw.pt;
+      gt.jetht[shift] += pt;
       if (analysis.year == 2016 || analysis.year == 2017) {
         if (isNominal && !isMatched(matchVeryLoosePhos.get(),0.16,jet.eta,jet.phi)) {
           // prefiring weights
@@ -370,8 +373,8 @@ void JetOp::do_execute()
       }
     }
     gt.jetTotM[shift] = vJet.M();
-    gt.sphericity[shift] = sphericity(2.,allVecs);
     */
+    //gt.sphericity[shift] = sphericity(2.,allVecs);
 
   } // shift loop
 
@@ -396,26 +399,37 @@ void JetOp::do_execute()
     jets.vpfMETNoMu.SetMagPhi(gt.pfmet[shift], gt.pfmetphi[shift]);
   }
 
-     for (auto &gen : event.GenJet) {
-            bool jetpass=true;
-            if(gen.pt<30 || fabs(gen.eta)>2.4) continue;
-            if (DeltaR2(gen.eta, gen.phi, gt.genPhotonEta, gt.genPhotonPhi) < 0.16 && gt.genPhotonPt>0) jetpass=false;
-            for(auto &genP : event.GenPart){
-               if((fabs(genP.pdgId)==11 || fabs(genP.pdgId)==13) && (genP.status)==1){
-                   if (DeltaR2(gen.eta, gen.phi, genP.eta, genP.phi) < 0.16) jetpass=false;
-                 }
-            }          
-         if(jetpass){ 
-           gt.GenJetPt[gt.nGenJet]=gen.pt;
-           gt.GenJetEta[gt.nGenJet]=gen.eta;
-           gt.GenJetPhi[gt.nGenJet]=gen.phi;
-           gt.nGenJet++;
-         }
-         if(gt.nGenJet>=10) break;
-     }
-     
-     gt.genmet=event.GenMET.pt;
-     gt.genmetphi = event.GenMET.phi;
+  for (auto &gen : event.GenJet) {
+    bool jetpass=true;
+    if(gen.pt<30 || fabs(gen.eta)>2.4) continue;
+    if (DeltaR2(gen.eta, gen.phi, gt.genPhotonEta, gt.genPhotonPhi) < 0.16 && gt.genPhotonPt>0) jetpass=false;
+    for(auto &genP : event.GenPart){
+      if((fabs(genP.pdgId)==11 || fabs(genP.pdgId)==13) && (genP.status)==1){
+	if (DeltaR2(gen.eta, gen.phi, genP.eta, genP.phi) < 0.16) jetpass=false;
+      }
+    }          
+    if(jetpass){ 
+      gt.GenJetPt[gt.nGenJet]=gen.pt;
+      gt.GenJetEta[gt.nGenJet]=gen.eta;
+      gt.GenJetPhi[gt.nGenJet]=gen.phi;
+      gt.nGenJet++;
+    }
+    if(gt.nGenJet>=10) break;
+  }
+  
+  gt.genmet=event.GenMET.pt;
+  gt.genmetphi = event.GenMET.phi;
+  
+  gt.nTrk = 0;
+  for (auto &pfcand : event.PFCands){
+    //std::cout << pfcand.pt << std::endl;
+    if (pfcand.trkPt>1. && gt.nTrk<NTRKS){
+      gt.trkPt[gt.nTrk] = pfcand.trkPt;
+      gt.trkEta[gt.nTrk] = pfcand.trkEta;
+      gt.trkPhi[gt.nTrk] = pfcand.trkPhi;
+      gt.nTrk += 1;
+    }
+  }
 }
 
 

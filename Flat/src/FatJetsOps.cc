@@ -64,174 +64,161 @@ void FatJetOp::setupJES()
 
 void FatJetOp::do_execute()
 {
-//  cout << "nFatJet=" << event.FatJet.size() << endl;
-  setupJES();
+
+  vector<fastjet::PseudoJet> finalTracks;
+  vector<TLorentzVector> tracksP4;
+
+  gt.HTTot = 0;
+
+  for (auto &pfcand : event.PFCands){
+    //std::cout << pfcand.pt << std::endl;                                                                                                                                                
+    if (pfcand.trkPt>1.){
+      TLorentzVector tmp;
+      tmp.SetPtEtaPhiM(pfcand.trkPt,pfcand.trkEta,pfcand.trkPhi,pfcand.mass);
+      tracksP4.push_back(tmp);
+      fastjet::PseudoJet curtrk(tmp.Px(),tmp.Py(),tmp.Pz(),tmp.E());
+      if (!std::isinf(curtrk.perp())){
+	finalTracks.emplace_back(curtrk);
+	gt.HTTot += tmp.Pt();
+      }
+    }
+  }
+
+  //std::cout << "starting clustering" << std::endl;
+  fastjet::JetDefinition *jetDef = new fastjet::JetDefinition(fastjet::antikt_algorithm,1.5);
+
+  //for (int z=0; z<(int)finalTracks.size();z++)
+  //  std::cout << std::isinf(sorted_by_pt(finalTracks)[z].perp()) << std::endl;
+  
+  fastjet::ClusterSequence seqq(sorted_by_pt(finalTracks), *jetDef);
+  //std::cout << "doing clustering" << std::endl;
+  vector<fastjet::PseudoJet> allJets(sorted_by_pt(seqq.inclusive_jets(200)));
+  //std::cout << "done clustering" << std::endl;
 
   gt.nFatJet=0;
- 
-  int fatjet_counter=-1;
-  for (auto& fj : event.FatJet) {
-//    auto& fj = *fjPtr;
-    ++fatjet_counter;
-    bool doSmear = !analysis.isData && recalcJER;
-    JetWrapper jwNominal = shiftJet(fj, shiftjes::kNominal, doSmear); 
-    float pt = jwNominal.pt;
-    float rawpt = fj.pt*(1-fj.rawFactor);
-    float eta = fj.eta;
-    float mass = fj.mass;
-    float ptcut = 200;
-    if (analysis.deep || analysis.ak8)
-      ptcut = 350;
+  gt.nFatJetTrunc = 0;
 
-    float bestPt = pt;
-/*
-    if (analysis.varyJES || analysis.varyJESTotal) {
-      bestPt = TMath::Max(bestPt, fj.ptCorrUp);
-      bestPt = TMath::Max(bestPt, fj.ptCorrDown);
-    }
-*/
-    if (bestPt<ptcut || fabs(eta)>2.4/* || !fj.monojet*/)
-      continue;
+  int max_mult = 0;
+  int idx_mult = 0;
 
-    float phi = fj.phi;
-    if (isMatched(matchLeps.get(),cfg.FATJETMATCHDR2,eta,phi) ||
-        isMatched(matchPhos.get(),cfg.FATJETMATCHDR2,eta,phi)) {
-      continue;
-    }
+  int counter_pt = 0;
 
-    int iFJ = gt.nFatJet;
-    double best_doubleB = 0; 
+  for (auto& trackJet : allJets) {
     gt.nFatJet++;
-    if (iFJ < nMaxFJ) {
-      gt.nFatJetTrunc++; 
-      gt.fjIsClean[iFJ] = fatjet_counter==0 ? 1 : 0;
-      gt.fjEta[iFJ] = eta;
-      gt.fjPhi[iFJ] = phi;
-      gt.fjRawPt[iFJ] = pt*(1-fj.rawFactor);
-//      float corrweight = getMSDCorr(pt,eta);
-      JESLOOP {
-        JetWrapper jw = shift == 0 ? jwNominal : shiftJet(fj, i2jes(shift), doSmear);
-        gt.fjPt[shift][iFJ] = jw.pt;
-        gt.fjM[shift][iFJ] = mass * jw.fat_scale();
-//        gt.fjMSD[shift][iFJ] = fj.mSD * jw.scale();
-//        gt.fjMSD_corr[shift][iFJ] = corrweight*gt.fjMSD[shift][iFJ];
-      }
-/*
-      if (analysis.recalcECF && event.recoil.max < 175) {
-        substructure->run(fj);
-      }
-*/
-      // now we do substructure
-      gt.fjTau32[iFJ] = clean(fj.tau3/fj.tau2);
-//      gt.fjTau32SD[iFJ] = clean(fj.tau3SD/fj.tau2SD);
-      gt.fjTau21[iFJ] = clean(fj.tau2/fj.tau1);
-//      gt.fjTau21SD[iFJ] = clean(fj.tau2SD/fj.tau1SD);
-/*
-      for (auto ibeta : cfg.ibetas) {
-        for (auto N : cfg.Ns) {
-          for (auto order : cfg.orders) {
-            GeneralTree::ECFParams p;
-            p.order = order; p.N = N; p.ibeta = ibeta; 
-            if (gt.fjIsClean[iFJ] || true)
-              gt.fjECFNs[p][iFJ] = fj.get_ecf(order,N,ibeta);
-            else
-              gt.fjECFNs[p][iFJ] = fj.get_ecf(order,N,ibeta);
-          }
-        }
-      } //loop over betas
-      gt.fjHTTMass[iFJ] = fj.htt_mass;
-      gt.fjHTTFRec[iFJ] = fj.htt_frec;
 
-      if (analysis.vqqhbb) {
-        // jet charge
-        gt.fjQ[iFJ] = 0;
-        for (const auto& pf : fj.constituents) {
-          gt.fjQ[iFJ] += pf->q() * pf->pt() / jwNominal.pt;
-        }
-      }
-*/
-      std::vector<SubJet const*> subjets;
-      for (auto& subjet : event.SubJet)
-        subjets.push_back(&subjet);
-
-
-      auto& mya = analysis; // local scope
-      auto mycsv = [&mya](const SubJet& j) { return (mya.year == 2016 ? j.btagCSVV2 : j.btagDeepB); };
-      auto csvsort = [&mycsv](SubJet const* j1, SubJet const* j2) -> bool {
-              return mycsv(*j1) > mycsv(*j2);
-            };
-
-      std::sort(subjets.begin(),subjets.end(),csvsort);
-      if (subjets.size() > 0) {
-        gt.fjMaxCSV[iFJ] = mycsv(*(subjets[0]));
-        gt.fjMinCSV[iFJ] = mycsv(*(subjets.back()));
-        if (subjets.size()>1) {
-          gt.fjSubMaxCSV[iFJ] = mycsv(*(subjets[1]));
-        }
-      }
-
-      gt.fjDoubleCSV[iFJ] = fj.btagCSVV2;
-      gt.fjDeepProbH[iFJ] = fj.btagHbb;
-      gt.fjDeepB[iFJ] = fj.btagDeepB; 
-      if (gt.fjDoubleCSV[iFJ] > best_doubleB) {
-        best_doubleB = gt.fjDoubleCSV[iFJ]; 
-        //gt.fjHiggsIdx = iFJ; 
-      }
-
-/*      if (analysis.monoh && iFJ == 0) {
-        for (int iSJ=0; iSJ!=fj.subjets.size(); ++iSJ) {
-          auto& subjet = fj.subjets.objAt(iSJ);
-          gt.fjsjPt[iSJ]=subjet.pt();
-          gt.fjsjEta[iSJ]=subjet.eta();
-          gt.fjsjPhi[iSJ]=subjet.phi();
-          gt.fjsjM[iSJ]=subjet.m();
-          gt.fjsjCSV[iSJ]=mycsv(subjet);
-          gt.fjsjQGL[iSJ]=subjet.qgl;
-        }
-      }*/
-/*
-      if (!analysis.isData && fj.matchedGenJet.isValid())
-        gt.fjGenNumB[iFJ] = fj.matchedGenJet.get()->numB;
-      else
-        gt.fjGenNumB[iFJ] = 0;
-*/
+    if (trackJet.perp() < 200){
+      continue;
     }
 
-    // Fill constituents list from position 100 on. The first 100 came from the AK4 dijet system.
-/*    if (analysis.hbb && analysis.advTraining) {
-      int counter = 100;
-      for (const auto& pf : fj.constituents) {
-	gt.hbbconstpt[counter] = pf->pt();
-	gt.hbbconsteta[counter] = pf->eta();
-	gt.hbbconstphi[counter] = pf->phi();
-	gt.hbbconstphi[counter] = pf->e();
-	counter++;
+    if ((int)trackJet.constituents().size()>max_mult){
+      max_mult = trackJet.constituents().size();
+      idx_mult = gt.nFatJet-1;
+    }
+
+    if (gt.nFatJetTrunc < nMaxFJ) {
+      gt.nFatJetTrunc++;
+    }
+    else
+      continue;
+
+    if(counter_pt == 0){
+      gt.fjEta[gt.nFatJetTrunc-1] = trackJet.eta();
+      gt.fjPhi[gt.nFatJetTrunc-1] = trackJet.phi();
+      gt.fjNconst[gt.nFatJetTrunc-1] = trackJet.constituents().size();
+    
+      JESLOOP {
+	gt.fjPt[shift][gt.nFatJetTrunc-1] = trackJet.perp();
+	gt.fjM[shift][gt.nFatJetTrunc-1] = trackJet.m();
       }
-    }*/
+    }
+    counter_pt += 1;
   }
-  //gt.fjVIdx = 1 - gt.fjHiggsIdx; 
-}
+  
 
-/*
-float FatJetOp::getMSDCorr(float puppipt, float puppieta)
-{
+  // Three algos for three different SUEP candidates
+  // SUEP candidates
 
-  float genCorr  = 1.;
-  float recoCorr = 1.;
-  float totalWeight = 1.;
+  if (gt.nFatJet>0){
 
-  genCorr = utils.puppisd_corrGEN->Eval( puppipt );
-  if (fabs(puppieta) <= 1.3) {
-    recoCorr = utils.puppisd_corrRECO_cen->Eval(puppipt);
-  } else {
-    recoCorr = utils.puppisd_corrRECO_for->Eval(puppipt);
+  // highest multiplicity
+
+    JESLOOP {
+      gt.SUEP_mult_pt[shift] = 0;//allJets[idx_mult].perp();
+      gt.SUEP_mult_m[shift] = 0;//allJets[idx_mult].m();
+    }
+    
+    gt.SUEP_mult_eta = allJets[idx_mult].eta();
+    gt.SUEP_mult_phi = allJets[idx_mult].phi();
+    gt.SUEP_mult_nconst = allJets[idx_mult].constituents().size();
+    
+    TLorentzVector SUEP_mult; SUEP_mult.SetPtEtaPhiM(allJets[idx_mult].perp(),allJets[idx_mult].eta(),allJets[idx_mult].phi(),allJets[idx_mult].m());
+    TVector3 SUEP_mult_boost = SUEP_mult.BoostVector();
+    vector<fastjet::PseudoJet> constituents_mult = allJets[idx_mult].constituents();
+    vector<TLorentzVector> tracksP4_mult;
+    for (unsigned int j=0; j<constituents_mult.size(); j++){
+      TLorentzVector tmp;
+      tmp.SetPtEtaPhiM(constituents_mult[j].perp(),constituents_mult[j].eta(),constituents_mult[j].phi(),constituents_mult[j].m());
+      tmp.Boost(-SUEP_mult_boost);
+      tracksP4_mult.push_back(tmp);
+    }
+    
+    gt.SUEP_mult_spher = sphericity(2.,tracksP4_mult);
+
+    // highest pT
+
+    JESLOOP {
+      gt.SUEP_pt_pt[shift] = gt.fjPt[shift][0];
+      gt.SUEP_pt_m[shift] = gt.fjM[shift][0];
+    }
+
+    gt.SUEP_pt_eta = gt.fjEta[0];
+    gt.SUEP_pt_phi = gt.fjPhi[0];
+    gt.SUEP_pt_nconst = gt.fjNconst[0];  
+
+    TLorentzVector SUEP_pt; SUEP_pt.SetPtEtaPhiM(allJets[0].perp(),allJets[0].eta(),allJets[0].phi(),allJets[0].m());
+    TVector3 SUEP_pt_boost = SUEP_pt.BoostVector();
+    vector<fastjet::PseudoJet> constituents_pt = allJets[0].constituents();
+    vector<TLorentzVector> tracksP4_pt;
+    for (unsigned int j=0; j<constituents_pt.size(); j++){
+      TLorentzVector tmp;
+      tmp.SetPtEtaPhiM(constituents_pt[j].perp(),constituents_pt[j].eta(),constituents_pt[j].phi(),constituents_pt[j].m());
+      tmp.Boost(-SUEP_pt_boost);
+      tracksP4_pt.push_back(tmp);
+    }
+    gt.SUEP_pt_spher = sphericity(2.,tracksP4_pt);
   }
-  //printf("genCorr=%.3f, recoCorr=%.3f\n",genCorr,recoCorr);
-  totalWeight = genCorr * recoCorr;
 
-  return totalWeight;
+  // ISR removal (remove N hardest tracks)
+
+  TLorentzVector SUEP_isr(0.,0.,0.,0.);
+  int N = 10;
+
+  if ((int)finalTracks.size()>N){ // sanity cut
+
+    vector<fastjet::PseudoJet> sorted_tracks = sorted_by_pt(finalTracks);
+    sorted_tracks.erase(sorted_tracks.begin(),sorted_tracks.begin()+N);    
+
+    for (auto &trk : sorted_tracks){
+      TLorentzVector tmp; tmp.SetPtEtaPhiM(trk.perp(),trk.eta(),trk.phi(),trk.m());
+      SUEP_isr += tmp;
+    } 
+    
+    gt.SUEP_isr_pt = SUEP_isr.Pt();
+    gt.SUEP_isr_eta = SUEP_isr.Eta();
+    gt.SUEP_isr_phi = SUEP_isr.Phi();
+    gt.SUEP_isr_m = SUEP_isr.M();
+    gt.SUEP_isr_nconst = (int)finalTracks.size()-N;
+    
+    TVector3 SUEP_isr_boost = SUEP_isr.BoostVector();
+    vector<TLorentzVector> tracksP4_isr;
+    for (auto &trk : sorted_tracks){
+      TLorentzVector tmp; tmp.SetPtEtaPhiM(trk.perp(),trk.eta(),trk.phi(),trk.m());
+      tmp.Boost(-SUEP_isr_boost);
+      tracksP4_isr.push_back(tmp);
+    }
+    gt.SUEP_isr_spher = sphericity(2.,tracksP4_isr);
+  }
 }
-*/
 
 const GenPart* FatJetMatchingOp::matchGen(double eta, double phi, double radius, int pdgid) const
 {
@@ -530,231 +517,3 @@ void FatJetMatchingOp::do_execute()
   }
 }
 
-/*
-float HRTagOp::getMSDCorr(float puppipt, float puppieta)
-{
-
-  float genCorr  = 1.;
-  float recoCorr = 1.;
-  float totalWeight = 1.;
-
-  genCorr = utils.puppisd_corrGEN->Eval( puppipt );
-  if (fabs(puppieta) <= 1.3) {
-    recoCorr = utils.puppisd_corrRECO_cen->Eval(puppipt);
-  } else {
-    recoCorr = utils.puppisd_corrRECO_for->Eval(puppipt);
-  }
-  totalWeight = genCorr * recoCorr;
-
-  return totalWeight;
-}
-
-
-void HRTagOp::do_execute()
-{
-  // first loop through genP and find any partons worth saving
-  // if this is a signal
-  int i_parton = 0; 
-  float minPt = 0;
-  if (analysis.processType == kTop || analysis.processType == kTT) {
-    for (auto *pptr : *genP) {
-      auto& p = pToGRef(pptr);
-      if (abs(p.pdgid) != 6)
-        continue;
-      float pt = p.pt();
-      if (pt < minPt)
-        continue;
-      float eta = p.eta, phi = p.phi;
-      if (hasChild(p, *genP))
-        continue;
-      const GenPart *W{nullptr}, *b{nullptr}, *q0{nullptr}, *q1{nullptr};
-      // first loop through: find W and b
-      for (auto *childptr : *genP) {
-        auto& child = pToGRef(childptr);
-        int id = abs(child.pdgid);
-        if (id != 5 && id != 24)
-          continue;
-        if (hasChild(child, *genP))
-          continue;
-        if (!isAncestor(child, p))
-          continue;
-        if (id == 5) {
-          b = &child;
-        } else {
-          W = &child;
-        }
-      } // W and b loop
-      if (W == nullptr || b == nullptr)
-        continue;
-      // second loop through: find qq'
-      for (auto *childptr : *genP) {
-        auto& child = pToGRef(childptr);
-        if (!child.parent.isValid() || child.parent.get() != W)
-          continue;
-        int id = abs(child.pdgid);
-        if (id > 5)
-          continue;
-        if (q0 == nullptr)
-          q0 = &child;
-        else
-          q1 = &child;
-        if (q0 != nullptr && q1 != nullptr)
-          break;
-      } // qq' loop
-      if (q0 == nullptr || q1 == nullptr)
-        continue;
-      // now fill the tree
-      gt.i_evt = event.eventNumber;
-      gt.i_parton = i_parton++;
-      gt.npv = event.npv;
-      gt.sampleType = 2;
-      gt.gen_pt = pt; gt.gen_eta = eta; gt.gen_phi = p.phi;
-      gt.gen_pdgid = p.pdgid;
-      gt.gen_size = max({DeltaR2(eta, phi, b->eta, b->phi),
-                         DeltaR2(eta, phi, q0->eta, q0->phi),
-                         DeltaR2(eta, phi, q1->eta, q1->phi)});
-      // now find a good fat jet
-      for (auto* fj : *fjPtrs) {
-        if (DeltaR2(eta, phi, fj->eta, fj->phi) > 0.36)
-          continue;
-        fillJet(*fj);
-        break;
-      }
-      gt.Fill();
-      gt.Reset();
-    }
-  } else {
-    for (auto *pptr : *genP) {
-      auto& p = pToGRef(pptr);
-      if (abs(p.pdgid) > 5 && abs(p.pdgid) != 21)
-        continue;
-      float pt = p.pt();
-      if (pt < minPt)
-        continue;
-      float eta = p.eta, phi = p.phi;
-      if (!hard(p) || hasChild(p, *genP, true))
-        continue;
-      // now fill the tree
-      gt.i_evt = event.eventNumber;
-      gt.i_parton = i_parton++;
-      gt.npv = event.npv;
-      gt.sampleType = 0;
-      gt.gen_pt = pt; gt.gen_eta = eta; gt.gen_phi = p.phi;
-      gt.gen_pdgid = p.pdgid;
-      gt.gen_size = 0;
-      // now find a good fat jet
-      for (auto* fj : *fjPtrs) {
-        if (DeltaR2(eta, phi, fj->eta, fj->phi) > 0.36)
-          continue;
-        fillJet(*fj);
-        break;
-      }
-      gt.Fill();
-      gt.Reset();
-    }
-  }
-}
-*/
-/*
-void SubRunner::run(panda::FatJet& fj)
-{
-  VPseudoJet particles = convertPFCands(fj.constituents,doPuppi,0.01);
-
-  ClusterSequenceArea seq(particles,*jetDef,*(utils.areaDef));
-  VPseudoJet allJets(seq.inclusive_jets(0.));
-  PseudoJet *pj{nullptr};
-  double minDR2 = 999;
-  for (auto &jet : allJets) {
-    double dr2 = DeltaR2(jet.eta,jet.phi_std(),fj.eta,fj.phi);
-    if (dr2<minDR2) {
-      minDR2 = dr2;
-      pj = &jet;
-    }
-  }
-  if (pj == nullptr)
-    return;
-  VPseudoJet constituents = sorted_by_pt(pj->constituents());
-
-  PseudoJet sd = (*utils.softDrop)(*pj);
-  VPseudoJet sdConstituents = sorted_by_pt(sd.constituents());
-  fj.mSD = sd.m();
-
-  fj.tau1 = tauN->getTau(1, constituents);
-  fj.tau2 = tauN->getTau(2, constituents);
-  fj.tau3 = tauN->getTau(3, constituents);
-  fj.tau1SD = tauN->getTau(1, sdConstituents);
-  fj.tau2SD = tauN->getTau(2, sdConstituents);
-  fj.tau3SD = tauN->getTau(3, sdConstituents);
-
-  // get ecfs
-  if (doECF) {
-    unsigned nFilter = min(100, (int)sdConstituents.size());
-    VPseudoJet sdConstsFiltered(sdConstituents.begin(), sdConstituents.begin() + nFilter);
-
-    ecfcalc->calculate(sdConstsFiltered);
-    for (auto iter = ecfcalc->begin(); iter != ecfcalc->end(); ++iter) {
-      int N = iter.get<pa::ECFCalculator::nP>();
-      int o = iter.get<pa::ECFCalculator::oP>();
-      int beta = iter.get<pa::ECFCalculator::bP>();
-      float ecf(iter.get<pa::ECFCalculator::ecfP>());
-      if (!fj.set_ecf(o+1,N+1,beta,ecf)) {
-        logger.error("SubRunner::run", Form("Failed to set ecf at %i %i %i\n", o+1, N+1, beta));
-        throw std::runtime_error("");
-      }
-    }
-  }
-
-  // HTT
-  PseudoJet httJet = htt->result(*pj);
-  if (httJet != 0) {
-    auto* s(static_cast<httwrapper::HEPTopTaggerV2Structure*>(httJet.structure_non_const_ptr()));
-    fj.htt_mass = s->top_mass();
-    fj.htt_frec = s->fRec();
-  } else {
-    fj.htt_mass = 0;
-    fj.htt_frec = 0;
-  }
-}
-*/
-/*
-void HRTagOp::fillJet(panda::FatJet& fj)
-{
-  if (analysis.reclusterFJ) 
-    substructure->run(fj);
-
-//  gt.recoil = event.recoil.max;
-  gt.clf_IsMatched = 1;
-  gt.clf_Pt = fj.pt;
-  gt.clf_Eta = fj.eta;
-  gt.clf_Phi = fj.phi;
-  gt.clf_M = fj.mass;
-  gt.clf_Tau32 = clean(fj.tau3 / fj.tau2);
-  gt.clf_Tau21 = clean(fj.tau2 / fj.tau1);
-//  gt.clf_Tau32SD = clean(fj.tau3SD / fj.tau2SD);
-//  gt.clf_Tau21SD = clean(fj.tau2SD / fj.tau1SD);
-//  gt.clf_HTTFRec = fj.htt_frec;
-//  gt.clf_MSD = fj.mSD;
-//  gt.clf_MSD_corr = fj.mSD * getMSDCorr(fj.pt(),fj.eta());
-
-  std::vector<SubJet const*> subjets;
-  for (int iS(0); iS != fj.subjets.size(); ++iS)
-    subjets.push_back(&fj.subjets.objAt(iS));
-  auto csvsort = [](SubJet const* j1, SubJet const* j2) -> bool {
-          return j1->btagCSVV2 > j2->btagCSVV2;
-        };
-  std::sort(subjets.begin(),subjets.end(),csvsort);
-  if (subjets.size()>0)
-    gt.clf_MaxCSV = subjets[0]->btagCSVV2;
-
-  for (auto ibeta : gt.get_ibetas()) {
-    for (auto N : gt.get_Ns()) {
-      for (auto order : gt.get_orders()) {
-        HeavyResTree::ECFParams p;
-        p.order = order; p.N = N; p.ibeta = ibeta;
-        gt.clf_ECFNs[p] = fj.get_ecf(order,N,ibeta);
-      }
-    }
-  } //loop ov
-
-}
-*/

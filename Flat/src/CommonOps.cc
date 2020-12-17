@@ -400,12 +400,26 @@ void TriggerOp::checkEle32()
 void TriggerOp::do_execute()
 {
 
+  gt.HLT_PFHT1050 = false;
+  gt.HLT_PFJet500 = false;
+
+  //std::cout << gt.HLT_PFHT1050 << std::endl;
+
   if(analysis.year==2018){ if(event.HLT.Ele32_WPTight_Gsf || event.HLT.Ele115_CaloIdVT_GsfTrkIdT) gt.trigger+=1;}
   else { if(event.HLT.Ele35_WPTight_Gsf || event.HLT.Ele115_CaloIdVT_GsfTrkIdT) gt.trigger+=1;}
   if(event.HLT.IsoMu27) gt.trigger+=2;
   if(event.HLT.PFMETNoMu120_PFMHTNoMu120_IDTight || event.HLT.PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60) gt.trigger+=4;
   if(event.HLT.Photon200) gt.trigger+=8;  
-  if(event.HLT.PFHT1050) gt.trigger+=16;
+  if(event.HLT.PFHT1050){
+    gt.trigger+=16;
+    gt.HLT_PFHT1050 = true;
+  }
+
+  if(event.HLT.PFJet500)
+    gt.HLT_PFJet500 = true;
+
+  //std::cout << gt.HLT_PFHT1050 << std::endl;
+
   if(event.HLT.PFHT180) gt.trigger+=32;
   if(event.HLT.PFHT430) gt.trigger+=64;
   if(event.HLT.PFHT590) gt.trigger+=128;
@@ -447,67 +461,50 @@ void GlobalOp::do_execute()
   // event info
 
 
-//  cout << "npdf=" << event.nLHEPdfWeight << " nqcd=" << event.nLHEScaleWeight <<" nobj=" << event.nTrigObj << endl;
-
-  
   if(!analysis.isData){
-  gt.npdf = event.nLHEPdfWeight;
-  gt.nscale = event.nLHEScaleWeight;
-  
-  float temx2=0;
-  float ave=0;
+    gt.npdf = event.nLHEPdfWeight;
+    gt.nscale = event.nLHEScaleWeight;
+    
+    float temx2=0;
+    float ave=0;
 
-//  for(int k=0; k<gt.nscale; k++){
-//    cout << "qcd" << k << "=" << event.LHEScaleWeight[k].VAL << endl;
-//  }
+    gt.pdfup=1;
+    gt.pdfdow=1;
+    for(int k=0; k<9; k++)
+      gt.qcd[k]=1;
 
+    for(int k=0; k<gt.npdf; k++){
+      ave=ave+event.LHEPdfWeight[k].VAL;
+    }
+    ave=ave/gt.npdf;
 
-  gt.pdfup=1;
-  gt.pdfdow=1;
-  for(int k=0; k<9; k++)
-     gt.qcd[k]=1;
+    for(int k=0; k<gt.npdf; k++){
+      temx2=temx2+pow((event.LHEPdfWeight[k].VAL-ave),2);
+    }
 
-  for(int k=0; k<gt.npdf; k++){
-    ave=ave+event.LHEPdfWeight[k].VAL;
-  }
-  ave=ave/gt.npdf;
-
-  for(int k=0; k<gt.npdf; k++){
-    temx2=temx2+pow((event.LHEPdfWeight[k].VAL-ave),2);
-  }
-
-  if(gt.npdf>1) temx2=sqrt(temx2/float(gt.npdf-1));
-  else temx2=0;
-
+    if(gt.npdf>1) temx2=sqrt(temx2/float(gt.npdf-1));
+    else temx2=0;
+    
     gt.pdfup=1+temx2;
     gt.pdfdow=1-temx2;
 
 
-  if(gt.nscale<=9){
-   for(int k=0; k<gt.nscale; k++){
-      gt.qcd[k]=event.LHEScaleWeight[k].VAL;
+    if(gt.nscale<=9){
+      for(int k=0; k<gt.nscale; k++){
+	gt.qcd[k]=event.LHEScaleWeight[k].VAL;
+      }
     }
-  }
 
-  if(gt.nscale==44){
+    if(gt.nscale==44){
 //   int mmap[9]={0,3,6,1,4,7,2,5,8}; //this sample is messed up....(WZTo3LNu_3Jets_MLL4-50)
-   int ll=0;
-   for(int k=4; k<gt.nscale; k=k+5){
-      ll++; 
-      gt.qcd[ll]=event.LHEScaleWeight[k].VAL;
-    }
-  } 
-
-/*
-   if(gt.qcd[0]!=1){
-    for(int k=0; k<9; k++){
-      cout << "qcd" << k <<"=" << event.LHEScaleWeight[k].VAL << endl;
-    }
-   }
-*/ 
+      int ll=0;
+      for(int k=4; k<gt.nscale; k=k+5){
+	ll++; 
+	gt.qcd[ll]=event.LHEScaleWeight[k].VAL;
+      }
+    } 
   }
-
-
+  
   gt.mcWeight = event.genWeight;
   gt.runNumber = event.run;
   gt.lumiNumber = event.luminosityBlock;
@@ -534,38 +531,18 @@ void GlobalOp::do_execute()
     }
   }
 
-//  gt.metFilter = (gt.metFilter==1 && !event.metFilters.badPFMuons) ? 1 : 0;
-//  gt.metFilter = (gt.metFilter==1 && !event.metFilters.badChargedHadrons) ? 1 : 0;
   if (!analysis.isData) {
     gt.pu = event.Pileup.nTrueInt;
     gt.sf_npv = utils.getCorr(cNPV, gt.npv);
     gt.sf_pu = utils.getCorr(cPU, gt.pu);
-    gt.lhevpt=event.LHE.Vpt;
-    gt.lhenjet = event.LHE.Njets;
     gt.lheht = event.LHE.HT;
   }
-
-  
-  
 }
-/*
-template <typename TREE>
-void BaseGenPOp<TREE>::do_execute()
-{
-  if (this->event.genParticles.size() > 0) {
-    merge_particles(this->event.genParticles);
-  } else {
-    merge_particles(this->event.genParticlesU);
-  }
-}
-*/
-//template class BaseGenPOp<GeneralTree>;
 
 void RecoilOp::do_execute()
 {
   TLorentzVector vObj1, vObj2;
   gt.whichRecoil = 0; // -1=photon, 0=MET, 1,2=nLep
-//   cout << "in recoil" << endl;
   if (gt.nLooseLep>0) {
     Lepton *lep1 = looseLeps->at(0);
     vObj1.SetPtEtaPhiM(lep1->pt,lep1->eta,lep1->phi,lep1->mass);
@@ -631,44 +608,5 @@ void RecoilOp::do_execute()
 void TriggerEffOp::do_execute() 
 {
   // trigger efficiencies
-  gt.sf_metTrig = utils.getCorr(cTrigMET,gt.pfmetnomu[jes2i(shiftjes::kNominal)]);
-  gt.sf_metTrigZmm = utils.getCorr(cTrigMETZmm,gt.pfmetnomu[jes2i(shiftjes::kNominal)]);
-
-  auto* lep0 = looseLeps->size()>0 ? (*looseLeps)[0] : nullptr;
-  auto* lep1 = looseLeps->size()>1 ? (*looseLeps)[1] : nullptr;
-
-  if(analysis.year == 2017 || analysis.year == 2018){
-  if (gt.nLooseElectron>1 && analysis.complicatedLeptons) {
-     double data_eff1=utils.getCorr(cTrigEleDataEff, gt.electronEta[0], gt.electronPt[0]);
-     double data_eff2=utils.getCorr(cTrigEleDataEff, gt.electronEta[1], gt.electronPt[1]);
-     double mc_eff1 = utils.getCorr(cTrigEleMCEff, gt.electronEta[0], gt.electronPt[0]);
-     double mc_eff2 = utils.getCorr(cTrigEleMCEff, gt.electronEta[1], gt.electronPt[1]);
-    gt.sf_eleTrig = (1-(1-data_eff1)*(1-data_eff2))/(1-(1-mc_eff1)*(1-mc_eff2));
-    if(gt.eleTrigMatch[0]==1)
-        gt.sf_eleTrig2 = utils.getCorr(cTrigEle, gt.electronEta[0], gt.electronPt[0]);
-    else if(gt.eleTrigMatch[1]==1)
-        gt.sf_eleTrig2 = utils.getCorr(cTrigEle, gt.electronEta[1], gt.electronPt[1]);
-  } else if (gt.nLooseElectron==1) {
-      gt.sf_eleTrig = utils.getCorr(cTrigEle, gt.electronEta[0], gt.electronPt[0]);
-      if(gt.eleTrigMatch[0]==1)
-          gt.sf_eleTrig2 = utils.getCorr(cTrigEle, gt.electronEta[0], gt.electronPt[0]);
-  } // done with ele trig SF
-  if (gt.nLooseMuon>=1 && analysis.complicatedLeptons) {
-    Muon *mu1=nullptr, *mu2=nullptr;
-    float eff1=0;
-      eff1 = utils.getCorr(
-        cTrigMu,
-        fabs(gt.muonEta[0]),
-        TMath::Max((float)26.,TMath::Min((float)499.99,gt.muonPt[0]))
-      );
-      gt.sf_muTrig = eff1;
-  } // done with mu trig SF
-  }
-  if (gt.nLoosePhoton>0 && gt.loosePho1IsTight)
-    gt.sf_phoTrig = utils.getCorr(cTrigPho,gt.loosePho1Pt);
-
-//  if (analysis.vbf) {
-//    gt.sf_metTrigVBF = utils.getCorr(cVBF_TrigMET,gt.barrelHTMiss);
-//    gt.sf_metTrigZmmVBF = utils.getCorr(cVBF_TrigMETZmm,gt.barrelHTMiss);
-//  }
+  gt.sf_trig_HT1050 = 1.;
 }
