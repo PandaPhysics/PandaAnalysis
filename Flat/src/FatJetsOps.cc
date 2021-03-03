@@ -84,7 +84,7 @@ void FatJetOp::do_execute()
     }
   }
 
-  fastjet::JetDefinition *jetDef = new fastjet::JetDefinition(fastjet::antikt_algorithm,1.5);
+  fastjet::JetDefinition *jetDef = new fastjet::JetDefinition(fastjet::kt_algorithm,1.5);
   fastjet::ClusterSequence seq(sorted_by_pt(finalTracks), *jetDef);
   vector<fastjet::PseudoJet> allJets(sorted_by_pt(seq.inclusive_jets(200)));
 
@@ -169,6 +169,8 @@ void FatJetOp::do_execute()
       tracksP4_pt.push_back(tmp);
     }
     gt.SUEP_pt_spher = sphericity(2.,tracksP4_pt);
+    //std::cout << "Spher " <<  gt.SUEP_pt_spher << std::endl;
+
   }
 
   // ISR removal (remove N hardest tracks)
