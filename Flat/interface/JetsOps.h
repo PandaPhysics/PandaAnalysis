@@ -6,26 +6,6 @@
 
 namespace pa {
 
-  class AdJetOp : public AnalysisOp {
-  public:
-    AdJetOp(panda::Event& event_,
-	    Config& cfg_,
-	    Utils& utils_,
-	    GeneralTree& gt_,
-	    int level_=0) :
-      AnalysisOp("adjet", event_, cfg_, utils_, gt_, level_) { }
-    virtual ~AdJetOp() { }
-    bool on() { return analysis.hbb; }
-  protected:
-    void do_init(Registry& registry) {
-      currentJES = registry.access<JESHandler*>("currentJES");
-    }
-    void do_execute(); 
-  private:
-    std::shared_ptr<JESHandler*> currentJES{nullptr};
-  };
-
-
   class JetFlavorOp : public AnalysisOp {
   public:
     JetFlavorOp(panda::Event& event_,
@@ -36,7 +16,7 @@ namespace pa {
       AnalysisOp("jetflavor", event_, cfg_, utils_, gt_, level_) { }
     virtual ~JetFlavorOp () {}
 
-    bool on() { return !analysis.isData && (analysis.jetFlavorPartons || analysis.jetFlavorJets); }
+    bool on() { return !analysis.isData && analysis.jetFlavorJets; }
   protected:
     void do_init(Registry& registry) {
       jesShifts = registry.access<std::vector<JESHandler>>("jesShifts");
@@ -48,109 +28,9 @@ namespace pa {
     std::shared_ptr<std::vector<JESHandler>> jesShifts{nullptr};
     std::shared_ptr<const std::vector<panda::Particle*>> genP{nullptr};
 
-    void partonFlavor(JetWrapper&);
     void clusteredFlavor(JetWrapper&);
   };
 
-  class IsoJetOp : public AnalysisOp {
-  public:
-    IsoJetOp(panda::Event& event_,
-              Config& cfg_,
-              Utils& utils_,
-              GeneralTree& gt_,
-              int level_=0) :
-      AnalysisOp("isojet", event_, cfg_, utils_, gt_, level_) { }
-    virtual ~IsoJetOp () {}
-
-    bool on() { return analysis.fatjet; }
-  protected:
-    void do_init(Registry& registry) {
-      currentJet = registry.access<JetWrapper*>("currentJet");
-      currentJES = registry.access<JESHandler*>("currentJES");
-
-    }
-    void do_execute();
-  private:
-    std::shared_ptr<JetWrapper*> currentJet{nullptr}; // shared ptr to a bare address
-    std::shared_ptr<JESHandler*> currentJES{nullptr};
-  };
-
-  class BJetRegOp : public AnalysisOp {
-  public:
-    BJetRegOp(panda::Event& event_,
-                  Config& cfg_,
-                  Utils& utils_,
-                  GeneralTree& gt_,
-                  int level_=0) :
-      AnalysisOp("bjetreg", event_, cfg_, utils_, gt_, level_) { }
-    virtual ~BJetRegOp () {}
-
-    bool on() { return analysis.bjetBDTReg || analysis.bjetDeepReg || analysis.bjetRegTraining; }
-  protected:
-    void do_init(Registry& registry) {
-      currentJet = registry.access<JetWrapper*>("currentJet");
-      currentJES = registry.access<JESHandler*>("currentJES");
-    }
-    void do_execute();
-    void do_reset() { energies.clear(); }
-  private:
-    struct Energies {
-      static const std::vector<double> dr2_bins;
-      enum pftype {
-        pem, pch, pmu, pne, pN
-      };
-      using contents = std::array<std::vector<TLorentzVector>, static_cast<int>(shiftjetrings::N)>;
-      std::array<contents, pN> pf; // pf[pftype][bin_idx]
-      float jet_e; 
-
-      void clear() {
-        for (auto& i : pf)
-          for (auto& j : i)
-            j.clear();
-      }
-      float get_e(int bin, pftype pft) {
-        float sum = 0;
-        for (auto& v : pf[pft][bin])
-          sum += v.E();
-        return sum / jet_e;
-      }
-
-      typedef double (TLorentzVector::*vec_func) () const;
-      template <long unsigned int I>
-      void get_moments(int pft, vec_func f, std::array<float,I>& moments, float shift=0) {
-        std::fill(moments.begin(), moments.end(), 0);
-        // first get the mean
-        float sumw{0};
-        std::vector<std::pair<float,float>> x;
-        for (auto& bin : pf[pft]) {
-          x.reserve(x.size() + bin.size());
-          for (auto& v : bin) {
-            x.emplace_back((v.*f)() - shift, v.E());
-            sumw += v.E();
-          }
-        }
-
-        if (sumw == 0)
-          return;
-
-        for (auto& xx : x)
-          moments[0] += xx.first * xx.second; 
-        moments[0] /= sumw;
-
-        for (unsigned ex = 1; ex != I; ++ ex) {
-          for (auto& xx : x) {
-            // dividing by sumw here is not optimal but prevents a very large sum
-            moments[ex] += std::pow(xx.second / sumw * (xx.first - moments[0]), ex + 1);
-          }
-          moments[ex] = std::pow(std::fabs(moments[ex]), 1./(ex + 1));
-        }
-      }
-    };
-
-    Energies energies;
-    std::shared_ptr<JetWrapper*> currentJet{nullptr}; // shared ptr to a bare address
-    std::shared_ptr<JESHandler*> currentJES{nullptr};
-  };
 
   class VBFSystemOp : public AnalysisOp {
   public:
@@ -266,22 +146,10 @@ namespace pa {
       BaseJetOp("jet", event_, cfg_, utils_, gt_, level_),
       currentJet(std::make_shared<JetWrapper*>(nullptr)),
       currentJES(std::make_shared<JESHandler*>(nullptr)) {
-//	if (analysis.puppiJets)
-//	  ak4Jets = &(event.puppiAK4Jets);
-//	else
-	  ak4Jets = &(event.Jet);
+	ak4Jets = &(event.Jet);
         recalcJER = analysis.rerunJER; 
-
-        isojet = addSubOp<IsoJetOp>();
-//        bjetreg = addSubOp<BJetRegOp>();
-//        vbf = addSubOp<VBFSystemOp>();
-//        hbb = addSubOp<HbbSystemOp>();
-//	adjet = addSubOp<AdJetOp>();
-
-//	if (analysis.puppiJets)
-//	  jetType = "AK4PFPuppi";
-//	else
-	  jetType = "AK4PFchs";	  
+        vbf = addSubOp<VBFSystemOp>();
+	jetType = "AK4PFchs";	  
     }
     virtual ~JetOp () { }
 
@@ -299,11 +167,7 @@ namespace pa {
     void do_execute();
 
   private:
-    IsoJetOp *isojet{nullptr};
-//    BJetRegOp *bjetreg{nullptr};
-//    VBFSystemOp *vbf{nullptr};
-//    HbbSystemOp *hbb{nullptr};
-//    AdJetOp *adjet{nullptr};
+    VBFSystemOp *vbf{nullptr};
 
     std::shared_ptr<std::vector<JESHandler>> jesShifts{nullptr};
 

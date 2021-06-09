@@ -73,11 +73,11 @@ vbfg = lambda v=False : _analysis(
         useDeepJet = False,
         darkg = False,
         varyJES = False,
-        METJER = True,
+        METJER = False,
         LowPtJet = False,
         varyJESTotal = True,
         rerunJES = True,
-        rerunJER = True,
+        rerunJER = False,
         mcTriggers = True,
         complicatedPhotons = False,
         complicatedLeptons = True

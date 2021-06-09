@@ -72,8 +72,8 @@ void JetCorrector::RunCorrection(bool isData, float rho, panda::MuonCollection *
   //        cout << "factor=" << jecFactor << " jet in pt=" << v_j_in.Pt() << " muon frac=" << j_in.muonSubtrFactor << endl;
  //         cout << "new pt=" << new_pt << " old_pt=" << old_pt << endl;
 
-//          if(new_pt_ini<=15) continue; 
-          if(new_pt_ini*(1-j_in.muonSubtrFactor) <= 15) continue;
+          if(new_pt_ini<=15) continue; 
+//          if(new_pt_ini*(1-j_in.muonSubtrFactor) <= 15) continue;
 
           float old_pt = old_pt_ini*(1-j_in.muonSubtrFactor);
           float new_pt = new_pt_ini*(1-j_in.muonSubtrFactor);
